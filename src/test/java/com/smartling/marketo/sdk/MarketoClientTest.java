@@ -1,5 +1,6 @@
 package com.smartling.marketo.sdk;
 
+import com.smartling.marketo.sdk.command.CloneEmail;
 import com.smartling.marketo.sdk.command.GetEmailsCommand;
 import com.smartling.marketo.sdk.command.LoadEmailById;
 import com.smartling.marketo.sdk.command.LoadEmailContent;
@@ -53,5 +54,25 @@ public class MarketoClientTest {
         List<EmailContentItem> result = testedInstance.loadEmailContent(42);
 
         assertThat(result).contains(contentItem);
+    }
+
+    @Test
+    public void shouldCloneEmail() throws Exception {
+        Email clone = new Email();
+        given(executor.execute(isA(CloneEmail.class))).willReturn(Collections.singletonList(clone));
+
+        Email result = testedInstance.cloneEmail(42, "blah", 999);
+
+        assertThat(result).isSameAs(clone);
+    }
+
+    @Test
+    public void shouldCloneExistingEmail() throws Exception {
+        Email clone = new Email();
+        given(executor.execute(isA(CloneEmail.class))).willReturn(Collections.singletonList(clone));
+
+        Email result = testedInstance.cloneEmail(new Email(), "blah");
+
+        assertThat(result).isSameAs(clone);
     }
 }

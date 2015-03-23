@@ -6,7 +6,10 @@ import org.glassfish.jersey.jackson.JacksonFeature;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Form;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -35,19 +38,36 @@ public class HttpCommandExecutor {
         ParameterizedType parameterizedType = createReturnType(command);
 
         WebTarget target = client.target(restUrl).path(command.getPath());
-        for (Map.Entry<String, Object> param : command.getParameters().entrySet()) {
-            target = target.queryParam(param.getKey(), param.getValue());
+        if ("GET".equalsIgnoreCase(command.getMethod())) {
+            for (Map.Entry<String, Object> param : command.getParameters().entrySet()) {
+                target = target.queryParam(param.getKey(), param.getValue());
+            }
         }
 
-        MarketoResponse<T> marketoResponse = target.request(MediaType.APPLICATION_JSON_TYPE)
-                .header("Authorization", "Bearer " + token)
-                .get(new GenericType<MarketoResponse<T>>(parameterizedType) {});
+        Invocation.Builder invocationBuilder = target.request(MediaType.APPLICATION_JSON_TYPE)
+                .header("Authorization", "Bearer " + token);
+        GenericType<MarketoResponse<T>> typeToken = new GenericType<MarketoResponse<T>>(parameterizedType) {};
+
+        MarketoResponse<T> marketoResponse;
+        if ("POST".equalsIgnoreCase(command.getMethod())) {
+            marketoResponse = invocationBuilder.post(Entity.form(toForm(command.getParameters())), typeToken);
+        } else {
+            marketoResponse = invocationBuilder.method(command.getMethod(), typeToken);
+        }
 
         if (marketoResponse.isSuccess()) {
             return marketoResponse.getResult();
         } else {
             throw new MarketoApiException(marketoResponse.getErrors().get(0).getMessage());
         }
+    }
+
+    private static Form toForm(Map<String, Object> parameters) {
+        Form form = new Form();
+        for (Map.Entry<String, Object> param : parameters.entrySet()) {
+            form.param(param.getKey(), param.getValue().toString());
+        }
+        return form;
     }
 
     private static <T> ParameterizedType createReturnType(final Command<T> command) {

@@ -9,6 +9,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
@@ -74,5 +75,28 @@ public class EmailIntegrationTest {
         assertThat(contentItems).isNotEmpty();
         assertThat(contentItems.get(0).getHtmlContent()).isNotNull();
         assertThat(contentItems.get(0).getTextContent()).isNotNull();
+    }
+
+    @Test
+    public void shouldCloneEmail() throws Exception {
+        String newEmailName = "integration-test-clone-" + UUID.randomUUID().toString();
+
+        Email clone = marketoClient.cloneEmail(1004, newEmailName, 14);
+
+        assertThat(clone).isNotNull();
+        assertThat(clone.getId()).isPositive();
+        assertThat(clone.getName()).isEqualTo(newEmailName);
+    }
+
+    @Test
+    public void shouldCloneEmailViaShorthandMethod() throws Exception {
+        String newEmailName = "integration-test-clone-" + UUID.randomUUID().toString();
+        Email email = marketoClient.loadEmailById(1004);
+
+        Email clone = marketoClient.cloneEmail(email, newEmailName);
+
+        assertThat(clone).isNotNull();
+        assertThat(clone.getId()).isPositive();
+        assertThat(clone.getName()).isEqualTo(newEmailName);
     }
 }

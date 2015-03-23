@@ -1,5 +1,6 @@
 package com.smartling.marketo.sdk;
 
+import com.smartling.marketo.sdk.command.CloneEmail;
 import com.smartling.marketo.sdk.command.GetEmailsCommand;
 import com.smartling.marketo.sdk.command.LoadEmailById;
 import com.smartling.marketo.sdk.command.LoadEmailContent;
@@ -29,6 +30,15 @@ public class MarketoClient {
 
     public List<EmailContentItem> loadEmailContent(int emailId) throws MarketoApiException {
         return httpCommandExecutor.execute(new LoadEmailContent(emailId));
+    }
+
+    public Email cloneEmail(int sourceEmailId, String newEmailName, int folderId) throws MarketoApiException {
+        List<Email> cloned = httpCommandExecutor.execute(new CloneEmail(sourceEmailId, newEmailName, folderId));
+        return cloned.get(0);
+    }
+
+    public Email cloneEmail(Email existingEmail, String newEmailName) throws MarketoApiException {
+        return cloneEmail(existingEmail.getId(), newEmailName, existingEmail.getFolder().getValue());
     }
 
     public static class Builder {

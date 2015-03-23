@@ -2,6 +2,7 @@ package com.smartling.marketo.sdk.transport;
 
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.client.UrlMatchingStrategy;
+import com.github.tomakehurst.wiremock.client.ValueMatchingStrategy;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.smartling.marketo.sdk.Command;
 import com.smartling.marketo.sdk.MarketoApiException;
@@ -17,10 +18,13 @@ import java.util.Collections;
 import java.util.Random;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.givenThat;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
@@ -54,6 +58,7 @@ public class HttpCommandExecutorTest {
     public void setUp() throws Exception {
         stubFor(get(urlStartingWith("/identity")).willReturn(aJsonResponse("{}")));
         stubFor(get(urlStartingWith("/rest")).willReturn(aJsonResponse("{\"success\": true}")));
+        stubFor(post(urlStartingWith("/rest")).willReturn(aJsonResponse("{\"success\": true}")));
 
         when(command.getResultType()).thenReturn(Data.class);
         when(command.getMethod()).thenReturn("GET");
@@ -75,7 +80,6 @@ public class HttpCommandExecutorTest {
 
     @Test
     public void shouldIgnoreUnknownFields() throws Exception {
-        given(command.getMethod()).willReturn("GET");
         given(command.getPath()).willReturn("/some/path");
         givenThat(get(path("/rest/some/path")).willReturn(
                 aJsonResponse("{\"success\": true, \"result\": {}, \"unknown\": true}")));
@@ -85,7 +89,6 @@ public class HttpCommandExecutorTest {
 
     @Test
     public void shouldQueryParameters() throws Exception {
-        given(command.getMethod()).willReturn("GET");
         given(command.getPath()).willReturn("/some/path");
         given(command.getParameters()).willReturn(Collections.<String, Object>singletonMap("key", "value"));
 
@@ -133,6 +136,33 @@ public class HttpCommandExecutorTest {
         thrown.expectMessage("Error!");
 
         testedInstance.execute(command);
+    }
+
+    @Test
+    public void shouldExecutePostCommands() throws Exception {
+        given(command.getMethod()).willReturn("POST");
+        given(command.getPath()).willReturn("/some/path");
+        givenThat(post(urlMatching("/rest/some/path")).willReturn(
+                aJsonResponse("{\"success\": true, \"result\": {\"string\": \"test\"}}")));
+
+        Data response = testedInstance.execute(command);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getString()).isEqualTo("test");
+    }
+
+    @Test
+    public void shouldPassPostParameters() throws Exception {
+        given(command.getMethod()).willReturn("POST");
+        given(command.getParameters()).willReturn(Collections.<String, Object>singletonMap("key", "value"));
+
+        testedInstance.execute(command);
+
+        verify(postRequestedFor(urlStartingWith("/rest")).withRequestBody(withFormParam("key", "value")));
+    }
+
+    private ValueMatchingStrategy withFormParam(String key, String value) {
+        return containing(key + "=" + value);
     }
 
     private static UrlMatchingStrategy urlStartingWith(String path) {
