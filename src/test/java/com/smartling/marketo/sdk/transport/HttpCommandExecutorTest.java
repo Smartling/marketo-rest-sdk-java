@@ -161,6 +161,13 @@ public class HttpCommandExecutorTest {
         verify(postRequestedFor(urlStartingWith("/rest")).withRequestBody(withFormParam("key", "value")));
     }
 
+    @Test
+    public void shouldDeserializeVoid() throws Exception {
+        given(command.getResultType()).willReturn(Void.TYPE);
+
+        testedInstance.execute(command);
+    }
+
     private ValueMatchingStrategy withFormParam(String key, String value) {
         return containing(key + "=" + value);
     }

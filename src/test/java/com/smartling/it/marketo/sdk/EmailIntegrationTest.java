@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -101,5 +102,24 @@ public class EmailIntegrationTest {
         assertThat(clone).isNotNull();
         assertThat(clone.getId()).isPositive();
         assertThat(clone.getName()).isEqualTo(newEmailName);
+    }
+
+    @Test
+    public void shouldUpdateEmailContent() throws Exception {
+        String subject = "IT " + UUID.randomUUID();
+        EmailContentItem newItem = new EmailContentItem();
+        newItem.setHtmlId("greeting");
+        newItem.setHtmlContent("<strong>" + UUID.randomUUID() + "<strong>");
+        newItem.setTextContent(UUID.randomUUID().toString());
+
+        marketoClient.updateEmailContent(1016, subject, Arrays.asList(newItem));
+
+//        Email email = marketoClient.loadEmailById(1016);
+//        assertThat(email.getSubject()).isEqualTo(subject);
+//        List<EmailContentItem> emailContentItems = marketoClient.loadEmailContent(1016);
+//        assertThat(emailContentItems).hasSize(1);
+//        assertThat(emailContentItems.get(0).getHtmlId()).isEqualTo(newItem.getHtmlId());
+//        assertThat(emailContentItems.get(0).getHtmlContent()).isEqualTo(newItem.getHtmlContent());
+//        assertThat(emailContentItems.get(0).getTextContent()).isEqualTo(newItem.getTextContent());
     }
 }
