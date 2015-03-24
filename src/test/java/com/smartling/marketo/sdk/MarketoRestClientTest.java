@@ -24,12 +24,12 @@ import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MarketoClientTest {
+public class MarketoRestClientTest {
     @Mock
     private HttpCommandExecutor executor;
 
     @InjectMocks
-    private MarketoClient testedInstance;
+    private MarketoRestClient testedInstance;
 
     @Test
     public void shouldRequestEmailList() throws Exception {

@@ -3,6 +3,7 @@ package com.smartling.it.marketo.sdk;
 import com.smartling.marketo.sdk.EmailContentItem;
 import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.MarketoClient;
+import com.smartling.marketo.sdk.MarketoRestClient;
 import com.smartling.marketo.sdk.Email;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -39,7 +40,7 @@ public class EmailIntegrationTest {
 
     @Before
     public void setUp() throws Exception {
-        marketoClient = MarketoClient.create(identityEndpoint, restEndpoint).withCredentials(clientId, clientSecret);
+        marketoClient = MarketoRestClient.create(identityEndpoint, restEndpoint).withCredentials(clientId, clientSecret);
     }
 
     @Test
@@ -53,7 +54,7 @@ public class EmailIntegrationTest {
 
     @Test(expected = MarketoApiException.class)
     public void shouldThrowAuthenticationError() throws Exception {
-        MarketoClient invalid = MarketoClient.create(identityEndpoint, restEndpoint).withCredentials(clientId, "invalid");
+        MarketoRestClient invalid = MarketoRestClient.create(identityEndpoint, restEndpoint).withCredentials(clientId, "invalid");
         invalid.listEmails(0, 1);
     }
 
