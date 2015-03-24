@@ -14,6 +14,8 @@ import java.util.UUID;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public class EmailIntegrationTest {
+    private static final int TEST_EMAIL_ID = 1016;
+
     private static String identityEndpoint;
     private static String restEndpoint;
     private static String clientId;
@@ -61,16 +63,16 @@ public class EmailIntegrationTest {
 
     @Test
     public void shouldLoadEmail() throws Exception {
-        Email email = marketoClient.loadEmailById(1004);
+        Email email = marketoClient.loadEmailById(TEST_EMAIL_ID);
 
         assertThat(email).isNotNull();
-        assertThat(email.getId()).isEqualTo(1004);
+        assertThat(email.getId()).isEqualTo(TEST_EMAIL_ID);
         assertThat(email.getName()).isNotEmpty();
     }
 
     @Test
     public void shouldReadEmailContent() throws Exception {
-        List<EmailContentItem> contentItems = marketoClient.loadEmailContent(1004);
+        List<EmailContentItem> contentItems = marketoClient.loadEmailContent(TEST_EMAIL_ID);
 
         assertThat(contentItems).isNotEmpty();
         assertThat(contentItems.get(0).getHtmlContent()).isNotNull();
@@ -81,7 +83,7 @@ public class EmailIntegrationTest {
     public void shouldCloneEmail() throws Exception {
         String newEmailName = "integration-test-clone-" + UUID.randomUUID().toString();
 
-        Email clone = marketoClient.cloneEmail(1004, newEmailName, 14);
+        Email clone = marketoClient.cloneEmail(TEST_EMAIL_ID, newEmailName, 14);
 
         assertThat(clone).isNotNull();
         assertThat(clone.getId()).isPositive();
@@ -91,7 +93,7 @@ public class EmailIntegrationTest {
     @Test
     public void shouldCloneEmailViaShorthandMethod() throws Exception {
         String newEmailName = "integration-test-clone-" + UUID.randomUUID().toString();
-        Email email = marketoClient.loadEmailById(1004);
+        Email email = marketoClient.loadEmailById(TEST_EMAIL_ID);
 
         Email clone = marketoClient.cloneEmail(email, newEmailName);
 
