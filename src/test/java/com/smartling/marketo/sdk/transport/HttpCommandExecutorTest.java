@@ -75,7 +75,7 @@ public class HttpCommandExecutorTest {
         Data response = testedInstance.execute(command);
 
         assertThat(response).isNotNull();
-        assertThat(response.getString()).isEqualTo("test");
+        assertThat(response.string).isEqualTo("test");
     }
 
     @Test
@@ -148,7 +148,7 @@ public class HttpCommandExecutorTest {
         Data response = testedInstance.execute(command);
 
         assertThat(response).isNotNull();
-        assertThat(response.getString()).isEqualTo("test");
+        assertThat(response.string).isEqualTo("test");
     }
 
     @Test
@@ -179,9 +179,5 @@ public class HttpCommandExecutorTest {
 
     private static class Data {
         private String string;
-
-        public String getString() {
-            return string;
-        }
     }
 }

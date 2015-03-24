@@ -68,6 +68,7 @@ public class EmailIntegrationTest {
         assertThat(email).isNotNull();
         assertThat(email.getId()).isEqualTo(TEST_EMAIL_ID);
         assertThat(email.getName()).isNotEmpty();
+        assertThat(email.getSubject()).isNotEmpty();
     }
 
     @Test
