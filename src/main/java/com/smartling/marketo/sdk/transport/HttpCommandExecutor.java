@@ -35,18 +35,20 @@ public class HttpCommandExecutor {
 
         String token = getToken(client);
 
-        ParameterizedType parameterizedType = createReturnType(command);
-
-        WebTarget target = client.target(restUrl).path(command.getPath());
-        if ("GET".equalsIgnoreCase(command.getMethod())) {
-            for (Map.Entry<String, Object> param : command.getParameters().entrySet()) {
-                target = target.queryParam(param.getKey(), param.getValue());
-            }
-        }
-
+        WebTarget target = buildWebTarget(client, command);
         Invocation.Builder invocationBuilder = target.request(MediaType.APPLICATION_JSON_TYPE)
                 .header("Authorization", "Bearer " + token);
-        GenericType<MarketoResponse<T>> typeToken = new GenericType<MarketoResponse<T>>(parameterizedType) {};
+        MarketoResponse<T> marketoResponse = execute(invocationBuilder, command);
+
+        if (marketoResponse.isSuccess()) {
+            return marketoResponse.getResult();
+        } else {
+            throw new MarketoApiException(marketoResponse.getErrors().get(0).getMessage());
+        }
+    }
+
+    private <T> MarketoResponse<T> execute(Invocation.Builder invocationBuilder, Command<T> command) {
+        GenericType<MarketoResponse<T>> typeToken = new GenericType<MarketoResponse<T>>(createReturnType(command)) {};
 
         MarketoResponse<T> marketoResponse;
         if ("POST".equalsIgnoreCase(command.getMethod())) {
@@ -55,11 +57,18 @@ public class HttpCommandExecutor {
             marketoResponse = invocationBuilder.method(command.getMethod(), typeToken);
         }
 
-        if (marketoResponse.isSuccess()) {
-            return marketoResponse.getResult();
-        } else {
-            throw new MarketoApiException(marketoResponse.getErrors().get(0).getMessage());
+        return marketoResponse;
+    }
+
+    private <T> WebTarget buildWebTarget(Client client, Command<T> command) {
+        WebTarget target = client.target(restUrl).path(command.getPath());
+        if ("GET".equalsIgnoreCase(command.getMethod())) {
+            for (Map.Entry<String, Object> param : command.getParameters().entrySet()) {
+                target = target.queryParam(param.getKey(), param.getValue());
+            }
         }
+
+        return target;
     }
 
     private static Form toForm(Map<String, Object> parameters) {
