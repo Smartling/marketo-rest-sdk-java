@@ -1,5 +1,7 @@
 package com.smartling.marketo.sdk.transport;
 
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
 import com.smartling.marketo.sdk.Command;
 import com.smartling.marketo.sdk.MarketoApiException;
 import org.glassfish.jersey.jackson.JacksonFeature;
@@ -16,6 +18,7 @@ import javax.ws.rs.core.Response;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class HttpCommandExecutor {
     private final String identityUrl;
@@ -23,17 +26,20 @@ public class HttpCommandExecutor {
     private final String clientId;
     private final String clientSecret;
 
+    private final Client client;
+
+    private volatile Supplier<String> tokenSupplier = Suppliers.ofInstance(null);
+
     public HttpCommandExecutor(String identityUrl, String restUrl, String clientId, String clientSecret) {
         this.identityUrl = identityUrl;
         this.restUrl = restUrl;
         this.clientId = clientId;
         this.clientSecret = clientSecret;
+        this.client = ClientBuilder.newClient().register(JacksonFeature.class).register(ObjectMapperProvider.class);
     }
 
     public <T> T execute(final Command<T> command) throws MarketoApiException {
-        Client client = ClientBuilder.newClient().register(JacksonFeature.class).register(ObjectMapperProvider.class);
-
-        String token = getToken(client);
+        String token = getToken();
 
         WebTarget target = buildWebTarget(client, command);
         Invocation.Builder invocationBuilder = target.request(MediaType.APPLICATION_JSON_TYPE)
@@ -76,6 +82,7 @@ public class HttpCommandExecutor {
         for (Map.Entry<String, Object> param : parameters.entrySet()) {
             form.param(param.getKey(), param.getValue().toString());
         }
+
         return form;
     }
 
@@ -98,7 +105,20 @@ public class HttpCommandExecutor {
             };
     }
 
-    private String getToken(Client client) throws MarketoApiException {
+    private String getToken() throws MarketoApiException {
+        String token = tokenSupplier.get();
+        if (token == null) {
+            AuthenticationResponse authenticationResponse = authenticate();
+
+            tokenSupplier = Suppliers.memoizeWithExpiration(new OneTimeSupplier<>(authenticationResponse.getAccessToken()),
+                    authenticationResponse.getExpirationInterval(), TimeUnit.SECONDS);
+            token = tokenSupplier.get();
+        }
+
+        return token;
+    }
+
+    private AuthenticationResponse authenticate() throws MarketoApiException {
         Response response = client.target(identityUrl).path("/oauth/token")
                 .queryParam("grant_type", "client_credentials")
                 .queryParam("client_id", clientId)
@@ -108,10 +128,25 @@ public class HttpCommandExecutor {
 
         AuthenticationResponse authenticationResponse = response.readEntity(AuthenticationResponse.class);
         if (response.getStatus() == 200) {
-            return authenticationResponse.getAccessToken();
+            return authenticationResponse;
         } else {
             throw new MarketoApiException(authenticationResponse.getErrorDescription());
         }
+    }
 
+    private static final class OneTimeSupplier<T> implements Supplier<T> {
+        private T value;
+
+        private OneTimeSupplier(T value) {
+            this.value = value;
+        }
+
+        @Override
+        public T get() {
+            T copy = value;
+            value = null;
+
+            return copy;
+        }
     }
 }

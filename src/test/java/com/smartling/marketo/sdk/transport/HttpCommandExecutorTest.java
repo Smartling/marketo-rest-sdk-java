@@ -56,7 +56,7 @@ public class HttpCommandExecutorTest {
 
     @Before
     public void setUp() throws Exception {
-        stubFor(get(urlStartingWith("/identity")).willReturn(aJsonResponse("{}")));
+        stubFor(get(urlStartingWith("/identity")).willReturn(aJsonResponse("{\"access_token\": \"\",\"expires_in\": 100000}")));
         stubFor(get(urlStartingWith("/rest")).willReturn(aJsonResponse("{\"success\": true}")));
         stubFor(post(urlStartingWith("/rest")).willReturn(aJsonResponse("{\"success\": true}")));
 
@@ -99,7 +99,8 @@ public class HttpCommandExecutorTest {
 
     @Test
     public void shouldAuthenticateEachRequest() throws Exception {
-        givenThat(get(path("/identity/oauth/token")).willReturn(aJsonResponse("{\"access_token\": \"token\"}")));
+        givenThat(get(path("/identity/oauth/token")).willReturn(aJsonResponse(
+                "{\"access_token\": \"token\",\"expires_in\": 100000}\"}")));
 
         testedInstance.execute(command);
 
@@ -166,6 +167,26 @@ public class HttpCommandExecutorTest {
         given(command.getResultType()).willReturn(Void.TYPE);
 
         testedInstance.execute(command);
+    }
+
+    @Test
+    public void shouldReuseTokenInMultipleCalls() throws Exception {
+        testedInstance.execute(command);
+        testedInstance.execute(command);
+
+        verify(1, getRequestedFor(urlStartingWith("/identity")));
+    }
+
+    @Test
+    public void shouldExpireToken() throws Exception {
+        givenThat(get(urlStartingWith("/identity")).willReturn(aJsonResponse(
+                "{\"access_token\": \"\",\"expires_in\": 1}")));
+
+        testedInstance.execute(command);
+        Thread.sleep(1000);
+        testedInstance.execute(command);
+
+        verify(2, getRequestedFor(urlStartingWith("/identity")));
     }
 
     private ValueMatchingStrategy withFormParam(String key, String value) {
