@@ -54,7 +54,7 @@ public class EmailIntegrationTest {
 
     @Test(expected = MarketoApiException.class)
     public void shouldThrowAuthenticationError() throws Exception {
-        MarketoRestClient invalid = MarketoRestClient.create(identityEndpoint, restEndpoint).withCredentials(clientId, "invalid");
+        MarketoClient invalid = MarketoRestClient.create(identityEndpoint, restEndpoint).withCredentials(clientId, "invalid");
         invalid.listEmails(0, 1);
     }
 
