@@ -6,6 +6,9 @@ import com.github.tomakehurst.wiremock.client.ValueMatchingStrategy;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.smartling.marketo.sdk.rest.Command;
 import com.smartling.marketo.sdk.MarketoApiException;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -131,9 +134,10 @@ public class HttpCommandExecutorTest {
     @Test
     public void shouldHandleNotSuccessfulResponses() throws Exception {
         givenThat(get(urlStartingWith("/rest")).willReturn(
-                aJsonResponse("{\"success\": false, \"errors\":[{\"message\": \"Error!\"}]}")));
+                aJsonResponse("{\"success\": false, \"errors\":[{\"code\": \"100\",\"message\": \"Error!\"}]}")));
 
         thrown.expect(MarketoApiException.class);
+        thrown.expect(exceptionWithCode("100"));
         thrown.expectMessage("Error!");
 
         testedInstance.execute(command);
@@ -187,6 +191,20 @@ public class HttpCommandExecutorTest {
         testedInstance.execute(command);
 
         verify(2, getRequestedFor(urlStartingWith("/identity")));
+    }
+
+    private static Matcher<MarketoApiException> exceptionWithCode(final String code) {
+        return new TypeSafeMatcher<MarketoApiException>() {
+            @Override
+            protected boolean matchesSafely(MarketoApiException item) {
+                return code.equalsIgnoreCase(item.getErrorCode());
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("exception with code ").appendValue(code);
+            }
+        };
     }
 
     private ValueMatchingStrategy withFormParam(String key, String value) {

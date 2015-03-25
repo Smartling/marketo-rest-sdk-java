@@ -52,6 +52,14 @@ public class EmailIntegrationTest {
         assertThat(emails.get(0).getName()).isNotEmpty();
     }
 
+//    @org.junit.Ignore
+    @Test
+    public void shouldReturnEmptyListWhenEndReached() throws Exception {
+        List<Email> emails = marketoClient.listEmails(10000, 1);
+
+        assertThat(emails).isEmpty();
+    }
+
     @Test(expected = MarketoApiException.class)
     public void shouldThrowAuthenticationError() throws Exception {
         MarketoClient invalid = MarketoRestClient.create(identityEndpoint, restEndpoint).withCredentials(clientId, "invalid");
@@ -60,7 +68,7 @@ public class EmailIntegrationTest {
 
     @Test(expected = MarketoApiException.class)
     public void shouldThrowLogicException() throws Exception {
-        marketoClient.listEmails(20000, 5);
+        marketoClient.listEmails(-5, 5);
     }
 
     @Test

@@ -49,7 +49,8 @@ public class HttpCommandExecutor {
         if (marketoResponse.isSuccess()) {
             return marketoResponse.getResult();
         } else {
-            throw new MarketoApiException(marketoResponse.getErrors().get(0).getMessage());
+            MarketoResponse.Error firstError = marketoResponse.getErrors().get(0);
+            throw new MarketoApiException(firstError.getCode(), firstError.getMessage());
         }
     }
 

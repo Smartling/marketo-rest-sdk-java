@@ -11,9 +11,12 @@ import com.smartling.marketo.sdk.rest.command.LoadEmailContent;
 import com.smartling.marketo.sdk.rest.command.UpdateEmailContent;
 import com.smartling.marketo.sdk.rest.transport.HttpCommandExecutor;
 
+import java.util.Collections;
 import java.util.List;
 
 public class MarketoRestClient implements MarketoClient {
+    private static final String LIST_END_REACHED_CODE = "702";
+
     private final HttpCommandExecutor httpCommandExecutor;
 
     private MarketoRestClient(HttpCommandExecutor httpCommandExecutor) {
@@ -26,7 +29,15 @@ public class MarketoRestClient implements MarketoClient {
 
     @Override
     public List<Email> listEmails(int offset, int limit) throws MarketoApiException {
-        return httpCommandExecutor.execute(new GetEmailsCommand(offset, limit));
+        try {
+            return httpCommandExecutor.execute(new GetEmailsCommand(offset, limit));
+        } catch (MarketoApiException e) {
+            if (LIST_END_REACHED_CODE.equalsIgnoreCase(e.getErrorCode())) {
+                return Collections.emptyList();
+            } else {
+                throw e;
+            }
+        }
     }
 
     @Override

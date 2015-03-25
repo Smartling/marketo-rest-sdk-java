@@ -2,6 +2,7 @@ package com.smartling.marketo.sdk.rest;
 
 import com.smartling.marketo.sdk.Email;
 import com.smartling.marketo.sdk.EmailContentItem;
+import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.rest.command.CloneEmail;
 import com.smartling.marketo.sdk.rest.command.GetEmailsCommand;
 import com.smartling.marketo.sdk.rest.command.LoadEmailById;
@@ -22,6 +23,7 @@ import java.util.List;
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.fest.assertions.api.Assertions.entry;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.verify;
 
@@ -41,6 +43,22 @@ public class MarketoRestClientTest {
         List<Email> emails = testedInstance.listEmails(0, 10);
 
         assertThat(emails).contains(email);
+    }
+
+    @Test
+    public void shouldReturnEmptyEmailListIfNoEmailCanBeFound() throws Exception {
+        given(executor.execute(any(Command.class))).willThrow(new MarketoApiException("702", ""));
+
+        List<Email> emails = testedInstance.listEmails(0, 10);
+
+        assertThat(emails).isEmpty();
+    }
+
+    @Test(expected = MarketoApiException.class)
+    public void shouldRethrowApiErrorsDifferentFromPaginationIssues() throws Exception {
+        given(executor.execute(any(Command.class))).willThrow(new MarketoApiException("100", ""));
+
+        testedInstance.listEmails(0, 10);
     }
 
     @Test
