@@ -23,6 +23,28 @@ where
   * `marketo.clientId` - [Custom Service](http://developers.marketo.com/documentation/rest/custom-service/) client ID,
   * `marketo.clientSecret`- [Custom Service](http://developers.marketo.com/documentation/rest/custom-service/) client secret.
 
-## Using the client
+## Using the client library
+
+### Creating instance of Client
+
+    MarketoClient client = MarketoRestClient.create("https://xxx-xxx-xxx.mktorest.com/identity", "https://xxx-xxx-xxx.mktorest.com/rest")
+            .withCredentials("XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+
+### Listing all e-mails
+
+Requesting 20 emails, string from the first one (i.e. with no offset):
+
+    List<Email> page = client.listEmails(0, 20);
+
+Requesting all emails page-by-page. Empty list will be returned when the end is reached:
+
+    List<Email> page;
+    int offset = 0;
+    do {
+        page = client.listEmails(offset, 20);
+        offset += 20;
+    } while(page.size() > 0);
+
+### Loading e-mail info
 
     TODO
