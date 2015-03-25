@@ -1,8 +1,8 @@
-package com.smartling.marketo.sdk.transport;
+package com.smartling.marketo.sdk.rest.transport;
 
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
-import com.smartling.marketo.sdk.Command;
+import com.smartling.marketo.sdk.rest.Command;
 import com.smartling.marketo.sdk.MarketoApiException;
 import org.glassfish.jersey.jackson.JacksonFeature;
 

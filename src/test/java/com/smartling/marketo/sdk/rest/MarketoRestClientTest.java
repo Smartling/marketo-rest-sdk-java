@@ -1,11 +1,13 @@
-package com.smartling.marketo.sdk;
+package com.smartling.marketo.sdk.rest;
 
-import com.smartling.marketo.sdk.command.CloneEmail;
-import com.smartling.marketo.sdk.command.GetEmailsCommand;
-import com.smartling.marketo.sdk.command.LoadEmailById;
-import com.smartling.marketo.sdk.command.LoadEmailContent;
-import com.smartling.marketo.sdk.command.UpdateEmailContent;
-import com.smartling.marketo.sdk.transport.HttpCommandExecutor;
+import com.smartling.marketo.sdk.Email;
+import com.smartling.marketo.sdk.EmailContentItem;
+import com.smartling.marketo.sdk.rest.command.CloneEmail;
+import com.smartling.marketo.sdk.rest.command.GetEmailsCommand;
+import com.smartling.marketo.sdk.rest.command.LoadEmailById;
+import com.smartling.marketo.sdk.rest.command.LoadEmailContent;
+import com.smartling.marketo.sdk.rest.command.UpdateEmailContent;
+import com.smartling.marketo.sdk.rest.transport.HttpCommandExecutor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;

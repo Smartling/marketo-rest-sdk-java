@@ -1,4 +1,4 @@
-package com.smartling.marketo.sdk.command;
+package com.smartling.marketo.sdk.rest.command;
 
 import com.smartling.marketo.sdk.EmailContentItem;
 

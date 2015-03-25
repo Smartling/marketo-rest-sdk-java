@@ -1,6 +1,6 @@
-package com.smartling.marketo.sdk.command;
+package com.smartling.marketo.sdk.rest.command;
 
-import com.smartling.marketo.sdk.Command;
+import com.smartling.marketo.sdk.rest.Command;
 import jersey.repackaged.com.google.common.collect.ImmutableMap;
 
 import java.lang.reflect.Type;

@@ -1,4 +1,4 @@
-package com.smartling.marketo.sdk;
+package com.smartling.marketo.sdk.rest;
 
 import java.lang.reflect.Type;
 import java.util.Map;

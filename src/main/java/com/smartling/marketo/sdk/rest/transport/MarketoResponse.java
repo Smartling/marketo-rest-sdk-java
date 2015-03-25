@@ -1,4 +1,4 @@
-package com.smartling.marketo.sdk.transport;
+package com.smartling.marketo.sdk.rest.transport;
 
 
 import java.util.Collections;

@@ -1,10 +1,10 @@
-package com.smartling.marketo.sdk.transport;
+package com.smartling.marketo.sdk.rest.transport;
 
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.client.UrlMatchingStrategy;
 import com.github.tomakehurst.wiremock.client.ValueMatchingStrategy;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import com.smartling.marketo.sdk.Command;
+import com.smartling.marketo.sdk.rest.Command;
 import com.smartling.marketo.sdk.MarketoApiException;
 import org.junit.Before;
 import org.junit.Rule;

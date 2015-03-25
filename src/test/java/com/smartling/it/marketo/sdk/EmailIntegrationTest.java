@@ -3,7 +3,7 @@ package com.smartling.it.marketo.sdk;
 import com.smartling.marketo.sdk.EmailContentItem;
 import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.MarketoClient;
-import com.smartling.marketo.sdk.MarketoRestClient;
+import com.smartling.marketo.sdk.rest.MarketoRestClient;
 import com.smartling.marketo.sdk.Email;
 import org.junit.Before;
 import org.junit.BeforeClass;
