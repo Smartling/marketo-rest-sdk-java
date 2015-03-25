@@ -1,10 +1,10 @@
 # Marketo REST SDK
 This module is to provide Java API for Marketo Platform. Only asset's operations are planned to be covered by this library.
 Currently you can:
- * list all e-mails,
- * fetch e-mail data by it's ID,
- * load e-mail content,
- * clone existing e-mail,
+ * list all emails,
+ * fetch email data by it's ID,
+ * load email content,
+ * clone existing email,
  * update email-content
 
 ## Building the codebase
@@ -30,7 +30,7 @@ where
     MarketoClient client = MarketoRestClient.create("https://xxx-xxx-xxx.mktorest.com/identity", "https://xxx-xxx-xxx.mktorest.com/rest")
             .withCredentials("XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
 
-### Listing all e-mails
+### Listing all emails
 
 Requesting 20 emails, string from the first one (i.e. with no offset):
 
@@ -45,6 +45,6 @@ Requesting all emails page-by-page. Empty list will be returned when the end is 
         offset += 20;
     } while(page.size() > 0);
 
-### Loading e-mail info
+### Loading email info
 
     TODO
