@@ -113,11 +113,11 @@ public class EmailIntegrationTest {
         newItem.setHtmlContent("<strong>" + UUID.randomUUID() + "<strong>");
         newItem.setTextContent(UUID.randomUUID().toString());
 
-        marketoClient.updateEmailContent(1016, subject, Arrays.asList(newItem));
+        marketoClient.updateEmailContent(TEST_EMAIL_ID, subject, Arrays.asList(newItem));
 
-//        Email email = marketoClient.loadEmailById(1016);
+//        Email email = marketoClient.loadEmailById(TEST_EMAIL_ID);
 //        assertThat(email.getSubject()).isEqualTo(subject);
-//        List<EmailContentItem> emailContentItems = marketoClient.loadEmailContent(1016);
+//        List<EmailContentItem> emailContentItems = marketoClient.loadEmailContent(TEST_EMAIL_ID);
 //        assertThat(emailContentItems).hasSize(1);
 //        assertThat(emailContentItems.get(0).getHtmlId()).isEqualTo(newItem.getHtmlId());
 //        assertThat(emailContentItems.get(0).getHtmlContent()).isEqualTo(newItem.getHtmlContent());
