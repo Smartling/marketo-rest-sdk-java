@@ -52,7 +52,6 @@ public class EmailIntegrationTest {
         assertThat(emails.get(0).getName()).isNotEmpty();
     }
 
-//    @org.junit.Ignore
     @Test
     public void shouldReturnEmptyListWhenEndReached() throws Exception {
         List<Email> emails = marketoClient.listEmails(10000, 1);
