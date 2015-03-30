@@ -1,5 +1,6 @@
 package com.smartling.marketo.sdk.rest;
 
+import com.google.common.base.Preconditions;
 import com.smartling.marketo.sdk.Email;
 import com.smartling.marketo.sdk.EmailContentItem;
 import com.smartling.marketo.sdk.MarketoApiException;
@@ -24,6 +25,9 @@ public class MarketoRestClient implements MarketoClient {
     }
 
     public static Builder create(String identityUrl, String restUrl) {
+        Preconditions.checkNotNull(identityUrl, "Identity URL is empty");
+        Preconditions.checkNotNull(restUrl, "REST endpoint URL is empty");
+
         return new Builder(identityUrl, restUrl);
     }
 
@@ -86,6 +90,9 @@ public class MarketoRestClient implements MarketoClient {
         }
 
         public MarketoRestClient withCredentials(String clientId, String clientSecret) {
+            Preconditions.checkNotNull(clientId, "Client ID is empty");
+            Preconditions.checkNotNull(clientSecret, "Client secret is empty");
+
             return new MarketoRestClient(new HttpCommandExecutor(identityUrl, restUrl, clientId, clientSecret));
         }
     }
