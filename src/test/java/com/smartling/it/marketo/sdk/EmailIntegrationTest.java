@@ -101,18 +101,20 @@ public class EmailIntegrationTest {
         assertThat(clone).isNotNull();
         assertThat(clone.getId()).isPositive();
         assertThat(clone.getName()).isEqualTo(newEmailName);
+        assertThat(clone.getFolder().getValue()).isEqualTo(TEST_FOLDER_ID);
     }
 
     @Test
     public void shouldCloneEmailViaShorthandMethod() throws Exception {
         String newEmailName = "integration-test-clone-" + UUID.randomUUID().toString();
-        Email email = marketoClient.loadEmailById(TEST_EMAIL_ID);
+        Email existingEmail = marketoClient.loadEmailById(TEST_EMAIL_ID);
 
-        Email clone = marketoClient.cloneEmail(email, newEmailName);
+        Email clone = marketoClient.cloneEmail(existingEmail, newEmailName);
 
         assertThat(clone).isNotNull();
         assertThat(clone.getId()).isPositive();
         assertThat(clone.getName()).isEqualTo(newEmailName);
+        assertThat(clone.getFolder().getValue()).isEqualTo(existingEmail.getFolder().getValue());
     }
 
     @Test
