@@ -87,9 +87,13 @@ public class EmailIntegrationTest {
     public void shouldReadEmailContent() throws Exception {
         List<EmailContentItem> contentItems = marketoClient.loadEmailContent(TEST_EMAIL_ID);
 
-        assertThat(contentItems).isNotEmpty();
-        assertThat(contentItems.get(0).getHtmlContent()).isNotNull();
-        assertThat(contentItems.get(0).getTextContent()).isNotNull();
+        assertThat(contentItems).hasSize(2);
+        assertThat(contentItems.get(0).getHtmlId()).isEqualTo("greeting");
+        assertThat(contentItems.get(0).getValue()).hasSize(2);
+        assertThat(contentItems.get(0).getValue().get(0).getType()).isEqualTo("HTML");
+        assertThat(contentItems.get(0).getValue().get(0).getValue()).isNotEmpty();
+        assertThat(contentItems.get(0).getValue().get(1).getType()).isEqualTo("Text");
+        assertThat(contentItems.get(0).getValue().get(1).getValue()).isNotEmpty();
     }
 
     @Test
