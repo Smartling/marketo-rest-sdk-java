@@ -17,7 +17,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.lang.annotation.ElementType;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Random;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -174,6 +176,26 @@ public class HttpCommandExecutorTest {
     }
 
     @Test
+    public void shouldDeserializeDates() throws Exception {
+        givenThat(get(path("/rest/some/path")).willReturn(
+                aJsonResponse("{\"success\": true, \"result\": {\"date\": \"2015-02-10T07:53:03Z+0000\"}}")));
+
+        Data response = testedInstance.execute(command);
+
+        assertThat(response.date).isNotNull();
+    }
+
+    @Test
+    public void shouldDeserializeEnumsIgnoringCase() throws Exception {
+        givenThat(get(path("/rest/some/path")).willReturn(
+                aJsonResponse("{\"success\": true, \"result\": {\"enumeration\": \"method\"}}")));
+
+        Data response = testedInstance.execute(command);
+
+        assertThat(response.enumeration).isEqualTo(ElementType.METHOD);
+    }
+
+    @Test
     public void shouldReuseTokenInMultipleCalls() throws Exception {
         testedInstance.execute(command);
         testedInstance.execute(command);
@@ -225,5 +247,7 @@ public class HttpCommandExecutorTest {
 
     private static class Data {
         private String string;
+        private Date date;
+        private ElementType enumeration;
     }
 }

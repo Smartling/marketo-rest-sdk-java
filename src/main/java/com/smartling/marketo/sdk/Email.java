@@ -1,8 +1,12 @@
 package com.smartling.marketo.sdk;
 
+import java.util.Date;
+
 public class Email {
     private int id;
     private String name;
+    private Date updatedAt;
+    private Status status;
     private Folder folder = new Folder();
     private TextField subject = new TextField();
 
@@ -22,6 +26,22 @@ public class Email {
         this.name = name;
     }
 
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
     public Folder getFolder() {
         return folder;
     }
@@ -36,5 +56,9 @@ public class Email {
         public String getValue() {
             return value;
         }
+    }
+
+    public enum Status {
+        DRAFT, APPROVED
     }
 }

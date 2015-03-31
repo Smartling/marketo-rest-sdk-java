@@ -50,6 +50,8 @@ public class EmailIntegrationTest {
         assertThat(emails).hasSize(1);
         assertThat(emails.get(0).getId()).isPositive();
         assertThat(emails.get(0).getName()).isNotEmpty();
+        assertThat(emails.get(0).getUpdatedAt()).isNotNull();
+        assertThat(emails.get(0).getStatus()).isNotNull();
     }
 
     @Test
