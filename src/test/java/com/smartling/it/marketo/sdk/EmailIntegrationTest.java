@@ -16,7 +16,8 @@ import java.util.UUID;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public class EmailIntegrationTest {
-    private static final int TEST_EMAIL_ID = 1016;
+    private static final int TEST_EMAIL_ID = 1109;
+    private static final int TEST_FOLDER_ID = 44;
 
     private static String identityEndpoint;
     private static String restEndpoint;
@@ -95,7 +96,7 @@ public class EmailIntegrationTest {
     public void shouldCloneEmail() throws Exception {
         String newEmailName = "integration-test-clone-" + UUID.randomUUID().toString();
 
-        Email clone = marketoClient.cloneEmail(TEST_EMAIL_ID, newEmailName, 14);
+        Email clone = marketoClient.cloneEmail(TEST_EMAIL_ID, newEmailName, TEST_FOLDER_ID);
 
         assertThat(clone).isNotNull();
         assertThat(clone.getId()).isPositive();
