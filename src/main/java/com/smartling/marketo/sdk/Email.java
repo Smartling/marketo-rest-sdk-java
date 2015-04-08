@@ -50,11 +50,20 @@ public class Email {
         return subject.getValue();
     }
 
+    public void setSubject(String subject) {
+        this.subject.setValue(subject);
+    }
+
     public static class TextField {
         private String value;
 
         public String getValue() {
             return value;
+        }
+
+        public void setValue(String value)
+        {
+            this.value = value;
         }
     }
 
