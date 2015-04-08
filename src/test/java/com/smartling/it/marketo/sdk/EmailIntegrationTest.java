@@ -9,7 +9,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -138,7 +138,7 @@ public class EmailIntegrationTest {
         newItem.setHtmlContent("<strong>" + UUID.randomUUID() + "<strong>");
         newItem.setTextContent(UUID.randomUUID().toString());
 
-        marketoClient.updateEmailContent(TEST_EMAIL_ID, subject, Arrays.asList(newItem));
+        marketoClient.updateEmailContent(TEST_EMAIL_ID, subject, Collections.singletonList(newItem));
 
 //        Email email = marketoClient.loadEmailById(TEST_EMAIL_ID);
 //        assertThat(email.getSubject()).isEqualTo(subject);
