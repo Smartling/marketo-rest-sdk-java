@@ -6,6 +6,7 @@ import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.rest.command.CloneEmail;
 import com.smartling.marketo.sdk.rest.command.GetEmailsCommand;
 import com.smartling.marketo.sdk.rest.command.LoadEmailById;
+import com.smartling.marketo.sdk.rest.command.LoadEmailByName;
 import com.smartling.marketo.sdk.rest.command.LoadEmailContent;
 import com.smartling.marketo.sdk.rest.command.UpdateEmailContent;
 import com.smartling.marketo.sdk.rest.transport.HttpCommandExecutor;
@@ -69,6 +70,16 @@ public class MarketoRestClientTest {
         Email result = testedInstance.loadEmailById(42);
 
         assertThat(result).isEqualTo(email);
+    }
+
+    @Test
+    public void shouldLoadEmailByName() throws Exception {
+        Email expected = new Email();
+        given(executor.execute(isA(LoadEmailByName.class))).willReturn(Collections.singletonList(expected));
+
+        Email result = testedInstance.loadEmailByName("name");
+
+        assertThat(result).isEqualTo(expected);
     }
 
     @Test

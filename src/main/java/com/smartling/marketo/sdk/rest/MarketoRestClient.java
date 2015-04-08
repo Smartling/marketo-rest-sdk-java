@@ -5,11 +5,7 @@ import com.smartling.marketo.sdk.Email;
 import com.smartling.marketo.sdk.EmailContentItem;
 import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.MarketoClient;
-import com.smartling.marketo.sdk.rest.command.CloneEmail;
-import com.smartling.marketo.sdk.rest.command.GetEmailsCommand;
-import com.smartling.marketo.sdk.rest.command.LoadEmailById;
-import com.smartling.marketo.sdk.rest.command.LoadEmailContent;
-import com.smartling.marketo.sdk.rest.command.UpdateEmailContent;
+import com.smartling.marketo.sdk.rest.command.*;
 import com.smartling.marketo.sdk.rest.transport.HttpCommandExecutor;
 
 import java.util.Collections;
@@ -47,6 +43,14 @@ public class MarketoRestClient implements MarketoClient {
     @Override
     public Email loadEmailById(int id) throws MarketoApiException {
         List<Email> execute = httpCommandExecutor.execute(new LoadEmailById(id));
+        return execute.get(0);
+    }
+
+    @Override
+    public Email loadEmailByName(final String name) throws MarketoApiException
+    {
+        List<Email> execute = httpCommandExecutor.execute(new LoadEmailByName(name));
+
         return execute.get(0);
     }
 

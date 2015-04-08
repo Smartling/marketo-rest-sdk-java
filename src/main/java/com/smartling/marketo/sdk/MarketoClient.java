@@ -7,6 +7,8 @@ public interface MarketoClient {
 
     Email loadEmailById(int id) throws MarketoApiException;
 
+    Email loadEmailByName(String name) throws MarketoApiException;
+
     List<EmailContentItem> loadEmailContent(int emailId) throws MarketoApiException;
 
     Email cloneEmail(int sourceEmailId, String newEmailName, int folderId) throws MarketoApiException;

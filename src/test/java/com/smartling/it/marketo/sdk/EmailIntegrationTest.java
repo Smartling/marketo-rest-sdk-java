@@ -17,6 +17,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
 
 public class EmailIntegrationTest {
     private static final int TEST_EMAIL_ID = 1109;
+    private static final String TEST_EMAIL_NAME = "Email For Integration Tests";
     private static final int TEST_FOLDER_ID = 44;
 
     private static String identityEndpoint;
@@ -74,13 +75,21 @@ public class EmailIntegrationTest {
     }
 
     @Test
-    public void shouldLoadEmail() throws Exception {
+    public void shouldLoadEmailById() throws Exception {
         Email email = marketoClient.loadEmailById(TEST_EMAIL_ID);
 
         assertThat(email).isNotNull();
         assertThat(email.getId()).isEqualTo(TEST_EMAIL_ID);
         assertThat(email.getName()).isNotEmpty();
         assertThat(email.getSubject()).isNotEmpty();
+    }
+
+    @Test
+    public void shouldLoadEmailByName() throws Exception {
+        Email email = marketoClient.loadEmailByName(TEST_EMAIL_NAME);
+
+        assertThat(email).isNotNull();
+        assertThat(email.getId()).isEqualTo(TEST_EMAIL_ID);
     }
 
     @Test
