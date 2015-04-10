@@ -133,7 +133,6 @@ public class EmailIntegrationTest {
 
     @Test
     public void shouldUpdateEmailContent() throws Exception {
-        String subject = "IT " + UUID.randomUUID();
         EmailContentItem newItem = new EmailContentItem();
         newItem.setHtmlId("greeting");
         newItem.setContentType("Text");
@@ -143,7 +142,7 @@ public class EmailIntegrationTest {
         newItem.getValue().get(1).setType("Text");
         newItem.getValue().get(1).setValue(UUID.randomUUID().toString());
 
-        marketoClient.updateEmailContent(TEST_EMAIL_ID, subject, Collections.singletonList(newItem));
+        marketoClient.updateEmailContent(TEST_EMAIL_ID, Collections.singletonList(newItem));
 
         // Can not verify - no way to fetch not approved content
     }

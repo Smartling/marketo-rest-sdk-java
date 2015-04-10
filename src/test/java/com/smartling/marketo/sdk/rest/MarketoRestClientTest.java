@@ -108,7 +108,7 @@ public class MarketoRestClientTest {
 
     @Test
     public void shouldUpdateEmailContent() throws Exception {
-        testedInstance.updateEmailContent(42, "blah", Arrays.asList(new EmailContentItem(), new EmailContentItem()));
+        testedInstance.updateEmailContent(42, Arrays.asList(new EmailContentItem(), new EmailContentItem()));
 
         verify(executor, times(2)).execute(isA(UpdateEmailEditableSection.class));
     }

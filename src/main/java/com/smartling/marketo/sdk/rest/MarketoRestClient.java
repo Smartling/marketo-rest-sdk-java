@@ -71,7 +71,7 @@ public class MarketoRestClient implements MarketoClient {
     }
 
     @Override
-    public void updateEmailContent(int id, String subject, List<EmailContentItem> contentItems) throws MarketoApiException {
+    public void updateEmailContent(int id, List<EmailContentItem> contentItems) throws MarketoApiException {
         for (EmailContentItem contentItem : contentItems) {
             httpCommandExecutor.execute(new UpdateEmailEditableSection(id, contentItem));
         }
