@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -135,17 +136,15 @@ public class EmailIntegrationTest {
         String subject = "IT " + UUID.randomUUID();
         EmailContentItem newItem = new EmailContentItem();
         newItem.setHtmlId("greeting");
-        newItem.setHtmlContent("<strong>" + UUID.randomUUID() + "<strong>");
-        newItem.setTextContent(UUID.randomUUID().toString());
+        newItem.setContentType("Text");
+        newItem.setValue(Arrays.asList(new EmailContentItem.Value(), new EmailContentItem.Value()));
+        newItem.getValue().get(0).setType("HTML");
+        newItem.getValue().get(0).setValue("<strong>" + UUID.randomUUID() + "<strong>");
+        newItem.getValue().get(1).setType("Text");
+        newItem.getValue().get(1).setValue(UUID.randomUUID().toString());
 
         marketoClient.updateEmailContent(TEST_EMAIL_ID, subject, Collections.singletonList(newItem));
 
-//        Email email = marketoClient.loadEmailById(TEST_EMAIL_ID);
-//        assertThat(email.getSubject()).isEqualTo(subject);
-//        List<EmailContentItem> emailContentItems = marketoClient.loadEmailContent(TEST_EMAIL_ID);
-//        assertThat(emailContentItems).hasSize(1);
-//        assertThat(emailContentItems.get(0).getHtmlId()).isEqualTo(newItem.getHtmlId());
-//        assertThat(emailContentItems.get(0).getHtmlContent()).isEqualTo(newItem.getHtmlContent());
-//        assertThat(emailContentItems.get(0).getTextContent()).isEqualTo(newItem.getTextContent());
+        // Can not verify - no way to fetch not approved content
     }
 }

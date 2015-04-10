@@ -6,8 +6,6 @@ import java.util.List;
 public class EmailContentItem {
     private String htmlId;
     private String contentType;
-    private String htmlContent;
-    private String textContent;
     private List<Value> value = Collections.emptyList();
 
     public String getHtmlId() {
@@ -24,22 +22,6 @@ public class EmailContentItem {
 
     public void setContentType(String contentType) {
         this.contentType = contentType;
-    }
-
-    public String getHtmlContent() {
-        return htmlContent;
-    }
-
-    public void setHtmlContent(String htmlContent) {
-        this.htmlContent = htmlContent;
-    }
-
-    public String getTextContent() {
-        return textContent;
-    }
-
-    public void setTextContent(String textContent) {
-        this.textContent = textContent;
     }
 
     public List<Value> getValue() {

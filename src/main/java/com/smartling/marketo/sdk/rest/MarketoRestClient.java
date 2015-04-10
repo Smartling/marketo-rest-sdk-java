@@ -72,16 +72,9 @@ public class MarketoRestClient implements MarketoClient {
 
     @Override
     public void updateEmailContent(int id, String subject, List<EmailContentItem> contentItems) throws MarketoApiException {
-        String format = "<div class='mktEditable' id='%s'>%s</div>";
-
-        StringBuilder htmlContent = new StringBuilder();
-        StringBuilder textContent = new StringBuilder();
         for (EmailContentItem contentItem : contentItems) {
-            htmlContent.append(String.format(format, contentItem.getHtmlId(), contentItem.getHtmlContent()));
-            textContent.append(String.format(format, contentItem.getHtmlId(), contentItem.getTextContent()));
+            httpCommandExecutor.execute(new UpdateEmailEditableSection(id, contentItem));
         }
-
-        httpCommandExecutor.execute(new UpdateEmailContent(id, subject, htmlContent.toString(), textContent.toString()));
     }
 
     public static class Builder {
