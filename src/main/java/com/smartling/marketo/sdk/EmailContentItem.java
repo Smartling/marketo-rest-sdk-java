@@ -1,12 +1,14 @@
 package com.smartling.marketo.sdk;
 
+import com.google.common.collect.Lists;
+
 import java.util.Collections;
 import java.util.List;
 
 public class EmailContentItem {
     private String htmlId;
     private String contentType;
-    private List<Value> value = Collections.emptyList();
+    private List<Value> value = Lists.newArrayList();
 
     public String getHtmlId() {
         return htmlId;
