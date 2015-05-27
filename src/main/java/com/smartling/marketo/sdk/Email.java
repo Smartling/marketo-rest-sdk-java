@@ -9,6 +9,7 @@ public class Email {
     private Status status;
     private Folder folder = new Folder();
     private TextField subject = new TextField();
+    private TextField fromName = new TextField();
 
     public int getId() {
         return id;
@@ -52,6 +53,14 @@ public class Email {
 
     public void setSubject(String subject) {
         this.subject.setValue(subject);
+    }
+
+    public String getFromName() {
+        return fromName.getValue();
+    }
+
+    public void setFromName(String value) {
+        fromName.setValue(value);
     }
 
     public static class TextField {

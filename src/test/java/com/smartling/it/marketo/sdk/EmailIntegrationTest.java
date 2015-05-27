@@ -83,6 +83,7 @@ public class EmailIntegrationTest {
         assertThat(email.getId()).isEqualTo(TEST_EMAIL_ID);
         assertThat(email.getName()).isNotEmpty();
         assertThat(email.getSubject()).isNotEmpty();
+        assertThat(email.getFromName()).isNotEmpty();
     }
 
     @Test
@@ -143,6 +144,19 @@ public class EmailIntegrationTest {
         newItem.getValue().get(1).setValue(UUID.randomUUID().toString());
 
         marketoClient.updateEmailContent(TEST_EMAIL_ID, Collections.singletonList(newItem));
+
+        // Can not verify - no way to fetch not approved content
+    }
+
+    @Test
+    public void shouldUpdateEmailSubject() throws Exception {
+
+        Email email = new Email();
+        email.setId(TEST_EMAIL_ID);
+        email.setSubject("Subject from integration test");
+        email.setFromName("From SDK commiter");
+
+        marketoClient.updateEmail(email);
 
         // Can not verify - no way to fetch not approved content
     }

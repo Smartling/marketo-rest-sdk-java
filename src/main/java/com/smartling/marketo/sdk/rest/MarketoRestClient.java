@@ -77,6 +77,11 @@ public class MarketoRestClient implements MarketoClient {
         }
     }
 
+    @Override
+    public void updateEmail(Email email) throws MarketoApiException {
+        httpCommandExecutor.execute(new UpdateEmailContent(email));
+    }
+
     public static class Builder {
         private final String identityUrl;
         private final String restUrl;
