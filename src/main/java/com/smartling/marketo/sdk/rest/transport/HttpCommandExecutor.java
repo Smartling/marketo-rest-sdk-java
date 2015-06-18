@@ -59,7 +59,9 @@ public class HttpCommandExecutor {
 
         MarketoResponse<T> marketoResponse;
         if ("POST".equalsIgnoreCase(command.getMethod())) {
-            marketoResponse = invocationBuilder.post(Entity.form(toForm(command.getParameters())), typeToken);
+            Form form = toForm(command.getParameters());
+            Entity<?> entity = Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE.withCharset("UTF-8"));
+            marketoResponse = invocationBuilder.post(entity, typeToken);
         } else {
             marketoResponse = invocationBuilder.method(command.getMethod(), typeToken);
         }

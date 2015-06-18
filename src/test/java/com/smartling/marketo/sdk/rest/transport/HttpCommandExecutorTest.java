@@ -10,6 +10,7 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -166,6 +167,15 @@ public class HttpCommandExecutorTest {
         testedInstance.execute(command);
 
         verify(postRequestedFor(urlStartingWith("/rest")).withRequestBody(withFormParam("key", "value")));
+    }
+
+    @Test
+    public void shouldSpecifyCharsetOfForm() throws Exception {
+        given(command.getMethod()).willReturn("POST");
+
+        testedInstance.execute(command);
+
+        verify(postRequestedFor(urlStartingWith("/rest")).withHeader("Content-Type", containing(";charset=UTF-8")));
     }
 
     @Test
