@@ -154,7 +154,7 @@ public class EmailIntegrationTest {
         Email email = new Email();
         email.setId(TEST_EMAIL_ID);
         email.setSubject("Subject from integration test");
-        email.setFromName("From SDK commiter");
+        email.setFromName("From SDK committer");
 
         marketoClient.updateEmail(email);
 
