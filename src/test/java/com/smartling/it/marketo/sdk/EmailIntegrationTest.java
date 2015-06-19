@@ -26,6 +26,7 @@ public class EmailIntegrationTest {
     private static String restEndpoint;
     private static String clientId;
     private static String clientSecret;
+    private static String nonRoutableHostUrl;
 
     private MarketoClient marketoClient;
 
@@ -35,6 +36,8 @@ public class EmailIntegrationTest {
         restEndpoint = System.getProperty("marketo.rest");
         clientId = System.getProperty("marketo.clientId");
         clientSecret = System.getProperty("marketo.clientSecret");
+
+        nonRoutableHostUrl = "http://192.0.2.0:81";
 
         assertThat(identityEndpoint).overridingErrorMessage("Identity endpoint is missing").isNotEmpty();
         assertThat(restEndpoint).overridingErrorMessage("REST endpoint is missing").isNotEmpty();
@@ -165,9 +168,10 @@ public class EmailIntegrationTest {
     @Test(timeout = 3 * 1000, expected = ProcessingException.class)
     public void shouldSupportTimeoutConfiguration() throws Exception
     {
-        MarketoRestClient clientWithTimeout = MarketoRestClient.create("http://10.255.255.1:81", restEndpoint)
+        MarketoRestClient clientWithTimeout = MarketoRestClient.create(nonRoutableHostUrl, restEndpoint)
                 .withConnectionTimeout(1000)
                 .withCredentials(clientId, clientSecret);
+
         clientWithTimeout.listEmails(0, 1);
     }
 }
