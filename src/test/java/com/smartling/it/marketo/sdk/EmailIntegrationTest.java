@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import javax.ws.rs.ProcessingException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -159,5 +160,14 @@ public class EmailIntegrationTest {
         marketoClient.updateEmail(email);
 
         // Can not verify - no way to fetch not approved content
+    }
+
+    @Test(timeout = 3 * 1000, expected = ProcessingException.class)
+    public void shouldSupportTimeoutConfiguration() throws Exception
+    {
+        MarketoRestClient clientWithTimeout = MarketoRestClient.create("http://10.255.255.1:81", restEndpoint)
+                .withConnectionTimeout(1000)
+                .withCredentials(clientId, clientSecret);
+        clientWithTimeout.listEmails(0, 1);
     }
 }

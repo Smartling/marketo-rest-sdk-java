@@ -4,6 +4,7 @@ import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import com.smartling.marketo.sdk.rest.Command;
 import com.smartling.marketo.sdk.MarketoApiException;
+import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.jackson.JacksonFeature;
 
 import javax.ws.rs.client.Client;
@@ -36,6 +37,14 @@ public class HttpCommandExecutor {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         this.client = ClientBuilder.newClient().register(JacksonFeature.class).register(ObjectMapperProvider.class);
+    }
+
+    public void setConnectionTimeout(int timeout) {
+        client.property(ClientProperties.CONNECT_TIMEOUT, timeout);
+    }
+
+    public void setSocketReadTimeout(int timeout) {
+        client.property(ClientProperties.READ_TIMEOUT, timeout);
     }
 
     public <T> T execute(final Command<T> command) throws MarketoApiException {

@@ -82,9 +82,11 @@ public class MarketoRestClient implements MarketoClient {
         httpCommandExecutor.execute(new UpdateEmailContent(email));
     }
 
-    public static class Builder {
+    public final static class Builder {
         private final String identityUrl;
         private final String restUrl;
+        private int connectionTimeout;
+        private int socketReadTimeout;
 
         private Builder(String identityUrl, String restUrl) {
             this.identityUrl = identityUrl;
@@ -95,7 +97,20 @@ public class MarketoRestClient implements MarketoClient {
             Preconditions.checkNotNull(clientId, "Client ID is empty");
             Preconditions.checkNotNull(clientSecret, "Client secret is empty");
 
-            return new MarketoRestClient(new HttpCommandExecutor(identityUrl, restUrl, clientId, clientSecret));
+            HttpCommandExecutor executor = new HttpCommandExecutor(identityUrl, restUrl, clientId, clientSecret);
+            executor.setConnectionTimeout(connectionTimeout);
+            executor.setSocketReadTimeout(socketReadTimeout);
+            return new MarketoRestClient(executor);
+        }
+
+        public Builder withConnectionTimeout(int connectionTimeout) {
+            this.connectionTimeout = connectionTimeout;
+            return this;
+        }
+
+        public Builder withSocketReadTimeout(int socketReadTimeout) {
+            this.socketReadTimeout = socketReadTimeout;
+            return this;
         }
     }
 }

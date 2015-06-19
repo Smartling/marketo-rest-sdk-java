@@ -17,22 +17,13 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import javax.ws.rs.ProcessingException;
 import java.lang.annotation.ElementType;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Random;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.containing;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.givenThat;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
-import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
@@ -224,6 +215,14 @@ public class HttpCommandExecutorTest {
         verify(2, getRequestedFor(urlStartingWith("/identity")));
     }
 
+    @Test(timeout = 2 * 1000, expected = ProcessingException.class)
+    public void shouldSupportSocketTimeoutConfiguration() throws Exception {
+        addRequestProcessingDelay(5 * 1000);
+
+        testedInstance.setSocketReadTimeout(1000);
+        testedInstance.execute(command);
+    }
+
     private static Matcher<MarketoApiException> exceptionWithCode(final String code) {
         return new TypeSafeMatcher<MarketoApiException>() {
             @Override
@@ -254,6 +253,7 @@ public class HttpCommandExecutorTest {
         return aResponse().withHeader("Content-Type", "application/json").withBody(json);
     }
 
+    @SuppressWarnings("unused")
     private static class Data {
         private String string;
         private Date date;
