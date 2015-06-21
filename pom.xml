@@ -24,12 +24,21 @@
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>pre-test</id>
+                        <id>pre-unit-test</id>
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
                         <configuration>
                             <destFile>${basedir}/target/jacoco-reports/unit-tests.exec</destFile>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>pre-integration-test</id>
+                        <goals>
+                            <goal>prepare-agent-integration</goal>
+                        </goals>
+                        <configuration>
+                            <destFile>${basedir}/target/jacoco-reports/integration-tests.exec</destFile>
                         </configuration>
                     </execution>
                 </executions>
