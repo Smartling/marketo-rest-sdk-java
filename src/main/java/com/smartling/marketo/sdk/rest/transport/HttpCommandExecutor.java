@@ -1,5 +1,6 @@
 package com.smartling.marketo.sdk.rest.transport;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import com.smartling.marketo.sdk.rest.Command;
@@ -122,8 +123,12 @@ public class HttpCommandExecutor {
         if (token == null) {
             AuthenticationResponse authenticationResponse = authenticate();
 
+            long expirationInterval = authenticationResponse.getExpirationInterval();
+            Preconditions.checkState(expirationInterval > 0, "Expiration interval should be > 0, but equal to %s",
+                    expirationInterval);
+
             tokenSupplier = Suppliers.memoizeWithExpiration(new OneTimeSupplier<>(authenticationResponse.getAccessToken()),
-                    authenticationResponse.getExpirationInterval(), TimeUnit.SECONDS);
+                    expirationInterval, TimeUnit.SECONDS);
             token = tokenSupplier.get();
         }
 
