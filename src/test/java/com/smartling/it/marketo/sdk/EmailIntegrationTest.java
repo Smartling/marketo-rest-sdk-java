@@ -1,10 +1,13 @@
 package com.smartling.it.marketo.sdk;
 
+import com.smartling.marketo.sdk.Email;
 import com.smartling.marketo.sdk.EmailContentItem;
+import com.smartling.marketo.sdk.FolderDetails;
+import com.smartling.marketo.sdk.FolderId;
+import com.smartling.marketo.sdk.FolderType;
 import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.MarketoClient;
 import com.smartling.marketo.sdk.rest.MarketoRestClient;
-import com.smartling.marketo.sdk.Email;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -53,6 +56,17 @@ public class EmailIntegrationTest {
     @Test
     public void shouldListEmails() throws Exception {
         List<Email> emails = marketoClient.listEmails(0, 1);
+
+        assertThat(emails).hasSize(1);
+        assertThat(emails.get(0).getId()).isPositive();
+        assertThat(emails.get(0).getName()).isNotEmpty();
+        assertThat(emails.get(0).getUpdatedAt()).isNotNull();
+        assertThat(emails.get(0).getStatus()).isNotNull();
+    }
+
+    @Test
+    public void shouldListEmailsWithFilter() throws Exception {
+        List<Email> emails = marketoClient.listEmails(0, 1, new FolderId(TEST_FOLDER_ID, FolderType.FOLDER), Email.Status.APPROVED);
 
         assertThat(emails).hasSize(1);
         assertThat(emails.get(0).getId()).isPositive();
@@ -166,12 +180,22 @@ public class EmailIntegrationTest {
     }
 
     @Test(timeout = 3 * 1000, expected = ProcessingException.class)
-    public void shouldSupportTimeoutConfiguration() throws Exception
-    {
-        MarketoRestClient clientWithTimeout = MarketoRestClient.create(nonRoutableHostUrl, restEndpoint)
-                .withConnectionTimeout(1000)
+    public void shouldSupportTimeoutConfiguration() throws Exception {
+        MarketoRestClient clientWithTimeout = MarketoRestClient.create(nonRoutableHostUrl, restEndpoint).withConnectionTimeout(1000)
                 .withCredentials(clientId, clientSecret);
 
         clientWithTimeout.listEmails(0, 1);
+    }
+
+    @Test
+    public void shouldGetFolders() throws Exception {
+        List<FolderDetails> folders = marketoClient.getFolders(new FolderId(1, FolderType.FOLDER), 0, 1, 1, null);
+
+        assertThat(folders).hasSize(1);
+        assertThat(folders.get(0).getId()).isPositive();
+        assertThat(folders.get(0).getName()).isNotEmpty();
+        assertThat(folders.get(0).getUpdatedAt()).isNotNull();
+        assertThat(folders.get(0).getFolderId()).isNotNull();
+        assertThat(folders.get(0).getPath()).isNotNull();
     }
 }

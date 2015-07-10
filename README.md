@@ -1,11 +1,12 @@
 # Marketo REST SDK
-This module is to provide Java API for Marketo Platform. Only asset's operations are planned to be covered by this library.
+This module is to provide Java API for Marketo Platform. Only [asset's operations](http://developers.marketo.com/documentation/asset-api/) are planned to be covered by this library.
 Currently you can:
  * [list all emails](#listing-all-emails),
  * [fetch email data by it's ID](#loading-email-info),
  * load email content,
  * clone existing email,
  * update email-content
+ * browse folders
 
 ## Building the codebase
 

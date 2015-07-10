@@ -1,8 +1,11 @@
 package com.smartling.marketo.sdk.rest.transport;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
+import com.smartling.marketo.sdk.JsonParameter;
 import com.smartling.marketo.sdk.rest.Command;
 import com.smartling.marketo.sdk.MarketoApiException;
 import org.glassfish.jersey.client.ClientProperties;
@@ -17,8 +20,10 @@ import javax.ws.rs.core.Form;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.net.URLEncoder;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -31,6 +36,7 @@ public class HttpCommandExecutor {
     private final Client client;
 
     private volatile Supplier<String> tokenSupplier = Suppliers.ofInstance(null);
+    private final static ObjectMapper objectMapper = new ObjectMapper();
 
     public HttpCommandExecutor(String identityUrl, String restUrl, String clientId, String clientSecret) {
         this.identityUrl = identityUrl;
@@ -79,15 +85,23 @@ public class HttpCommandExecutor {
         return marketoResponse;
     }
 
-    private <T> WebTarget buildWebTarget(Client client, Command<T> command) {
-        WebTarget target = client.target(restUrl).path(command.getPath());
-        if ("GET".equalsIgnoreCase(command.getMethod())) {
-            for (Map.Entry<String, Object> param : command.getParameters().entrySet()) {
-                target = target.queryParam(param.getKey(), param.getValue());
+    private <T> WebTarget buildWebTarget(Client client, Command<T> command) throws MarketoApiException {
+        try {
+            WebTarget target = client.target(restUrl).path(command.getPath());
+            if ("GET".equalsIgnoreCase(command.getMethod())) {
+                for (Map.Entry<String, Object> param : command.getParameters().entrySet()) {
+                    Object value = param.getValue();
+                    if (value instanceof JsonParameter) {
+                        value = URLEncoder.encode(objectMapper.writeValueAsString(value), "UTF-8");
+                    }
+                    target = target.queryParam(param.getKey(), value);
+                }
             }
-        }
 
-        return target;
+            return target;
+        } catch (Exception e) {
+            throw new MarketoApiException(e.getMessage());
+        }
     }
 
     private static Form toForm(Map<String, Object> parameters) {

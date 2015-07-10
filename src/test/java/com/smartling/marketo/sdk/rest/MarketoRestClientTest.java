@@ -2,6 +2,9 @@ package com.smartling.marketo.sdk.rest;
 
 import com.smartling.marketo.sdk.Email;
 import com.smartling.marketo.sdk.EmailContentItem;
+import com.smartling.marketo.sdk.FolderDetails;
+import com.smartling.marketo.sdk.FolderId;
+import com.smartling.marketo.sdk.FolderType;
 import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.rest.command.*;
 import com.smartling.marketo.sdk.rest.transport.HttpCommandExecutor;
@@ -41,10 +44,20 @@ public class MarketoRestClientTest {
     }
 
     @Test
+    public void shouldRequestEmailListWithFilter() throws Exception {
+        Email email = new Email();
+        given(executor.execute(isA(GetEmailsCommand.class))).willReturn(Collections.singletonList(email));
+
+        List<Email> emails = testedInstance.listEmails(0, 10, new FolderId(1, FolderType.FOLDER), Email.Status.APPROVED);
+
+        assertThat(emails).contains(email);
+    }
+
+    @Test
     public void shouldReturnEmptyEmailListIfNoEmailCanBeFound() throws Exception {
         given(executor.execute(any(Command.class))).willThrow(new MarketoApiException("702", ""));
 
-        List<Email> emails = testedInstance.listEmails(0, 10);
+        List<Email> emails = testedInstance.listEmails(0, 10, new FolderId(1, FolderType.FOLDER), Email.Status.APPROVED);
 
         assertThat(emails).isEmpty();
     }
@@ -53,7 +66,7 @@ public class MarketoRestClientTest {
     public void shouldRethrowApiErrorsDifferentFromPaginationIssues() throws Exception {
         given(executor.execute(any(Command.class))).willThrow(new MarketoApiException("100", ""));
 
-        testedInstance.listEmails(0, 10);
+        testedInstance.listEmails(0, 10, new FolderId(1, FolderType.FOLDER), Email.Status.APPROVED);
     }
 
     @Test
@@ -111,5 +124,15 @@ public class MarketoRestClientTest {
         testedInstance.updateEmailContent(42, Arrays.asList(new EmailContentItem(), new EmailContentItem()));
 
         verify(executor, times(2)).execute(isA(UpdateEmailEditableSection.class));
+    }
+
+    @Test
+    public void shouldReturnFolder() throws Exception {
+        FolderDetails folder = new FolderDetails();
+        given(executor.execute(isA(GetFoldersCommand.class))).willReturn(Collections.singletonList(folder));
+
+        List<FolderDetails> folders = testedInstance.getFolders(new FolderId(1, FolderType.FOLDER), 0, 1, 10, null);
+
+        assertThat(folders).contains(folder);
     }
 }

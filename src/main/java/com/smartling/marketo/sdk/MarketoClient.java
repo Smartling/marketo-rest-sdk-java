@@ -5,6 +5,8 @@ import java.util.List;
 public interface MarketoClient {
     List<Email> listEmails(int offset, int limit) throws MarketoApiException;
 
+    List<Email> listEmails(int offset, int limit, FolderId folder, Email.Status status) throws MarketoApiException;
+
     Email loadEmailById(int id) throws MarketoApiException;
 
     Email loadEmailByName(String name) throws MarketoApiException;
@@ -18,4 +20,6 @@ public interface MarketoClient {
     void updateEmailContent(int id, List<EmailContentItem> contentItems) throws MarketoApiException;
 
     void updateEmail(Email email) throws MarketoApiException;
+
+    List<FolderDetails> getFolders(FolderId root, int offset, int maxDepth, int limit, String workspace) throws MarketoApiException;
 }

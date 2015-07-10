@@ -3,6 +3,8 @@ package com.smartling.marketo.sdk.rest;
 import com.google.common.base.Preconditions;
 import com.smartling.marketo.sdk.Email;
 import com.smartling.marketo.sdk.EmailContentItem;
+import com.smartling.marketo.sdk.FolderDetails;
+import com.smartling.marketo.sdk.FolderId;
 import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.MarketoClient;
 import com.smartling.marketo.sdk.rest.command.*;
@@ -29,8 +31,13 @@ public class MarketoRestClient implements MarketoClient {
 
     @Override
     public List<Email> listEmails(int offset, int limit) throws MarketoApiException {
+        return listEmails(offset, limit, null, null);
+    }
+
+    @Override
+    public List<Email> listEmails(int offset, int limit, FolderId folder, Email.Status status) throws MarketoApiException {
         try {
-            return httpCommandExecutor.execute(new GetEmailsCommand(offset, limit));
+            return httpCommandExecutor.execute(new GetEmailsCommand(offset, limit, folder, status));
         } catch (MarketoApiException e) {
             if (LIST_END_REACHED_CODE.equalsIgnoreCase(e.getErrorCode())) {
                 return Collections.emptyList();
@@ -47,8 +54,7 @@ public class MarketoRestClient implements MarketoClient {
     }
 
     @Override
-    public Email loadEmailByName(final String name) throws MarketoApiException
-    {
+    public Email loadEmailByName(final String name) throws MarketoApiException {
         List<Email> execute = httpCommandExecutor.execute(new LoadEmailByName(name));
 
         return execute.get(0);
@@ -80,6 +86,11 @@ public class MarketoRestClient implements MarketoClient {
     @Override
     public void updateEmail(Email email) throws MarketoApiException {
         httpCommandExecutor.execute(new UpdateEmailContent(email));
+    }
+
+    @Override
+    public List<FolderDetails> getFolders(FolderId root, int offset, int maxDepth, int limit, String workspace) throws MarketoApiException {
+        return httpCommandExecutor.execute(new GetFoldersCommand(root, offset, maxDepth, limit, workspace));
     }
 
     public final static class Builder {

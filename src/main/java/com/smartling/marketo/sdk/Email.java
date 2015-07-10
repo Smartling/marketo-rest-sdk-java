@@ -70,13 +70,23 @@ public class Email {
             return value;
         }
 
-        public void setValue(String value)
-        {
+        public void setValue(String value) {
             this.value = value;
         }
     }
 
     public enum Status {
-        DRAFT, APPROVED
+        DRAFT("draft"), APPROVED("approved");
+
+        private final String name;
+
+        Status(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
     }
 }
