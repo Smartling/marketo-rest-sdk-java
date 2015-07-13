@@ -1,6 +1,5 @@
 package com.smartling.marketo.sdk.rest.transport;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Supplier;
@@ -20,7 +19,6 @@ import javax.ws.rs.core.Form;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URLEncoder;
