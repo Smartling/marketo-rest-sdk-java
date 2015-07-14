@@ -25,6 +25,8 @@ public class EmailIntegrationTest {
     private static final int TEST_EMAIL_ID = 1109;
     private static final String TEST_EMAIL_NAME = "Email For Integration Tests";
     private static final int TEST_FOLDER_ID = 44;
+    private static final int TEST_PROGRAM_EMAIL_ID = 1596;
+    private static final int TEST_PROGRAM_ID = 1008;
 
     private static String identityEndpoint;
     private static String restEndpoint;
@@ -130,7 +132,7 @@ public class EmailIntegrationTest {
     public void shouldCloneEmail() throws Exception {
         String newEmailName = "integration-test-clone-" + UUID.randomUUID().toString();
 
-        Email clone = marketoClient.cloneEmail(TEST_EMAIL_ID, newEmailName, TEST_FOLDER_ID);
+        Email clone = marketoClient.cloneEmail(TEST_EMAIL_ID, newEmailName, new FolderId(TEST_FOLDER_ID, FolderType.FOLDER));
 
         assertThat(clone).isNotNull();
         assertThat(clone.getId()).isPositive();
@@ -138,6 +140,17 @@ public class EmailIntegrationTest {
         assertThat(clone.getFolder().getValue()).isEqualTo(TEST_FOLDER_ID);
     }
 
+    @Test
+    public void shouldCloneEmailInProgram() throws Exception {
+        String newEmailName = "integration-test-clone-" + UUID.randomUUID().toString();
+
+        Email clone = marketoClient.cloneEmail(TEST_PROGRAM_EMAIL_ID, newEmailName, new FolderId(TEST_PROGRAM_ID, FolderType.PROGRAM));
+
+        assertThat(clone).isNotNull();
+        assertThat(clone.getId()).isPositive();
+        assertThat(clone.getName()).isEqualTo(newEmailName);
+        assertThat(clone.getFolder().getValue()).isEqualTo(TEST_PROGRAM_ID);
+    }
     @Test
     public void shouldCloneEmailViaShorthandMethod() throws Exception {
         String newEmailName = "integration-test-clone-" + UUID.randomUUID().toString();

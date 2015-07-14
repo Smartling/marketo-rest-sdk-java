@@ -66,14 +66,14 @@ public class MarketoRestClient implements MarketoClient {
     }
 
     @Override
-    public Email cloneEmail(int sourceEmailId, String newEmailName, int folderId) throws MarketoApiException {
+    public Email cloneEmail(int sourceEmailId, String newEmailName, FolderId folderId) throws MarketoApiException {
         List<Email> cloned = httpCommandExecutor.execute(new CloneEmail(sourceEmailId, newEmailName, folderId));
         return cloned.get(0);
     }
 
     @Override
     public Email cloneEmail(Email existingEmail, String newEmailName) throws MarketoApiException {
-        return cloneEmail(existingEmail.getId(), newEmailName, existingEmail.getFolder().getValue());
+        return cloneEmail(existingEmail.getId(), newEmailName, new FolderId(existingEmail.getFolder()));
     }
 
     @Override

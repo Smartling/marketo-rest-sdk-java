@@ -2,7 +2,7 @@ package com.smartling.marketo.sdk;
 
 import java.util.Objects;
 
-public class FolderId implements HasToBeUrlEncoded {
+public class FolderId implements HasToBeMappedToJson {
     private int id;
     private FolderType type;
 
@@ -12,6 +12,11 @@ public class FolderId implements HasToBeUrlEncoded {
     public FolderId(int id, FolderType type) {
         this.id = id;
         this.type = type;
+    }
+
+    public FolderId(Folder folder) {
+        this.id = folder.getValue();
+        this.type = folder.getType();
     }
 
     public int getId() {

@@ -13,7 +13,7 @@ public interface MarketoClient {
 
     List<EmailContentItem> loadEmailContent(int emailId) throws MarketoApiException;
 
-    Email cloneEmail(int sourceEmailId, String newEmailName, int folderId) throws MarketoApiException;
+    Email cloneEmail(int sourceEmailId, String newEmailName, FolderId folderId) throws MarketoApiException;
 
     Email cloneEmail(Email existingEmail, String newEmailName) throws MarketoApiException;
 

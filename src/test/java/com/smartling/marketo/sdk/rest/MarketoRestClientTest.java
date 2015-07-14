@@ -104,7 +104,7 @@ public class MarketoRestClientTest {
         Email clone = new Email();
         given(executor.execute(isA(CloneEmail.class))).willReturn(Collections.singletonList(clone));
 
-        Email result = testedInstance.cloneEmail(42, "blah", 999);
+        Email result = testedInstance.cloneEmail(42, "blah", new FolderId(999, FolderType.FOLDER));
 
         assertThat(result).isSameAs(clone);
     }
