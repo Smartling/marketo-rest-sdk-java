@@ -1,11 +1,12 @@
 package com.smartling.marketo.sdk;
 
-public class FolderId implements JsonParameter {
+import java.util.Objects;
+
+public class FolderId implements HasToBeUrlEncoded {
     private int id;
     private FolderType type;
 
     public FolderId() {
-
     }
 
     public FolderId(int id, FolderType type) {
@@ -27,5 +28,20 @@ public class FolderId implements JsonParameter {
 
     public void setType(FolderType type) {
         this.type = type;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        FolderId folderId = (FolderId) o;
+        return Objects.equals(id, folderId.id) && Objects.equals(type, folderId.type);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, type);
     }
 }

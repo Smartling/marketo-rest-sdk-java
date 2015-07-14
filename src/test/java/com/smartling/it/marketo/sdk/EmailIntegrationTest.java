@@ -15,6 +15,7 @@ import org.junit.Test;
 import javax.ws.rs.ProcessingException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -194,8 +195,14 @@ public class EmailIntegrationTest {
         assertThat(folders).hasSize(1);
         assertThat(folders.get(0).getId()).isPositive();
         assertThat(folders.get(0).getName()).isNotEmpty();
-        assertThat(folders.get(0).getUpdatedAt()).isNotNull();
+        assertThat(folders.get(0).getDescription()).isNotEmpty();
+        assertThat(folders.get(0).getCreatedAt()).isBefore(new Date());
+        assertThat(folders.get(0).getUpdatedAt()).isBefore(new Date());
         assertThat(folders.get(0).getFolderId()).isNotNull();
-        assertThat(folders.get(0).getPath()).isNotNull();
+        assertThat(folders.get(0).getPath()).isNotEmpty();
+        assertThat(folders.get(0).getFolderId()).isNotNull();
+        assertThat(folders.get(0).getFolderType()).isNotEmpty();
+        assertThat(folders.get(0).getParent()).isNull();
+        assertThat(folders.get(0).getWorkspace()).isNotEmpty();
     }
 }

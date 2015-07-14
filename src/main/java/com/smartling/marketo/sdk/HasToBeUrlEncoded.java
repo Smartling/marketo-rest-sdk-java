@@ -1,4 +1,4 @@
 package com.smartling.marketo.sdk;
 
-public interface JsonParameter {
+public interface HasToBeUrlEncoded {
 }

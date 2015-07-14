@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
-import com.smartling.marketo.sdk.JsonParameter;
+import com.smartling.marketo.sdk.HasToBeUrlEncoded;
 import com.smartling.marketo.sdk.rest.Command;
 import com.smartling.marketo.sdk.MarketoApiException;
 import org.glassfish.jersey.client.ClientProperties;
@@ -89,7 +89,7 @@ public class HttpCommandExecutor {
             if ("GET".equalsIgnoreCase(command.getMethod())) {
                 for (Map.Entry<String, Object> param : command.getParameters().entrySet()) {
                     Object value = param.getValue();
-                    if (value instanceof JsonParameter) {
+                    if (value instanceof HasToBeUrlEncoded) {
                         value = URLEncoder.encode(objectMapper.writeValueAsString(value), "UTF-8");
                     }
                     target = target.queryParam(param.getKey(), value);
