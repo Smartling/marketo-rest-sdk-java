@@ -76,17 +76,11 @@ public class Email {
     }
 
     public enum Status {
-        DRAFT("draft"), APPROVED("approved");
-
-        private final String name;
-
-        Status(String name) {
-            this.name = name;
-        }
+        DRAFT, APPROVED;
 
         @Override
         public String toString() {
-            return name;
+            return name().toLowerCase();
         }
     }
 }

@@ -4,6 +4,8 @@ import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.client.UrlMatchingStrategy;
 import com.github.tomakehurst.wiremock.client.ValueMatchingStrategy;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.smartling.marketo.sdk.FolderId;
+import com.smartling.marketo.sdk.FolderType;
 import com.smartling.marketo.sdk.rest.Command;
 import com.smartling.marketo.sdk.MarketoApiException;
 import org.hamcrest.Description;
@@ -19,6 +21,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import javax.ws.rs.ProcessingException;
 import java.lang.annotation.ElementType;
+import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Random;
@@ -38,6 +41,8 @@ public class HttpCommandExecutorTest {
 
     private static final String CLIENT_ID = "the_client_id";
     private static final String CLIENT_SECRET = "a_secret_key";
+
+    private static final String FOLDER_ID_JSON = "{\"id\":42,\"type\":\"FOLDER\"}";
 
     @Rule
     public final WireMockRule wireMockRule = new WireMockRule(PORT);
@@ -221,6 +226,26 @@ public class HttpCommandExecutorTest {
 
         testedInstance.setSocketReadTimeout(1000);
         testedInstance.execute(command);
+    }
+
+    @Test
+    public void shouldSerializeAndUrlEncodeJsonParametersOnPost() throws Exception {
+        given(command.getMethod()).willReturn("POST");
+        given(command.getParameters()).willReturn(Collections.<String, Object>singletonMap("folderId", new FolderId(42, FolderType.FOLDER)));
+
+        testedInstance.execute(command);
+
+        verify(postRequestedFor(urlStartingWith("/rest")).withRequestBody(withFormParam("folderId", URLEncoder.encode(FOLDER_ID_JSON, "UTF-8"))));
+    }
+
+    @Test
+    public void shouldSerializeAndUrlEncodeJsonParametersOnGet() throws Exception {
+        given(command.getPath()).willReturn("/some/path");
+        given(command.getParameters()).willReturn(Collections.<String, Object>singletonMap("folderId", new FolderId(42, FolderType.FOLDER)));
+
+        testedInstance.execute(command);
+
+        verify(getRequestedFor(urlStartingWith("/rest")).withQueryParam("folderId", equalTo(FOLDER_ID_JSON)));
     }
 
     private static Matcher<MarketoApiException> exceptionWithCode(final String code) {
