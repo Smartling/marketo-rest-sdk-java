@@ -57,6 +57,10 @@ public class Email {
         return folder;
     }
 
+    public void setFolder(Folder folder) {
+        this.folder = folder;
+    }
+
     public String getSubject() {
         return subject.getValue();
     }

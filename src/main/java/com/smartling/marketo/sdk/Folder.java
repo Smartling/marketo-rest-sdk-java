@@ -17,4 +17,15 @@ public class Folder {
         return folderName;
     }
 
+    public void setValue(int value) {
+        this.value = value;
+    }
+
+    public void setType(FolderType type) {
+        this.type = type;
+    }
+
+    public void setFolderName(String folderName) {
+        this.folderName = folderName;
+    }
 }
