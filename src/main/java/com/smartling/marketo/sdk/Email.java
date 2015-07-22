@@ -5,11 +5,13 @@ import java.util.Date;
 public class Email {
     private int id;
     private String name;
+    private String description;
     private Date updatedAt;
     private Status status;
     private Folder folder = new Folder();
     private TextField subject = new TextField();
     private TextField fromName = new TextField();
+    private String url;
 
     public int getId() {
         return id;
@@ -25,6 +27,14 @@ public class Email {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Date getUpdatedAt() {
@@ -61,6 +71,14 @@ public class Email {
 
     public void setFromName(String value) {
         fromName.setValue(value);
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public static class TextField {
