@@ -80,13 +80,13 @@ public class MarketoRestClientTest {
     }
 
     @Test
-    public void shouldLoadEmailByName() throws Exception {
+    public void shouldLoadEmailsByNamePart() throws Exception {
         Email expected = new Email();
-        given(executor.execute(isA(LoadEmailByName.class))).willReturn(Collections.singletonList(expected));
+        given(executor.execute(isA(LoadEmailsByNamePart.class))).willReturn(Collections.singletonList(expected));
 
-        Email result = testedInstance.loadEmailByName("name");
+        List<Email> result = testedInstance.loadEmailsByNamePart("name", new FolderId(42, FolderType.FOLDER), Email.Status.APPROVED);
 
-        assertThat(result).isEqualTo(expected);
+        assertThat(result.get(0)).isEqualTo(expected);
     }
 
     @Test

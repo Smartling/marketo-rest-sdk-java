@@ -8,6 +8,7 @@ import com.smartling.marketo.sdk.FolderType;
 import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.MarketoClient;
 import com.smartling.marketo.sdk.rest.MarketoRestClient;
+import org.fest.assertions.core.Condition;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -24,7 +25,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
 public class EmailIntegrationTest {
     private static final int TEST_EMAIL_ID = 1109;
     private static final String TEST_EMAIL_NAME = "Email For Integration Tests";
-    private static final int TEST_FOLDER_ID = 44;
+    private static final FolderId TEST_FOLDER_ID = new FolderId(44, FolderType.FOLDER);
     private static final int TEST_PROGRAM_EMAIL_ID = 1596;
     private static final int TEST_PROGRAM_ID = 1008;
 
@@ -71,7 +72,7 @@ public class EmailIntegrationTest {
 
     @Test
     public void shouldListEmailsWithFilter() throws Exception {
-        List<Email> emails = marketoClient.listEmails(0, 1, new FolderId(TEST_FOLDER_ID, FolderType.FOLDER), Email.Status.APPROVED);
+        List<Email> emails = marketoClient.listEmails(0, 1, TEST_FOLDER_ID, Email.Status.APPROVED);
 
         assertThat(emails).hasSize(1);
         assertThat(emails.get(0).getId()).isPositive();
@@ -114,11 +115,39 @@ public class EmailIntegrationTest {
     }
 
     @Test
-    public void shouldLoadEmailByName() throws Exception {
-        Email email = marketoClient.loadEmailByName(TEST_EMAIL_NAME);
+    public void shouldLoadEmailsByNamePart() throws Exception {
+        List<Email> emails = marketoClient.loadEmailsByNamePart(TEST_EMAIL_NAME, null, null);
 
-        assertThat(email).isNotNull();
-        assertThat(email.getId()).isEqualTo(TEST_EMAIL_ID);
+        assertThat(emails).haveAtLeast(1, new Condition<Email>() {
+            @Override
+            public boolean matches(Email value) {
+                return value.getName().endsWith(TEST_EMAIL_NAME);
+            }
+        });
+    }
+
+    @Test
+    public void shouldLoadEmailsByNameWithFolder() throws Exception {
+        List<Email> emails = marketoClient.loadEmailsByNamePart(TEST_EMAIL_NAME, TEST_FOLDER_ID, null);
+
+        assertThat(emails).haveAtLeast(1, new Condition<Email>() {
+            @Override
+            public boolean matches(Email value) {
+                return value.getName().endsWith(TEST_EMAIL_NAME) &&new FolderId(value.getFolder()).equals(TEST_FOLDER_ID);
+            }
+        });
+    }
+
+    @Test
+    public void shouldLoadEmailsByNameWithStatus() throws Exception {
+        List<Email> emails = marketoClient.loadEmailsByNamePart(TEST_EMAIL_NAME, null, Email.Status.APPROVED);
+
+        assertThat(emails).haveAtLeast(1, new Condition<Email>() {
+            @Override
+            public boolean matches(Email value) {
+                return value.getName().endsWith(TEST_EMAIL_NAME) && value.getStatus().equals(Email.Status.APPROVED);
+            }
+        });
     }
 
     @Test
@@ -138,12 +167,12 @@ public class EmailIntegrationTest {
     public void shouldCloneEmail() throws Exception {
         String newEmailName = "integration-test-clone-" + UUID.randomUUID().toString();
 
-        Email clone = marketoClient.cloneEmail(TEST_EMAIL_ID, newEmailName, new FolderId(TEST_FOLDER_ID, FolderType.FOLDER));
+        Email clone = marketoClient.cloneEmail(TEST_EMAIL_ID, newEmailName, TEST_FOLDER_ID);
 
         assertThat(clone).isNotNull();
         assertThat(clone.getId()).isPositive();
         assertThat(clone.getName()).isEqualTo(newEmailName);
-        assertThat(clone.getFolder().getValue()).isEqualTo(TEST_FOLDER_ID);
+        assertThat(new FolderId(clone.getFolder())).isEqualTo(TEST_FOLDER_ID);
     }
 
     @Test

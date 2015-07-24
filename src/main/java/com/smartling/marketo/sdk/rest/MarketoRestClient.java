@@ -54,10 +54,8 @@ public class MarketoRestClient implements MarketoClient {
     }
 
     @Override
-    public Email loadEmailByName(final String name) throws MarketoApiException {
-        List<Email> execute = httpCommandExecutor.execute(new LoadEmailByName(name));
-
-        return execute.get(0);
+    public List<Email> loadEmailsByNamePart(final String name, final FolderId folder, Email.Status status) throws MarketoApiException {
+        return httpCommandExecutor.execute(new LoadEmailsByNamePart(name, folder, status));
     }
 
     @Override
