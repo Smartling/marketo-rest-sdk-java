@@ -1,6 +1,7 @@
 package com.smartling.it.marketo.sdk;
 
 import com.smartling.marketo.sdk.Email;
+import com.smartling.marketo.sdk.Email.Status;
 import com.smartling.marketo.sdk.EmailContentItem;
 import com.smartling.marketo.sdk.FolderDetails;
 import com.smartling.marketo.sdk.FolderId;
@@ -72,7 +73,7 @@ public class EmailIntegrationTest {
 
     @Test
     public void shouldListEmailsWithFilter() throws Exception {
-        List<Email> emails = marketoClient.listEmails(0, 1, TEST_FOLDER_ID, Email.Status.APPROVED);
+        List<Email> emails = marketoClient.listEmails(0, 1, TEST_FOLDER_ID, Status.APPROVED);
 
         assertThat(emails).hasSize(1);
         assertThat(emails.get(0).getId()).isPositive();
@@ -118,36 +119,21 @@ public class EmailIntegrationTest {
     public void shouldGetEmailsByName() throws Exception {
         List<Email> emails = marketoClient.getEmailsByName(TEST_EMAIL_NAME, null, null);
 
-        assertThat(emails).haveAtLeast(1, new Condition<Email>() {
-            @Override
-            public boolean matches(Email value) {
-                return value.getName().endsWith(TEST_EMAIL_NAME);
-            }
-        });
+        assertThat(emails).haveAtLeast(1, new EmailWithName(TEST_EMAIL_NAME));
     }
 
     @Test
     public void shouldGetEmailsByNameWithFolder() throws Exception {
         List<Email> emails = marketoClient.getEmailsByName(TEST_EMAIL_NAME, TEST_FOLDER_ID, null);
 
-        assertThat(emails).haveAtLeast(1, new Condition<Email>() {
-            @Override
-            public boolean matches(Email value) {
-                return value.getName().endsWith(TEST_EMAIL_NAME) &&new FolderId(value.getFolder()).equals(TEST_FOLDER_ID);
-            }
-        });
+        assertThat(emails).haveAtLeast(1, new EmailWithNameAndFolderId(TEST_EMAIL_NAME, TEST_FOLDER_ID));
     }
 
     @Test
     public void shouldGetEmailsByNameWithStatus() throws Exception {
-        List<Email> emails = marketoClient.getEmailsByName(TEST_EMAIL_NAME, null, Email.Status.APPROVED);
+        List<Email> emails = marketoClient.getEmailsByName(TEST_EMAIL_NAME, null, Status.APPROVED);
 
-        assertThat(emails).haveAtLeast(1, new Condition<Email>() {
-            @Override
-            public boolean matches(Email value) {
-                return value.getName().endsWith(TEST_EMAIL_NAME) && value.getStatus().equals(Email.Status.APPROVED);
-            }
-        });
+        assertThat(emails).haveAtLeast(1, new EmailWithNameAndStatus(TEST_EMAIL_NAME, Status.APPROVED));
     }
 
     @Test
@@ -252,5 +238,46 @@ public class EmailIntegrationTest {
         assertThat(folders.get(0).getFolderType()).isNotEmpty();
         assertThat(folders.get(0).getParent()).isNull();
         assertThat(folders.get(0).getWorkspace()).isNotEmpty();
+    }
+
+    private class EmailWithName extends Condition<Email> {
+        private final String name;
+
+        public EmailWithName(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public boolean matches(Email value) {
+            return value.getName().endsWith(name);
+        }
+    }
+
+    private class EmailWithNameAndFolderId extends EmailWithName {
+        private final FolderId folderId;
+
+        public EmailWithNameAndFolderId(String name, FolderId folderId) {
+            super(name);
+            this.folderId = folderId;
+        }
+
+        @Override
+        public boolean matches(Email value) {
+            return super.matches(value) && new FolderId(value.getFolder()).equals(folderId);
+        }
+    }
+
+    private class EmailWithNameAndStatus extends EmailWithName {
+        private final Status status;
+
+        public EmailWithNameAndStatus(String name, Status status) {
+            super(name);
+            this.status = status;
+        }
+
+        @Override
+        public boolean matches(Email value) {
+            return super.matches(value) && value.getStatus().equals(status);
+        }
     }
 }
