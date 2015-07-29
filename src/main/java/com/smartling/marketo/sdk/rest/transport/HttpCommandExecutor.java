@@ -26,6 +26,7 @@ import java.lang.reflect.Type;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
 public class HttpCommandExecutor {
@@ -110,7 +111,7 @@ public class HttpCommandExecutor {
     private <T> WebTarget buildWebTarget(Client client, Command<T> command) throws MarketoApiException {
         WebTarget target = client.target(restUrl).path(command.getPath());
         if ("GET".equalsIgnoreCase(command.getMethod())) {
-            for (Map.Entry<String, Object> param : processParameters(command.getParameters(), true).entrySet()) {
+            for (Entry<String, Object> param : processParameters(command.getParameters(), true).entrySet()) {
                 target = target.queryParam(param.getKey(), param.getValue());
             }
         }
@@ -120,7 +121,7 @@ public class HttpCommandExecutor {
 
     private static Form toForm(Map<String, Object> parameters) {
         Form form = new Form();
-        for (Map.Entry<String, Object> param : parameters.entrySet()) {
+        for (Entry<String, Object> param : parameters.entrySet()) {
             form.param(param.getKey(), param.getValue().toString());
         }
 
@@ -171,7 +172,8 @@ public class HttpCommandExecutor {
         if (response.getStatus() == 200) {
             return authenticationResponse;
         } else {
-            throw new MarketoApiException(authenticationResponse.getErrorDescription());
+            throw new MarketoApiException(String.valueOf(response.getStatus()),
+                    String.format("%s: %s", authenticationResponse.getError(), authenticationResponse.getErrorDescription()));
         }
     }
 

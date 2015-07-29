@@ -9,6 +9,9 @@ class AuthenticationResponse {
     @JsonProperty("expires_in")
     private long expirationInterval;
 
+    @JsonProperty("error")
+    private String error;
+
     @JsonProperty("error_description")
     private String errorDescription;
 
@@ -22,5 +25,9 @@ class AuthenticationResponse {
 
     public long getExpirationInterval() {
         return expirationInterval;
+    }
+
+    public String getError() {
+        return error;
     }
 }

@@ -120,11 +120,13 @@ public class HttpCommandExecutorTest {
 
     @Test
     public void shouldHandleUnauthorizedError() throws Exception {
-        givenThat(get(path("/identity/oauth/token")).willReturn(
-                aJsonResponse("{\"error_description\": \"Error!\"}").withStatus(401)));
+        givenThat(get(path("/identity/oauth/token"))
+                .willReturn(aJsonResponse("{\"error\": \"unauthorized\", \"error_description\": \"Error!\"}").withStatus(401)));
 
         thrown.expect(MarketoApiException.class);
-        thrown.expectMessage("Error!");
+        thrown.expectMessage("unauthorized: Error!");
+        thrown.expect(exceptionWithCode("401"));
+
 
         testedInstance.execute(command);
     }
