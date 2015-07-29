@@ -91,8 +91,8 @@ public class HttpCommandExecutor {
 
         try {
             Map<String, Object> processedParameters = new HashMap<>(parameters);
-            for (String key : processedParameters.keySet()) {
-                Object value = processedParameters.get(key);
+            for (Entry<String, Object> entry : processedParameters.entrySet()) {
+                Object value = entry.getValue();
                 Object newValue = value;
                 if (value instanceof HasToBeMappedToJson) {
                     newValue = objectMapper.writeValueAsString(newValue);
@@ -100,7 +100,7 @@ public class HttpCommandExecutor {
                         newValue = URLEncoder.encode((String) newValue, "UTF-8");
                     }
                 }
-                processedParameters.put(key, newValue);
+                entry.setValue(newValue);
             }
             return processedParameters;
         } catch (UnsupportedEncodingException | JsonProcessingException e) {
