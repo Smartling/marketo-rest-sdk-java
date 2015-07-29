@@ -115,8 +115,8 @@ public class EmailIntegrationTest {
     }
 
     @Test
-    public void shouldLoadEmailsByNamePart() throws Exception {
-        List<Email> emails = marketoClient.loadEmailsByNamePart(TEST_EMAIL_NAME, null, null);
+    public void shouldGetEmailsByName() throws Exception {
+        List<Email> emails = marketoClient.getEmailsByName(TEST_EMAIL_NAME, null, null);
 
         assertThat(emails).haveAtLeast(1, new Condition<Email>() {
             @Override
@@ -127,8 +127,8 @@ public class EmailIntegrationTest {
     }
 
     @Test
-    public void shouldLoadEmailsByNameWithFolder() throws Exception {
-        List<Email> emails = marketoClient.loadEmailsByNamePart(TEST_EMAIL_NAME, TEST_FOLDER_ID, null);
+    public void shouldGetEmailsByNameWithFolder() throws Exception {
+        List<Email> emails = marketoClient.getEmailsByName(TEST_EMAIL_NAME, TEST_FOLDER_ID, null);
 
         assertThat(emails).haveAtLeast(1, new Condition<Email>() {
             @Override
@@ -139,8 +139,8 @@ public class EmailIntegrationTest {
     }
 
     @Test
-    public void shouldLoadEmailsByNameWithStatus() throws Exception {
-        List<Email> emails = marketoClient.loadEmailsByNamePart(TEST_EMAIL_NAME, null, Email.Status.APPROVED);
+    public void shouldGetEmailsByNameWithStatus() throws Exception {
+        List<Email> emails = marketoClient.getEmailsByName(TEST_EMAIL_NAME, null, Email.Status.APPROVED);
 
         assertThat(emails).haveAtLeast(1, new Condition<Email>() {
             @Override

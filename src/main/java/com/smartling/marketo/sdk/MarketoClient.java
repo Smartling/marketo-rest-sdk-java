@@ -9,7 +9,7 @@ public interface MarketoClient {
 
     Email loadEmailById(int id) throws MarketoApiException;
 
-    List<Email> loadEmailsByNamePart(String name, FolderId folderId, Email.Status status) throws MarketoApiException;
+    List<Email> getEmailsByName(String name, FolderId folderId, Email.Status status) throws MarketoApiException;
 
     List<EmailContentItem> loadEmailContent(int emailId) throws MarketoApiException;
 
