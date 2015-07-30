@@ -82,7 +82,7 @@ public class MarketoRestClientTest {
     @Test
     public void shouldGetEmailsByName() throws Exception {
         Email expected = new Email();
-        given(executor.execute(isA(getEmailsByName.class))).willReturn(Collections.singletonList(expected));
+        given(executor.execute(isA(GetEmailsByName.class))).willReturn(Collections.singletonList(expected));
 
         List<Email> result = testedInstance.getEmailsByName("name", new FolderId(42, FolderType.FOLDER), Email.Status.APPROVED);
 

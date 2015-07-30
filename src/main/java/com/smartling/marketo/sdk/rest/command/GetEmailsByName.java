@@ -6,12 +6,12 @@ import com.smartling.marketo.sdk.FolderId;
 
 import java.util.Map;
 
-public class getEmailsByName extends BaseGetCommand<Email> {
+public class GetEmailsByName extends BaseGetCommand<Email> {
     private final String name;
     private final FolderId folder;
     private final Email.Status status;
 
-    public getEmailsByName(String name, FolderId folder, Email.Status status) {
+    public GetEmailsByName(String name, FolderId folder, Email.Status status) {
         super(Email.class);
         this.name = name;
         this.folder = folder;
