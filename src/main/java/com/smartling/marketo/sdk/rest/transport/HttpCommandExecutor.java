@@ -2,9 +2,6 @@ package com.smartling.marketo.sdk.rest.transport;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Preconditions;
-import com.google.common.base.Supplier;
-import com.google.common.base.Suppliers;
 import com.smartling.marketo.sdk.HasToBeMappedToJson;
 import com.smartling.marketo.sdk.rest.Command;
 import com.smartling.marketo.sdk.MarketoApiException;
@@ -19,7 +16,6 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -27,7 +23,6 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.TimeUnit;
 
 public class HttpCommandExecutor {
     private final String identityUrl;
@@ -37,8 +32,8 @@ public class HttpCommandExecutor {
 
     private final Client client;
 
-    private volatile Supplier<String> tokenSupplier = Suppliers.ofInstance(null);
     private final static ObjectMapper objectMapper = new ObjectMapper();
+    private final static MarketoTokenCache tokenCache = new MarketoTokenCache();
 
     public HttpCommandExecutor(String identityUrl, String restUrl, String clientId, String clientSecret) {
         this.identityUrl = identityUrl;
@@ -57,7 +52,8 @@ public class HttpCommandExecutor {
     }
 
     public <T> T execute(final Command<T> command) throws MarketoApiException {
-        String token = getToken();
+        ClientConnectionData clientConnectionData = new ClientConnectionData(client, identityUrl, clientId, clientSecret);
+        String token = tokenCache.getAccessToken(clientConnectionData);
 
         WebTarget target = buildWebTarget(client, command);
         Invocation.Builder invocationBuilder = target.request(MediaType.APPLICATION_JSON_TYPE).header("Authorization", "Bearer " + token);
@@ -147,49 +143,34 @@ public class HttpCommandExecutor {
         };
     }
 
-    private String getToken() throws MarketoApiException {
-        String token = tokenSupplier.get();
-        if (token == null) {
-            AuthenticationResponse authenticationResponse = authenticate();
 
-            long expirationInterval = authenticationResponse.getExpirationInterval();
-            Preconditions.checkState(expirationInterval > 0, "Expiration interval should be > 0, but equal to %s", expirationInterval);
+    static final class ClientConnectionData {
+        private final Client wsClient;
+        private final String identityUrl;
+        private final String clientId;
+        private final String clientSecret;
 
-            tokenSupplier = Suppliers
-                    .memoizeWithExpiration(new OneTimeSupplier<>(authenticationResponse.getAccessToken()), expirationInterval,
-                            TimeUnit.SECONDS);
-            token = tokenSupplier.get();
+        ClientConnectionData(Client wsClient, String identityUrl, String clientId, String clientSecret) {
+            this.wsClient = wsClient;
+            this.identityUrl = identityUrl;
+            this.clientId = clientId;
+            this.clientSecret = clientSecret;
         }
 
-        return token;
-    }
-
-    private AuthenticationResponse authenticate() throws MarketoApiException {
-        Response response = client.target(identityUrl).path("/oauth/token").queryParam("grant_type", "client_credentials")
-                .queryParam("client_id", clientId).queryParam("client_secret", clientSecret).request(MediaType.APPLICATION_JSON_TYPE).get();
-
-        AuthenticationResponse authenticationResponse = response.readEntity(AuthenticationResponse.class);
-        if (response.getStatus() == 200) {
-            return authenticationResponse;
-        } else {
-            throw new MarketoApiException(String.valueOf(response.getStatus()),
-                    String.format("%s: %s", authenticationResponse.getError(), authenticationResponse.getErrorDescription()));
-        }
-    }
-
-    private static final class OneTimeSupplier<T> implements Supplier<T> {
-        private T value;
-
-        private OneTimeSupplier(T value) {
-            this.value = value;
+        public Client getWsClient() {
+            return wsClient;
         }
 
-        @Override
-        public T get() {
-            T copy = value;
-            value = null;
+        public String getIdentityUrl() {
+            return identityUrl;
+        }
 
-            return copy;
+        public String getClientId() {
+            return clientId;
+        }
+
+        public String getClientSecret() {
+            return clientSecret;
         }
     }
 }

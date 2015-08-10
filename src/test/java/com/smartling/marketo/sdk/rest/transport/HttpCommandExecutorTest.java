@@ -1,16 +1,10 @@
 package com.smartling.marketo.sdk.rest.transport;
 
-import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
-import com.github.tomakehurst.wiremock.client.UrlMatchingStrategy;
-import com.github.tomakehurst.wiremock.client.ValueMatchingStrategy;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.smartling.marketo.sdk.FolderId;
 import com.smartling.marketo.sdk.FolderType;
 import com.smartling.marketo.sdk.rest.Command;
 import com.smartling.marketo.sdk.MarketoApiException;
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
-import org.hamcrest.TypeSafeMatcher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -21,10 +15,11 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import javax.ws.rs.ProcessingException;
 import java.lang.annotation.ElementType;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Random;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.fest.assertions.api.Assertions.assertThat;
@@ -32,15 +27,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class HttpCommandExecutorTest {
-    private static final int PORT = 10000 + new Random().nextInt(9999);
-
-    private static final String BASE_URL = "http://localhost:" + PORT;
-    private static final String IDENTITY_URL = BASE_URL + "/identity";
-    private static final String REST_URL = BASE_URL + "/rest";
-
-    private static final String CLIENT_ID = "the_client_id";
-    private static final String CLIENT_SECRET = "a_secret_key";
+public class HttpCommandExecutorTest extends BaseTransportTest{
 
     private static final String FOLDER_ID_JSON = "{\"id\":42,\"type\":\"FOLDER\"}";
 
@@ -100,6 +87,8 @@ public class HttpCommandExecutorTest {
 
     @Test
     public void shouldAuthenticateEachRequest() throws Exception {
+        reloadTokenCache();
+
         givenThat(get(path("/identity/oauth/token")).willReturn(aJsonResponse(
                 "{\"access_token\": \"token\",\"expires_in\": 100000}\"}")));
 
@@ -110,6 +99,8 @@ public class HttpCommandExecutorTest {
 
     @Test
     public void shouldPassCredentialsToAuthenticate() throws Exception {
+        reloadTokenCache();
+
         testedInstance.execute(command);
 
         verify(getRequestedFor(urlStartingWith("/identity/oauth/token"))
@@ -120,6 +111,8 @@ public class HttpCommandExecutorTest {
 
     @Test
     public void shouldHandleUnauthorizedError() throws Exception {
+        reloadTokenCache();
+
         givenThat(get(path("/identity/oauth/token"))
                 .willReturn(aJsonResponse("{\"error\": \"unauthorized\", \"error_description\": \"Error!\"}").withStatus(401)));
 
@@ -202,26 +195,6 @@ public class HttpCommandExecutorTest {
         assertThat(response.enumeration).isEqualTo(ElementType.METHOD);
     }
 
-    @Test
-    public void shouldReuseTokenInMultipleCalls() throws Exception {
-        testedInstance.execute(command);
-        testedInstance.execute(command);
-
-        verify(1, getRequestedFor(urlStartingWith("/identity")));
-    }
-
-    @Test
-    public void shouldExpireToken() throws Exception {
-        givenThat(get(urlStartingWith("/identity")).willReturn(aJsonResponse(
-                "{\"access_token\": \"\",\"expires_in\": 1}")));
-
-        testedInstance.execute(command);
-        Thread.sleep(1000);
-        testedInstance.execute(command);
-
-        verify(2, getRequestedFor(urlStartingWith("/identity")));
-    }
-
     @Test(timeout = 2 * 1000, expected = ProcessingException.class)
     public void shouldSupportSocketTimeoutConfiguration() throws Exception {
         addRequestProcessingDelay(5 * 1000);
@@ -240,6 +213,7 @@ public class HttpCommandExecutorTest {
         verify(postRequestedFor(urlStartingWith("/rest")).withRequestBody(withFormParam("folderId", URLEncoder.encode(FOLDER_ID_JSON, "UTF-8"))));
     }
 
+
     @Test
     public void shouldSerializeAndUrlEncodeJsonParametersOnGet() throws Exception {
         given(command.getPath()).willReturn("/some/path");
@@ -250,40 +224,19 @@ public class HttpCommandExecutorTest {
         verify(getRequestedFor(urlStartingWith("/rest")).withQueryParam("folderId", equalTo(FOLDER_ID_JSON)));
     }
 
-    private static Matcher<MarketoApiException> exceptionWithCode(final String code) {
-        return new TypeSafeMatcher<MarketoApiException>() {
-            @Override
-            protected boolean matchesSafely(MarketoApiException item) {
-                return code.equalsIgnoreCase(item.getErrorCode());
-            }
-
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("exception with code ").appendValue(code);
-            }
-        };
-    }
-
-    private ValueMatchingStrategy withFormParam(String key, String value) {
-        return containing(key + "=" + value);
-    }
-
-    private static UrlMatchingStrategy urlStartingWith(String path) {
-        return urlMatching(path + ".*");
-    }
-
-    private static UrlMatchingStrategy path(String path) {
-        return urlMatching(path + "(\\?.+)?");
-    }
-
-    private static ResponseDefinitionBuilder aJsonResponse(String json) {
-        return aResponse().withHeader("Content-Type", "application/json").withBody(json);
-    }
-
     @SuppressWarnings("unused")
     private static class Data {
         private String string;
         private Date date;
         private ElementType enumeration;
+    }
+
+    private void reloadTokenCache() throws NoSuchFieldException, IllegalAccessException {
+        Field tokenCache = testedInstance.getClass().getDeclaredField("tokenCache");
+        tokenCache.setAccessible(true);
+        Field modifiersField = Field.class.getDeclaredField("modifiers");
+        modifiersField.setAccessible(true);
+        modifiersField.setInt(tokenCache, tokenCache.getModifiers() & ~Modifier.FINAL);
+        tokenCache.set(testedInstance, new MarketoTokenCache());
     }
 }
