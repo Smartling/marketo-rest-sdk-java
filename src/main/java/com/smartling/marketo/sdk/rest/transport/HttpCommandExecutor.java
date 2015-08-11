@@ -29,17 +29,18 @@ public class HttpCommandExecutor {
     private final String restUrl;
     private final String clientId;
     private final String clientSecret;
+    private final TokenProvider tokenProvider;
 
     private final Client client;
 
     private final static ObjectMapper objectMapper = new ObjectMapper();
-    private final static MarketoTokenCache tokenCache = new MarketoTokenCache();
 
-    public HttpCommandExecutor(String identityUrl, String restUrl, String clientId, String clientSecret) {
+    public HttpCommandExecutor(String identityUrl, String restUrl, String clientId, String clientSecret, TokenProvider tokenProvider) {
         this.identityUrl = identityUrl;
         this.restUrl = restUrl;
         this.clientId = clientId;
         this.clientSecret = clientSecret;
+        this.tokenProvider = tokenProvider;
         this.client = ClientBuilder.newClient().register(JacksonFeature.class).register(ObjectMapperProvider.class);
     }
 
@@ -53,7 +54,7 @@ public class HttpCommandExecutor {
 
     public <T> T execute(final Command<T> command) throws MarketoApiException {
         ClientConnectionData clientConnectionData = new ClientConnectionData(client, identityUrl, clientId, clientSecret);
-        String token = tokenCache.getAccessToken(clientConnectionData);
+        String token = tokenProvider.authenticate(clientConnectionData).getAccessToken();
 
         WebTarget target = buildWebTarget(client, command);
         Invocation.Builder invocationBuilder = target.request(MediaType.APPLICATION_JSON_TYPE).header("Authorization", "Bearer " + token);
@@ -143,34 +144,4 @@ public class HttpCommandExecutor {
         };
     }
 
-
-    static final class ClientConnectionData {
-        private final Client wsClient;
-        private final String identityUrl;
-        private final String clientId;
-        private final String clientSecret;
-
-        ClientConnectionData(Client wsClient, String identityUrl, String clientId, String clientSecret) {
-            this.wsClient = wsClient;
-            this.identityUrl = identityUrl;
-            this.clientId = clientId;
-            this.clientSecret = clientSecret;
-        }
-
-        public Client getWsClient() {
-            return wsClient;
-        }
-
-        public String getIdentityUrl() {
-            return identityUrl;
-        }
-
-        public String getClientId() {
-            return clientId;
-        }
-
-        public String getClientSecret() {
-            return clientSecret;
-        }
-    }
 }

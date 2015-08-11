@@ -16,7 +16,6 @@ import java.util.Random;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
-import static com.smartling.marketo.sdk.rest.transport.HttpCommandExecutor.ClientConnectionData;
 
 public abstract class BaseTransportTest {
     static final int PORT = 10000 + new Random().nextInt(9999);
@@ -58,14 +57,13 @@ public abstract class BaseTransportTest {
         return aResponse().withHeader("Content-Type", "application/json").withBody(json);
     }
 
-    ClientConnectionData getClientConnectionData(String clientId) {
-        Client client = ClientBuilder.newClient().register(JacksonFeature.class).register(ObjectMapperProvider.class);
-        return new HttpCommandExecutor.ClientConnectionData(client, IDENTITY_URL, clientId, CLIENT_SECRET);
-
+    ClientConnectionData getClientConnectionData(Client wsClient, String clientId) {
+        return new ClientConnectionData(wsClient, IDENTITY_URL, clientId, CLIENT_SECRET);
     }
 
-    ClientConnectionData getClientConnectionData() {
-        return getClientConnectionData(CLIENT_ID);
+    ClientConnectionData getClientConnectionData(String clientId) {
+        Client client = ClientBuilder.newClient().register(JacksonFeature.class).register(ObjectMapperProvider.class);
+        return getClientConnectionData(client, clientId);
     }
 
 }

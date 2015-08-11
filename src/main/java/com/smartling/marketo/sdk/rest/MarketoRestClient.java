@@ -8,7 +8,10 @@ import com.smartling.marketo.sdk.FolderId;
 import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.MarketoClient;
 import com.smartling.marketo.sdk.rest.command.*;
+import com.smartling.marketo.sdk.rest.transport.BasicTokenProvider;
+import com.smartling.marketo.sdk.rest.transport.CacheableTokenProvider;
 import com.smartling.marketo.sdk.rest.transport.HttpCommandExecutor;
+import com.smartling.marketo.sdk.rest.transport.TokenProvider;
 
 import java.util.Collections;
 import java.util.List;
@@ -108,7 +111,8 @@ public class MarketoRestClient implements MarketoClient {
             Preconditions.checkNotNull(clientId, "Client ID is empty");
             Preconditions.checkNotNull(clientSecret, "Client secret is empty");
 
-            HttpCommandExecutor executor = new HttpCommandExecutor(identityUrl, restUrl, clientId, clientSecret);
+            TokenProvider tokenProvider = new CacheableTokenProvider(new BasicTokenProvider());
+            HttpCommandExecutor executor = new HttpCommandExecutor(identityUrl, restUrl, clientId, clientSecret, tokenProvider);
             executor.setConnectionTimeout(connectionTimeout);
             executor.setSocketReadTimeout(socketReadTimeout);
             return new MarketoRestClient(executor);

@@ -10,24 +10,30 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import javax.ws.rs.ProcessingException;
+import javax.ws.rs.client.Client;
 import java.lang.annotation.ElementType;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.net.URLEncoder;
+
+import static java.time.LocalDateTime.now;
+
 import java.util.Collections;
 import java.util.Date;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class HttpCommandExecutorTest extends BaseTransportTest{
+public class HttpCommandExecutorTest extends BaseTransportTest {
 
     private static final String FOLDER_ID_JSON = "{\"id\":42,\"type\":\"FOLDER\"}";
 
@@ -40,17 +46,22 @@ public class HttpCommandExecutorTest extends BaseTransportTest{
     @Mock
     private Command<Data> command;
 
-    private final HttpCommandExecutor testedInstance = new HttpCommandExecutor(IDENTITY_URL, REST_URL, CLIENT_ID, CLIENT_SECRET);
+    private TokenProvider tokenProvider = mock(TokenProvider.class);
+
+    private final HttpCommandExecutor testedInstance =
+            new HttpCommandExecutor(IDENTITY_URL, REST_URL, CLIENT_ID, CLIENT_SECRET, tokenProvider);
 
     @Before
     public void setUp() throws Exception {
-        stubFor(get(urlStartingWith("/identity")).willReturn(aJsonResponse("{\"access_token\": \"\",\"expires_in\": 100000}")));
         stubFor(get(urlStartingWith("/rest")).willReturn(aJsonResponse("{\"success\": true}")));
         stubFor(post(urlStartingWith("/rest")).willReturn(aJsonResponse("{\"success\": true}")));
 
         when(command.getResultType()).thenReturn(Data.class);
         when(command.getMethod()).thenReturn("GET");
         when(command.getPath()).thenReturn("/some/path");
+
+        when(tokenProvider.authenticate(getClientConnectionData(any(Client.class), CLIENT_ID)))
+                .thenReturn(new Token(now().plusHours(1), "token"));
     }
 
     @Test
@@ -87,7 +98,6 @@ public class HttpCommandExecutorTest extends BaseTransportTest{
 
     @Test
     public void shouldAuthenticateEachRequest() throws Exception {
-        reloadTokenCache();
 
         givenThat(get(path("/identity/oauth/token")).willReturn(aJsonResponse(
                 "{\"access_token\": \"token\",\"expires_in\": 100000}\"}")));
@@ -99,27 +109,29 @@ public class HttpCommandExecutorTest extends BaseTransportTest{
 
     @Test
     public void shouldPassCredentialsToAuthenticate() throws Exception {
-        reloadTokenCache();
 
+        ArgumentCaptor<ClientConnectionData> clientConnectionDataArgumentCaptor
+                = ArgumentCaptor.forClass(ClientConnectionData.class);
         testedInstance.execute(command);
 
-        verify(getRequestedFor(urlStartingWith("/identity/oauth/token"))
-                .withQueryParam("grant_type", equalTo("client_credentials"))
-                .withQueryParam("client_id", equalTo(CLIENT_ID))
-                .withQueryParam("client_secret", equalTo(CLIENT_SECRET)));
+        org.mockito.Mockito.verify(tokenProvider).authenticate(clientConnectionDataArgumentCaptor.capture());
+
+        ClientConnectionData value = clientConnectionDataArgumentCaptor.getValue();
+        assertThat(value.getClientId()).isEqualTo(CLIENT_ID);
+        assertThat(value.getClientSecret()).isEqualTo(CLIENT_SECRET);
+        assertThat(value.getIdentityUrl()).isEqualTo(IDENTITY_URL);
+
     }
 
     @Test
-    public void shouldHandleUnauthorizedError() throws Exception {
-        reloadTokenCache();
+    public void shouldReThrowExceptionWhenTokenProviderThrowException() throws Exception {
 
-        givenThat(get(path("/identity/oauth/token"))
-                .willReturn(aJsonResponse("{\"error\": \"unauthorized\", \"error_description\": \"Error!\"}").withStatus(401)));
+        when(tokenProvider.authenticate(any(ClientConnectionData.class)))
+                .thenThrow(new MarketoApiException("401", "unauthorized: Error!"));
 
         thrown.expect(MarketoApiException.class);
         thrown.expectMessage("unauthorized: Error!");
         thrown.expect(exceptionWithCode("401"));
-
 
         testedInstance.execute(command);
     }
@@ -231,12 +243,4 @@ public class HttpCommandExecutorTest extends BaseTransportTest{
         private ElementType enumeration;
     }
 
-    private void reloadTokenCache() throws NoSuchFieldException, IllegalAccessException {
-        Field tokenCache = testedInstance.getClass().getDeclaredField("tokenCache");
-        tokenCache.setAccessible(true);
-        Field modifiersField = Field.class.getDeclaredField("modifiers");
-        modifiersField.setAccessible(true);
-        modifiersField.setInt(tokenCache, tokenCache.getModifiers() & ~Modifier.FINAL);
-        tokenCache.set(testedInstance, new MarketoTokenCache());
-    }
 }
