@@ -1,12 +1,15 @@
 package com.smartling.marketo.sdk.rest;
 
 import com.google.common.base.Preconditions;
+import com.smartling.marketo.sdk.Asset;
+import com.smartling.marketo.sdk.SnippetContentItem;
 import com.smartling.marketo.sdk.Email;
 import com.smartling.marketo.sdk.EmailContentItem;
 import com.smartling.marketo.sdk.FolderDetails;
 import com.smartling.marketo.sdk.FolderId;
 import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.MarketoClient;
+import com.smartling.marketo.sdk.Snippet;
 import com.smartling.marketo.sdk.rest.command.*;
 import com.smartling.marketo.sdk.rest.transport.BasicTokenProvider;
 import com.smartling.marketo.sdk.rest.transport.CacheableTokenProvider;
@@ -95,6 +98,34 @@ public class MarketoRestClient implements MarketoClient {
         List<FolderDetails> folders = httpCommandExecutor.execute(new GetFoldersCommand(root, offset, maxDepth, limit, workspace));
 
         return folders != null ? folders : Collections.<FolderDetails>emptyList();
+    }
+
+    @Override
+    public List<Snippet> listSnippets(int offset, int limit, Asset.Status status) throws MarketoApiException {
+        List<Snippet> snippets = httpCommandExecutor.execute(new GetSnippets(offset, limit, status));
+        return snippets != null ? snippets : Collections.<Snippet>emptyList();
+    }
+
+    @Override
+    public Snippet loadSnippetById(int id) throws MarketoApiException {
+        List<Snippet> execute = httpCommandExecutor.execute(new LoadSnippetById(id));
+        return execute.get(0);
+    }
+
+    @Override
+    public List<SnippetContentItem> loadSnippetContent(int id) throws MarketoApiException {
+        return httpCommandExecutor.execute(new LoadSnippetContent(id));
+    }
+
+    @Override
+    public Snippet cloneSnippet(int sourceId, String newName, FolderId folderId) throws MarketoApiException {
+        List<Snippet> cloned = httpCommandExecutor.execute(new CloneSnippet(sourceId, newName, folderId));
+        return cloned.get(0);
+    }
+
+    @Override
+    public void updateSnippetContent(int snippetId, SnippetContentItem contentItem) throws MarketoApiException {
+        httpCommandExecutor.execute(new UpdateSnippetContent(snippetId, contentItem));
     }
 
     public final static class Builder {

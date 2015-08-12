@@ -1,7 +1,7 @@
 package com.smartling.it.marketo.sdk;
 
 import com.smartling.marketo.sdk.Email;
-import com.smartling.marketo.sdk.Email.Status;
+import com.smartling.marketo.sdk.Asset.Status;
 import com.smartling.marketo.sdk.EmailContentItem;
 import com.smartling.marketo.sdk.FolderDetails;
 import com.smartling.marketo.sdk.FolderId;
@@ -9,12 +9,8 @@ import com.smartling.marketo.sdk.FolderType;
 import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.MarketoClient;
 import com.smartling.marketo.sdk.rest.MarketoRestClient;
-import org.fest.assertions.core.Condition;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.ws.rs.ProcessingException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -23,37 +19,12 @@ import java.util.UUID;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
-public class EmailIntegrationTest {
+public class EmailIntegrationTest extends BaseIntegrationTest {
     private static final int TEST_EMAIL_ID = 1109;
     private static final String TEST_EMAIL_NAME = "Email For Integration Tests";
     private static final FolderId TEST_FOLDER_ID = new FolderId(44, FolderType.FOLDER);
     private static final int TEST_PROGRAM_EMAIL_ID = 1596;
     private static final int TEST_PROGRAM_ID = 1008;
-
-    private static String identityEndpoint;
-    private static String restEndpoint;
-    private static String clientId;
-    private static String clientSecret;
-
-    private MarketoClient marketoClient;
-
-    @BeforeClass
-    public static void checkPreconditions() {
-        identityEndpoint = System.getProperty("marketo.identity");
-        restEndpoint = System.getProperty("marketo.rest");
-        clientId = System.getProperty("marketo.clientId");
-        clientSecret = System.getProperty("marketo.clientSecret");
-
-        assertThat(identityEndpoint).overridingErrorMessage("Identity endpoint is missing").isNotEmpty();
-        assertThat(restEndpoint).overridingErrorMessage("REST endpoint is missing").isNotEmpty();
-        assertThat(clientId).overridingErrorMessage("Client ID is missing").isNotEmpty();
-        assertThat(clientSecret).overridingErrorMessage("Client Secret is missing").isNotEmpty();
-    }
-
-    @Before
-    public void setUp() throws Exception {
-        marketoClient = MarketoRestClient.create(identityEndpoint, restEndpoint).withCredentials(clientId, clientSecret);
-    }
 
     @Test
     public void shouldListEmails() throws Exception {
@@ -116,21 +87,21 @@ public class EmailIntegrationTest {
     public void shouldGetEmailsByName() throws Exception {
         List<Email> emails = marketoClient.getEmailsByName(TEST_EMAIL_NAME, null, null);
 
-        assertThat(emails).haveAtLeast(1, new EmailWithName(TEST_EMAIL_NAME));
+        assertThat(emails).haveAtLeast(1, new AssetWithName(TEST_EMAIL_NAME));
     }
 
     @Test
     public void shouldGetEmailsByNameWithFolder() throws Exception {
         List<Email> emails = marketoClient.getEmailsByName(TEST_EMAIL_NAME, TEST_FOLDER_ID, null);
 
-        assertThat(emails).haveAtLeast(1, new EmailWithNameAndFolderId(TEST_EMAIL_NAME, TEST_FOLDER_ID));
+        assertThat(emails).haveAtLeast(1, new AssetWithNameAndFolderId(TEST_EMAIL_NAME, TEST_FOLDER_ID));
     }
 
     @Test
     public void shouldGetEmailsByNameWithStatus() throws Exception {
         List<Email> emails = marketoClient.getEmailsByName(TEST_EMAIL_NAME, null, Status.APPROVED);
 
-        assertThat(emails).haveAtLeast(1, new EmailWithNameAndStatus(TEST_EMAIL_NAME, Status.APPROVED));
+        assertThat(emails).haveAtLeast(1, new AssetWithNameAndStatus(TEST_EMAIL_NAME, Status.APPROVED));
     }
 
     @Test
@@ -229,44 +200,4 @@ public class EmailIntegrationTest {
         assertThat(folders.get(0).getWorkspace()).isNotEmpty();
     }
 
-    private class EmailWithName extends Condition<Email> {
-        private final String name;
-
-        public EmailWithName(String name) {
-            this.name = name;
-        }
-
-        @Override
-        public boolean matches(Email value) {
-            return value.getName().endsWith(name);
-        }
-    }
-
-    private class EmailWithNameAndFolderId extends EmailWithName {
-        private final FolderId folderId;
-
-        public EmailWithNameAndFolderId(String name, FolderId folderId) {
-            super(name);
-            this.folderId = folderId;
-        }
-
-        @Override
-        public boolean matches(Email value) {
-            return super.matches(value) && new FolderId(value.getFolder()).equals(folderId);
-        }
-    }
-
-    private class EmailWithNameAndStatus extends EmailWithName {
-        private final Status status;
-
-        public EmailWithNameAndStatus(String name, Status status) {
-            super(name);
-            this.status = status;
-        }
-
-        @Override
-        public boolean matches(Email value) {
-            return super.matches(value) && value.getStatus().equals(status);
-        }
-    }
 }

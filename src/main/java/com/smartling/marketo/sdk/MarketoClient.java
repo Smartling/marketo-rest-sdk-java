@@ -22,4 +22,14 @@ public interface MarketoClient {
     void updateEmail(Email email) throws MarketoApiException;
 
     List<FolderDetails> getFolders(FolderId root, int offset, int maxDepth, int limit, String workspace) throws MarketoApiException;
+
+    List<Snippet> listSnippets(int offset, int limit, Asset.Status status) throws MarketoApiException;
+
+    Snippet loadSnippetById(int id) throws MarketoApiException;
+
+    List<SnippetContentItem> loadSnippetContent(int id) throws MarketoApiException;
+
+    Snippet cloneSnippet(int sourceId, String newName, FolderId folderId) throws MarketoApiException;
+
+    void updateSnippetContent(int snippetId, SnippetContentItem contentItem) throws MarketoApiException;
 }

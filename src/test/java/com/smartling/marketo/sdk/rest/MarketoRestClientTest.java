@@ -1,11 +1,14 @@
 package com.smartling.marketo.sdk.rest;
 
+import com.smartling.marketo.sdk.Asset;
+import com.smartling.marketo.sdk.SnippetContentItem;
 import com.smartling.marketo.sdk.Email;
 import com.smartling.marketo.sdk.EmailContentItem;
 import com.smartling.marketo.sdk.FolderDetails;
 import com.smartling.marketo.sdk.FolderId;
 import com.smartling.marketo.sdk.FolderType;
 import com.smartling.marketo.sdk.MarketoApiException;
+import com.smartling.marketo.sdk.Snippet;
 import com.smartling.marketo.sdk.rest.command.*;
 import com.smartling.marketo.sdk.rest.transport.HttpCommandExecutor;
 import org.junit.Test;
@@ -134,5 +137,52 @@ public class MarketoRestClientTest {
         List<FolderDetails> folders = testedInstance.getFolders(new FolderId(1, FolderType.FOLDER), 0, 1, 10, null);
 
         assertThat(folders).contains(folder);
+    }
+
+    @Test
+    public void shouldRequestSnippetListWithFilter() throws Exception {
+        Snippet snippet= new Snippet();
+        given(executor.execute(isA(GetSnippets.class))).willReturn(Collections.singletonList(snippet));
+
+        List<Snippet> snippets = testedInstance.listSnippets(0, 10, Asset.Status.APPROVED);
+
+        assertThat(snippets).contains(snippet);
+    }
+
+    @Test
+    public void shouldLoadSnippetById() throws Exception {
+        Snippet snippet = new Snippet();
+        given(executor.execute(isA(LoadSnippetById.class))).willReturn(Collections.singletonList(snippet));
+
+        Snippet result = testedInstance.loadSnippetById(42);
+
+        assertThat(result).isEqualTo(snippet);
+    }
+
+    @Test
+    public void shouldLoadSnippetContent() throws Exception {
+        SnippetContentItem contentItem = new SnippetContentItem();
+        given(executor.execute(isA(LoadSnippetContent.class))).willReturn(Collections.singletonList(contentItem));
+
+        List<SnippetContentItem> result = testedInstance.loadSnippetContent(42);
+
+        assertThat(result).contains(contentItem);
+    }
+
+    @Test
+    public void shouldCloneSnippet() throws Exception {
+        Snippet clone = new Snippet();
+        given(executor.execute(isA(CloneSnippet.class))).willReturn(Collections.singletonList(clone));
+
+        Snippet result = testedInstance.cloneSnippet(42, "blah", new FolderId(999, FolderType.FOLDER));
+
+        assertThat(result).isSameAs(clone);
+    }
+
+    @Test
+    public void shouldUpdateSnippetContent() throws Exception {
+        testedInstance.updateSnippetContent(42, new SnippetContentItem());
+
+        verify(executor).execute(isA(UpdateSnippetContent.class));
     }
 }
