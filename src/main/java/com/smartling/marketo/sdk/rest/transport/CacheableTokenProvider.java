@@ -2,14 +2,16 @@ package com.smartling.marketo.sdk.rest.transport;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.util.concurrent.UncheckedExecutionException;
 import com.smartling.marketo.sdk.MarketoApiException;
 
+import javax.ws.rs.ProcessingException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import static com.google.common.base.Throwables.getRootCause;
+import static com.google.common.base.Throwables.propagate;
 
 public class CacheableTokenProvider implements TokenProvider {
 
@@ -60,11 +62,13 @@ public class CacheableTokenProvider implements TokenProvider {
                     return tokenProvider.authenticate(clientConnectionData);
                 }
             });
-        } catch (ExecutionException e) {
-            if (getRootCause(e) instanceof MarketoApiException) {
-                throw (MarketoApiException) getRootCause(e);
+        } catch (ExecutionException | UncheckedExecutionException e) {
+            if (e.getCause() instanceof MarketoApiException) {
+                throw (MarketoApiException) e.getCause();
+            } else if (e.getCause() instanceof ProcessingException) {
+                throw (ProcessingException) e.getCause();
             } else {
-                throw new RuntimeException(getRootCause(e));
+                throw propagate(e.getCause());
             }
         }
     }
