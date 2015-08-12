@@ -18,6 +18,7 @@ import java.util.List;
 
 public class MarketoRestClient implements MarketoClient {
     private static final String LIST_END_REACHED_CODE = "702";
+    private static final TokenProvider tokenProvider = new CacheableTokenProvider(new BasicTokenProvider());
 
     private final HttpCommandExecutor httpCommandExecutor;
 
@@ -111,7 +112,6 @@ public class MarketoRestClient implements MarketoClient {
             Preconditions.checkNotNull(clientId, "Client ID is empty");
             Preconditions.checkNotNull(clientSecret, "Client secret is empty");
 
-            TokenProvider tokenProvider = new CacheableTokenProvider(new BasicTokenProvider());
             HttpCommandExecutor executor = new HttpCommandExecutor(identityUrl, restUrl, clientId, clientSecret, tokenProvider);
             executor.setConnectionTimeout(connectionTimeout);
             executor.setSocketReadTimeout(socketReadTimeout);
