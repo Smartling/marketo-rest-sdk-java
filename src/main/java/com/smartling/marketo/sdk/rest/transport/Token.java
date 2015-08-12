@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 import static java.time.LocalDateTime.now;
 
-public class Token {
+class Token {
     private final LocalDateTime validDateTime;
     private final String accessToken;
 

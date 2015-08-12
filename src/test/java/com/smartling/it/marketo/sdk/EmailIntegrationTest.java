@@ -11,8 +11,10 @@ import com.smartling.marketo.sdk.MarketoClient;
 import com.smartling.marketo.sdk.rest.MarketoRestClient;
 import org.fest.assertions.core.Condition;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
+import javax.ws.rs.ProcessingException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -21,14 +23,32 @@ import java.util.UUID;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
-public class EmailIntegrationTest extends BaseIntegrationTest {
+public class EmailIntegrationTest {
     private static final int TEST_EMAIL_ID = 1109;
     private static final String TEST_EMAIL_NAME = "Email For Integration Tests";
     private static final FolderId TEST_FOLDER_ID = new FolderId(44, FolderType.FOLDER);
     private static final int TEST_PROGRAM_EMAIL_ID = 1596;
     private static final int TEST_PROGRAM_ID = 1008;
 
+    private static String identityEndpoint;
+    private static String restEndpoint;
+    private static String clientId;
+    private static String clientSecret;
+
     private MarketoClient marketoClient;
+
+    @BeforeClass
+    public static void checkPreconditions() {
+        identityEndpoint = System.getProperty("marketo.identity");
+        restEndpoint = System.getProperty("marketo.rest");
+        clientId = System.getProperty("marketo.clientId");
+        clientSecret = System.getProperty("marketo.clientSecret");
+
+        assertThat(identityEndpoint).overridingErrorMessage("Identity endpoint is missing").isNotEmpty();
+        assertThat(restEndpoint).overridingErrorMessage("REST endpoint is missing").isNotEmpty();
+        assertThat(clientId).overridingErrorMessage("Client ID is missing").isNotEmpty();
+        assertThat(clientSecret).overridingErrorMessage("Client Secret is missing").isNotEmpty();
+    }
 
     @Before
     public void setUp() throws Exception {

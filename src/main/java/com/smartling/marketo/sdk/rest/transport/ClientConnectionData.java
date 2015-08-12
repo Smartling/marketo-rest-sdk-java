@@ -2,7 +2,7 @@ package com.smartling.marketo.sdk.rest.transport;
 
 import javax.ws.rs.client.Client;
 
-public class ClientConnectionData {
+class ClientConnectionData {
     private final Client wsClient;
     private final String identityUrl;
     private final String clientId;
