@@ -1,6 +1,7 @@
 package com.smartling.marketo.sdk.rest.transport;
 
 import com.google.common.base.Preconditions;
+import com.smartling.marketo.sdk.AuthenticationErrorException;
 import com.smartling.marketo.sdk.MarketoApiException;
 
 import javax.ws.rs.client.Client;
@@ -29,6 +30,9 @@ public class BasicTokenProvider implements TokenProvider {
         AuthenticationResponse authenticationResponse = response.readEntity(AuthenticationResponse.class);
         if (response.getStatus() == 200) {
             return extractToken(authenticationResponse);
+        } else if (response.getStatus() == 401) {
+            throw new AuthenticationErrorException(String.valueOf(response.getStatus()),
+                    String.format("%s: %s", authenticationResponse.getError(), authenticationResponse.getErrorDescription()));
         } else {
             throw new MarketoApiException(String.valueOf(response.getStatus()),
                     String.format("%s: %s", authenticationResponse.getError(), authenticationResponse.getErrorDescription()));

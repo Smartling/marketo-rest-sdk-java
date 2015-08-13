@@ -1,5 +1,6 @@
 package com.smartling.it.marketo.sdk;
 
+import com.smartling.marketo.sdk.AuthenticationErrorException;
 import com.smartling.marketo.sdk.Email;
 import com.smartling.marketo.sdk.Asset.Status;
 import com.smartling.marketo.sdk.EmailContentItem;
@@ -59,7 +60,7 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
         assertThat(emails).isEmpty();
     }
 
-    @Test(expected = MarketoApiException.class)
+    @Test(expected = AuthenticationErrorException.class)
     public void shouldThrowAuthenticationError() throws Exception {
         MarketoClient invalid = MarketoRestClient.create(identityEndpoint, restEndpoint).withCredentials(clientId, "invalid");
         invalid.listEmails(0, 1);
