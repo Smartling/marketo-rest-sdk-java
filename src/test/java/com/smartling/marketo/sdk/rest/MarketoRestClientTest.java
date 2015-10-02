@@ -57,10 +57,19 @@ public class MarketoRestClientTest {
     }
 
     @Test
-    public void shouldReturnEmptyEmailListIfNoEmailCanBeFound() throws Exception {
-        given(executor.execute(any(Command.class))).willThrow(new MarketoApiException("702", ""));
+    public void shouldReturnEmptyEmailListOnNullResult() throws Exception {
+        given(executor.execute(any(Command.class))).willReturn(null);
 
         List<Email> emails = testedInstance.listEmails(0, 10, new FolderId(1, FolderType.FOLDER), Email.Status.APPROVED);
+
+        assertThat(emails).isEmpty();
+    }
+
+    @Test
+    public void shouldReturnEmptyEmailListByNameOnNullResult() throws Exception {
+        given(executor.execute(any(Command.class))).willReturn(null);
+
+        List<Email> emails = testedInstance.getEmailsByName("name", new FolderId(1, FolderType.FOLDER), Email.Status.APPROVED);
 
         assertThat(emails).isEmpty();
     }
@@ -184,5 +193,14 @@ public class MarketoRestClientTest {
         testedInstance.updateSnippetContent(42, new SnippetContentItem());
 
         verify(executor).execute(isA(UpdateSnippetContent.class));
+    }
+
+    @Test
+    public void shouldReturnEmptySnippetListOnNullResult() throws Exception {
+        given(executor.execute(any(Command.class))).willReturn(null);
+
+        List<Snippet> snippets = testedInstance.listSnippets(0, 10, Email.Status.APPROVED);
+
+        assertThat(snippets).isEmpty();
     }
 }

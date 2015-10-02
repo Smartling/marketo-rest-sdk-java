@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.List;
 
 public class MarketoRestClient implements MarketoClient {
-    private static final String LIST_END_REACHED_CODE = "702";
     private static final TokenProvider tokenProvider = new CacheableTokenProvider(new BasicTokenProvider());
 
     private final HttpCommandExecutor httpCommandExecutor;
@@ -43,15 +42,8 @@ public class MarketoRestClient implements MarketoClient {
 
     @Override
     public List<Email> listEmails(int offset, int limit, FolderId folder, Email.Status status) throws MarketoApiException {
-        try {
-            return httpCommandExecutor.execute(new GetEmailsCommand(offset, limit, folder, status));
-        } catch (MarketoApiException e) {
-            if (LIST_END_REACHED_CODE.equalsIgnoreCase(e.getErrorCode())) {
-                return Collections.emptyList();
-            } else {
-                throw e;
-            }
-        }
+        final List<Email> emails = httpCommandExecutor.execute(new GetEmailsCommand(offset, limit, folder, status));
+        return emails != null ? emails : Collections.<Email>emptyList();
     }
 
     @Override
@@ -62,7 +54,8 @@ public class MarketoRestClient implements MarketoClient {
 
     @Override
     public List<Email> getEmailsByName(final String name, final FolderId folder, Email.Status status) throws MarketoApiException {
-        return httpCommandExecutor.execute(new GetEmailsByName(name, folder, status));
+        final List<Email> emails = httpCommandExecutor.execute(new GetEmailsByName(name, folder, status));
+        return emails != null ? emails : Collections.<Email>emptyList();
     }
 
     @Override

@@ -45,13 +45,13 @@ public class SnippetIntegrationTest extends BaseIntegrationTest {
 
     @Test
     public void shouldLoadSnippetById() throws Exception {
-        Snippet Snippet = marketoClient.loadSnippetById(TEST_SNIPPET_ID);
+        Snippet snippet = marketoClient.loadSnippetById(TEST_SNIPPET_ID);
 
-        assertThat(Snippet).isNotNull();
-        assertThat(Snippet.getId()).isEqualTo(TEST_SNIPPET_ID);
-        assertThat(Snippet.getName()).isNotEmpty();
-        assertThat(Snippet.getUrl()).isNotEmpty();
-        assertThat(Snippet.getFolder()).isNotNull();
+        assertThat(snippet).isNotNull();
+        assertThat(snippet.getId()).isEqualTo(TEST_SNIPPET_ID);
+        assertThat(snippet.getName()).isNotEmpty();
+        assertThat(snippet.getUrl()).isNotEmpty();
+        assertThat(snippet.getFolder()).isNotNull();
     }
 
     @Test
