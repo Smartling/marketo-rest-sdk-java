@@ -1,5 +1,6 @@
 package com.smartling.marketo.sdk.rest.command;
 
+import com.google.common.collect.Lists;
 import com.smartling.marketo.sdk.EmailContentItem;
 import org.junit.Test;
 
@@ -55,5 +56,20 @@ public class UpdateEmailEditableSectionTest {
         Map<String, Object> parameters = new UpdateEmailEditableSection(42, contentItem).getParameters();
 
         assertThat(parameters).contains(entry("value", "<b>HTML</b> value"));
+    }
+
+    @Test
+    public void shouldTolerateNullValuesInContentItem(){
+        EmailContentItem contentItem = new EmailContentItem();
+        contentItem.setContentType("");
+        contentItem.setValue(Lists.newArrayList(new EmailContentItem.Value(), new EmailContentItem.Value()));
+        contentItem.getValue().get(0).setType("HTML");
+        contentItem.getValue().get(0).setValue(null);
+        contentItem.getValue().get(1).setType("Text");
+        contentItem.getValue().get(1).setValue(null);
+
+        Map<String, Object> parameters = new UpdateEmailEditableSection(42, contentItem).getParameters();
+        assertThat(parameters).contains(entry("value", null));
+        assertThat(parameters).contains(entry("textValue", null));
     }
 }
