@@ -1,10 +1,13 @@
 package com.smartling.marketo.sdk.rest.transport;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.smartling.marketo.sdk.EmailContentItem;
 import com.smartling.marketo.sdk.FolderId;
 import com.smartling.marketo.sdk.FolderType;
 import com.smartling.marketo.sdk.rest.Command;
 import com.smartling.marketo.sdk.MarketoApiException;
+import com.smartling.marketo.sdk.rest.command.LoadEmailContent;
+import net.minidev.json.JSONObject;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -21,8 +24,10 @@ import java.net.URLEncoder;
 
 import static java.time.LocalDateTime.now;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.fest.assertions.api.Assertions.assertThat;
@@ -75,6 +80,62 @@ public class HttpCommandExecutorTest extends BaseTransportTest {
 
         assertThat(response).isNotNull();
         assertThat(response.string).isEqualTo("test");
+    }
+
+    @Test
+    public void shouldReturnAllNeededDataInResponseForLoadEmailContentCommand() throws Exception {
+        LoadEmailContent command = new LoadEmailContent(42);
+
+        givenThat(get(path("/rest/asset/v1/email/42/content")).willReturn(
+                aJsonResponse(json())));
+
+        List<EmailContentItem> response = testedInstance.execute(command);
+
+        List<EmailContentItem.Value> value = response.get(0).getValue();
+
+        EmailContentItem.Value html = new EmailContentItem.Value();
+        html.setType("HTML");
+        html.setValue("<p>html");
+
+        EmailContentItem.Value text = new EmailContentItem.Value();
+        text.setType("Text");
+        text.setValue("text");
+
+        assertThat(response).isNotNull();
+        assertThat(response.get(0).getHtmlId()).isEqualTo("edit_content");
+        assertThat(value.size()).isEqualTo(2);
+
+        assertThat(value.get(0)).isEqualsToByComparingFields(html);
+        assertThat(value.get(1)).isEqualsToByComparingFields(text);
+    }
+
+    private String json()
+    {
+        List<JSONObject> value = Arrays.asList(
+                new JSONObject()
+                {{
+                        this.put("type", "HTML");
+                        this.put("value", "<p>html");
+                    }},
+                new JSONObject()
+                {{
+                        this.put("type", "Text");
+                        this.put("value", "text");
+                    }}
+        );
+
+        List<JSONObject> result = Arrays.asList(
+                new JSONObject()
+                {{
+                        this.put("htmlId", "edit_content");
+                        this.put("value", value);
+                    }}
+        );
+
+        JSONObject response = new JSONObject();
+        response.put("success", true);
+        response.put("result", result);
+        return response.toJSONString();
     }
 
     @Test
