@@ -109,6 +109,18 @@ public class HttpCommandExecutorTest extends BaseTransportTest {
         assertThat(value.get(1)).isEqualsToByComparingFields(text);
     }
 
+    @Test
+    public void shouldHaveTextValueAsNullIfNoDataInJson() throws Exception {
+        LoadEmailContent command = new LoadEmailContent(42);
+
+        givenThat(get(path("/rest/asset/v1/email/42/content")).willReturn(
+                aJsonResponse(jsonWithNoTextValue())));
+
+        List<EmailContentItem> response = testedInstance.execute(command);
+
+        assertThat(response.get(0).getValue().get(0).getValue()).isNull();
+    }
+
     private String json()
     {
         List<JSONObject> value = Arrays.asList(
@@ -128,6 +140,28 @@ public class HttpCommandExecutorTest extends BaseTransportTest {
                 new JSONObject()
                 {{
                         this.put("htmlId", "edit_content");
+                        this.put("value", value);
+                    }}
+        );
+
+        JSONObject response = new JSONObject();
+        response.put("success", true);
+        response.put("result", result);
+        return response.toJSONString();
+    }
+
+    private String jsonWithNoTextValue()
+    {
+        List<JSONObject> value = Arrays.asList(
+                new JSONObject()
+                {{
+                        this.put("type", "Text");
+                    }}
+        );
+
+        List<JSONObject> result = Arrays.asList(
+                new JSONObject()
+                {{
                         this.put("value", value);
                     }}
         );
