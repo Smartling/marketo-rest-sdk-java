@@ -121,6 +121,18 @@ public class HttpCommandExecutorTest extends BaseTransportTest {
         assertThat(response.get(0).getValue().get(0).getValue()).isNull();
     }
 
+    @Test
+    public void shouldHaveTextValueAsEmptyStringIfEmptyStringInJson() throws Exception {
+        LoadEmailContent command = new LoadEmailContent(42);
+
+        givenThat(get(path("/rest/asset/v1/email/42/content")).willReturn(
+                aJsonResponse(jsonWithEmptyTextValue())));
+
+        List<EmailContentItem> response = testedInstance.execute(command);
+
+        assertThat(response.get(0).getValue().get(0).getValue()).isEqualTo("");
+    }
+
     private String json()
     {
         List<JSONObject> value = Arrays.asList(
@@ -156,6 +168,29 @@ public class HttpCommandExecutorTest extends BaseTransportTest {
                 new JSONObject()
                 {{
                         this.put("type", "Text");
+                    }}
+        );
+
+        List<JSONObject> result = Arrays.asList(
+                new JSONObject()
+                {{
+                        this.put("value", value);
+                    }}
+        );
+
+        JSONObject response = new JSONObject();
+        response.put("success", true);
+        response.put("result", result);
+        return response.toJSONString();
+    }
+
+    private String jsonWithEmptyTextValue()
+    {
+        List<JSONObject> value = Arrays.asList(
+                new JSONObject()
+                {{
+                        this.put("type", "Text");
+                        this.put("value", "");
                     }}
         );
 
