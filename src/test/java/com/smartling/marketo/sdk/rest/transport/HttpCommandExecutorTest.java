@@ -93,13 +93,8 @@ public class HttpCommandExecutorTest extends BaseTransportTest {
 
         List<EmailContentItem.Value> value = response.get(0).getValue();
 
-        EmailContentItem.Value html = new EmailContentItem.Value();
-        html.setType("HTML");
-        html.setValue("<p>html");
-
-        EmailContentItem.Value text = new EmailContentItem.Value();
-        text.setType("Text");
-        text.setValue("text");
+        EmailContentItem.Value html = getContentItemValue("HTML", "<p>html");
+        EmailContentItem.Value text = getContentItemValue("Text", "text");
 
         assertThat(response).isNotNull();
         assertThat(response.get(0).getHtmlId()).isEqualTo("edit_content");
@@ -131,80 +126,6 @@ public class HttpCommandExecutorTest extends BaseTransportTest {
         List<EmailContentItem> response = testedInstance.execute(command);
 
         assertThat(response.get(0).getValue().get(0).getValue()).isEqualTo("");
-    }
-
-    private String json()
-    {
-        List<JSONObject> value = Arrays.asList(
-                new JSONObject()
-                {{
-                        this.put("type", "HTML");
-                        this.put("value", "<p>html");
-                    }},
-                new JSONObject()
-                {{
-                        this.put("type", "Text");
-                        this.put("value", "text");
-                    }}
-        );
-
-        List<JSONObject> result = Arrays.asList(
-                new JSONObject()
-                {{
-                        this.put("htmlId", "edit_content");
-                        this.put("value", value);
-                    }}
-        );
-
-        JSONObject response = new JSONObject();
-        response.put("success", true);
-        response.put("result", result);
-        return response.toJSONString();
-    }
-
-    private String jsonWithNoTextValue()
-    {
-        List<JSONObject> value = Arrays.asList(
-                new JSONObject()
-                {{
-                        this.put("type", "Text");
-                    }}
-        );
-
-        List<JSONObject> result = Arrays.asList(
-                new JSONObject()
-                {{
-                        this.put("value", value);
-                    }}
-        );
-
-        JSONObject response = new JSONObject();
-        response.put("success", true);
-        response.put("result", result);
-        return response.toJSONString();
-    }
-
-    private String jsonWithEmptyTextValue()
-    {
-        List<JSONObject> value = Arrays.asList(
-                new JSONObject()
-                {{
-                        this.put("type", "Text");
-                        this.put("value", "");
-                    }}
-        );
-
-        List<JSONObject> result = Arrays.asList(
-                new JSONObject()
-                {{
-                        this.put("value", value);
-                    }}
-        );
-
-        JSONObject response = new JSONObject();
-        response.put("success", true);
-        response.put("result", result);
-        return response.toJSONString();
     }
 
     @Test
@@ -371,6 +292,87 @@ public class HttpCommandExecutorTest extends BaseTransportTest {
         private String string;
         private Date date;
         private ElementType enumeration;
+    }
+
+    private String json()
+    {
+        List<JSONObject> value = Arrays.asList(
+                new JSONObject()
+                {{
+                        this.put("type", "HTML");
+                        this.put("value", "<p>html");
+                    }},
+                new JSONObject()
+                {{
+                        this.put("type", "Text");
+                        this.put("value", "text");
+                    }}
+        );
+
+        List<JSONObject> result = Arrays.asList(
+                new JSONObject()
+                {{
+                        this.put("htmlId", "edit_content");
+                        this.put("value", value);
+                    }}
+        );
+
+        JSONObject response = new JSONObject();
+        response.put("success", true);
+        response.put("result", result);
+        return response.toJSONString();
+    }
+
+    private String jsonWithNoTextValue()
+    {
+        List<JSONObject> value = Arrays.asList(
+                new JSONObject()
+                {{
+                        this.put("type", "Text");
+                    }}
+        );
+
+        List<JSONObject> result = Arrays.asList(
+                new JSONObject()
+                {{
+                        this.put("value", value);
+                    }}
+        );
+
+        JSONObject response = new JSONObject();
+        response.put("success", true);
+        response.put("result", result);
+        return response.toJSONString();
+    }
+
+    private String jsonWithEmptyTextValue()
+    {
+        List<JSONObject> value = Arrays.asList(
+                new JSONObject()
+                {{
+                        this.put("type", "Text");
+                        this.put("value", "");
+                    }}
+        );
+
+        List<JSONObject> result = Arrays.asList(
+                new JSONObject()
+                {{
+                        this.put("value", value);
+                    }}
+        );
+
+        JSONObject response = new JSONObject();
+        response.put("success", true);
+        response.put("result", result);
+        return response.toJSONString();
+    }
+
+    private EmailContentItem.Value getContentItemValue(String type, String value) {
+        EmailContentItem.Value item = new EmailContentItem.Value();
+        item.setType(type);
+        item.setValue(value);
+        return item;
     }
 
 }
