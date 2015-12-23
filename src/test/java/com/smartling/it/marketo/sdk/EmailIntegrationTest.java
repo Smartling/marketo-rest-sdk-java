@@ -84,6 +84,11 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
         assertThat(email.getFolder()).isNotNull();
     }
 
+    @Test(expected = MarketoApiException.class)
+    public void shouldThrowMarketoApiExceptionWhenCouldNotFindEmailById() throws Exception {
+        marketoClient.loadEmailById(100500);
+    }
+
     @Test
     public void shouldGetEmailsByName() throws Exception {
         List<Email> emails = marketoClient.getEmailsByName(TEST_EMAIL_NAME, null, null);

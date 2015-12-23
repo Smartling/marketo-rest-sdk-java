@@ -11,7 +11,9 @@ import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.Snippet;
 import com.smartling.marketo.sdk.rest.command.*;
 import com.smartling.marketo.sdk.rest.transport.HttpCommandExecutor;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -30,6 +32,10 @@ import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MarketoRestClientTest {
+
+    @Rule
+    public final ExpectedException thrown = ExpectedException.none();
+
     @Mock
     private HttpCommandExecutor executor;
 
@@ -89,6 +95,19 @@ public class MarketoRestClientTest {
         Email result = testedInstance.loadEmailById(42);
 
         assertThat(result).isEqualTo(email);
+    }
+
+    @Test
+    public void shouldThrowMarketoApiExceptionIfEmailNotFound() throws Exception
+    {
+        int nonExistingId = 42;
+
+        given(executor.execute(isA(LoadEmailById.class))).willReturn(null);
+
+        thrown.expect(MarketoApiException.class);
+        thrown.expectMessage("Email[id = 42] not found");
+
+        testedInstance.loadEmailById(nonExistingId);
     }
 
     @Test

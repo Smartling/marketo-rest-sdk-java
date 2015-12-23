@@ -49,7 +49,11 @@ public class MarketoRestClient implements MarketoClient {
     @Override
     public Email loadEmailById(int id) throws MarketoApiException {
         List<Email> execute = httpCommandExecutor.execute(new LoadEmailById(id));
-        return execute.get(0);
+        if (execute != null && !execute.isEmpty()) {
+            return execute.get(0);
+        } else {
+            throw new MarketoApiException(String.format("Email[id = %d] not found", id));
+        }
     }
 
     @Override
