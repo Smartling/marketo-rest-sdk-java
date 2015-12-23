@@ -10,7 +10,9 @@ import com.smartling.marketo.sdk.FolderType;
 import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.MarketoClient;
 import com.smartling.marketo.sdk.rest.MarketoRestClient;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,6 +28,9 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
     private static final FolderId TEST_FOLDER_ID = new FolderId(44, FolderType.FOLDER);
     private static final int TEST_PROGRAM_EMAIL_ID = 1596;
     private static final int TEST_PROGRAM_ID = 1008;
+
+    @Rule
+    public final ExpectedException thrown = ExpectedException.none();
 
     @Test
     public void shouldListEmails() throws Exception {
@@ -62,7 +67,7 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
 
     @Test(expected = AuthenticationErrorException.class)
     public void shouldThrowAuthenticationError() throws Exception {
-        MarketoClient invalid = MarketoRestClient.create(identityEndpoint, restEndpoint).withCredentials(clientId, "invalid");
+        MarketoClient invalid = MarketoRestClient.create(identityEndpoint, restEndpoint).withCredentials("notCachedClientId", "invalid");
         invalid.listEmails(0, 1);
     }
 
@@ -84,9 +89,13 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
         assertThat(email.getFolder()).isNotNull();
     }
 
-    @Test(expected = MarketoApiException.class)
+    @Test
     public void shouldThrowMarketoApiExceptionWhenCouldNotFindEmailById() throws Exception {
-        marketoClient.loadEmailById(100500);
+
+        thrown.expect(MarketoApiException.class);
+        thrown.expectMessage("Email[id = 42] not found");
+
+        marketoClient.loadEmailById(42);
     }
 
     @Test
