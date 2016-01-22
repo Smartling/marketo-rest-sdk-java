@@ -144,7 +144,7 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
         assertThat(contentItems).hasSize(2);
         assertThat(contentItems.get(0)).isInstanceOf(EmailTextContentItem.class);
         assertThat(contentItems.get(1)).isInstanceOf(EmailSnippetContentItem.class);
-        EmailSnippetContentItem snippetContentItem = (EmailSnippetContentItem)contentItems.get(0);
+        EmailSnippetContentItem snippetContentItem = (EmailSnippetContentItem)contentItems.get(1);
         assertThat(snippetContentItem.getHtmlId()).isEqualTo("sign");
         assertThat(snippetContentItem.getValue()).isEqualTo("2");
     }
