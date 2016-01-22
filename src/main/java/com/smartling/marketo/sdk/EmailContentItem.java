@@ -1,13 +1,16 @@
 package com.smartling.marketo.sdk;
 
-import com.google.common.collect.Lists;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
-import java.util.List;
+@JsonTypeInfo(use=JsonTypeInfo.Id.NAME, include=JsonTypeInfo.As.PROPERTY, property="contentType")
+@JsonSubTypes({
+        @JsonSubTypes.Type(name="Text", value=EmailTextContentItem.class),
+        @JsonSubTypes.Type(name="Snippet", value=EmailSnippetContentItem.class)})
 
-public class EmailContentItem {
+public abstract class EmailContentItem {
     private String htmlId;
-    private String contentType;
-    private List<Value> value = Lists.newArrayList();
+    private ContentType contentType;
 
     public String getHtmlId() {
         return htmlId;
@@ -17,40 +20,28 @@ public class EmailContentItem {
         this.htmlId = htmlId;
     }
 
-    public String getContentType() {
+    public ContentType getContentType() {
         return contentType;
     }
 
-    public void setContentType(String contentType) {
+    public void setContentType(ContentType contentType) {
         this.contentType = contentType;
     }
 
-    public List<Value> getValue() {
-        return value;
-    }
+    public enum ContentType {
+        TEXT("Text"),
+        SNIPPET("Snippet"),
+        DYNAMIC_CONTENT("DynamicContent");
 
-    public void setValue(List<Value> value) {
-        this.value = value;
-    }
+        private String name;
 
-    public static final class Value {
-        private String type;
-        private String value;
-
-        public String getType() {
-            return type;
+        ContentType(String name) {
+            this.name = name;
         }
 
-        public void setType(String type) {
-            this.type = type;
-        }
-
-        public String getValue() {
-            return value;
-        }
-
-        public void setValue(String value) {
-            this.value = value;
+        @Override
+        public String toString() {
+            return name;
         }
     }
 }

@@ -2,6 +2,8 @@ package com.smartling.marketo.sdk.rest.transport;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.smartling.marketo.sdk.EmailContentItem;
+import com.smartling.marketo.sdk.EmailSnippetContentItem;
+import com.smartling.marketo.sdk.EmailTextContentItem;
 import com.smartling.marketo.sdk.FolderId;
 import com.smartling.marketo.sdk.FolderType;
 import com.smartling.marketo.sdk.rest.Command;
@@ -41,6 +43,8 @@ import static org.mockito.Mockito.when;
 public class HttpCommandExecutorTest extends BaseTransportTest {
 
     private static final String FOLDER_ID_JSON = "{\"id\":42,\"type\":\"FOLDER\"}";
+    private static final Object CONTENT_TYPE_TEXT = "Text";
+    private static final Object CONTENT_TYPE_SNIPPET = "Snippet";
 
     @Rule
     public final WireMockRule wireMockRule = new WireMockRule(PORT);
@@ -91,10 +95,10 @@ public class HttpCommandExecutorTest extends BaseTransportTest {
 
         List<EmailContentItem> response = testedInstance.execute(command);
 
-        List<EmailContentItem.Value> value = response.get(0).getValue();
+        List<EmailTextContentItem.Value> value = ((EmailTextContentItem)response.get(0)).getValue();
 
-        EmailContentItem.Value html = getContentItemValue("HTML", "<p>html");
-        EmailContentItem.Value text = getContentItemValue("Text", "text");
+        EmailTextContentItem.Value html = getTextContentItemValue("HTML", "<p>html");
+        EmailTextContentItem.Value text = getTextContentItemValue("Text", "text");
 
         assertThat(response).isNotNull();
         assertThat(response.get(0).getHtmlId()).isEqualTo("edit_content");
@@ -113,7 +117,7 @@ public class HttpCommandExecutorTest extends BaseTransportTest {
 
         List<EmailContentItem> response = testedInstance.execute(command);
 
-        assertThat(response.get(0).getValue().get(0).getValue()).isNull();
+        assertThat(((EmailTextContentItem)response.get(0)).getValue().get(0).getValue()).isNull();
     }
 
     @Test
@@ -125,7 +129,20 @@ public class HttpCommandExecutorTest extends BaseTransportTest {
 
         List<EmailContentItem> response = testedInstance.execute(command);
 
-        assertThat(response.get(0).getValue().get(0).getValue()).isEqualTo("");
+        assertThat(((EmailTextContentItem)response.get(0)).getValue().get(0).getValue()).isEqualTo("");
+    }
+
+    @Test
+    public void shouldReadSnippetItemsFromJson() throws Exception {
+        LoadEmailContent command = new LoadEmailContent(42);
+
+        givenThat(get(path("/rest/asset/v1/email/42/content")).willReturn(
+                aJsonResponse(jsonWithSnippetItem())));
+
+        List<EmailContentItem> response = testedInstance.execute(command);
+
+        assertThat(response.get(0)).isInstanceOf(EmailSnippetContentItem.class);
+        assertThat(response.get(1)).isInstanceOf(EmailTextContentItem.class);
     }
 
     @Test
@@ -297,82 +314,94 @@ public class HttpCommandExecutorTest extends BaseTransportTest {
     private String json()
     {
         List<JSONObject> value = Arrays.asList(
-                new JSONObject()
-                {{
-                        this.put("type", "HTML");
-                        this.put("value", "<p>html");
-                    }},
-                new JSONObject()
-                {{
-                        this.put("type", "Text");
-                        this.put("value", "text");
-                    }}
+                jsonTextContentItemValue("HTML", "<p>html"),
+                jsonTextContentItemValue("Text", "text")
         );
 
         List<JSONObject> result = Arrays.asList(
-                new JSONObject()
-                {{
-                        this.put("htmlId", "edit_content");
-                        this.put("value", value);
-                    }}
+                jsonTextContentItem(value)
         );
 
-        JSONObject response = new JSONObject();
-        response.put("success", true);
-        response.put("result", result);
+        JSONObject response = jsonResponse(result);
         return response.toJSONString();
     }
 
     private String jsonWithNoTextValue()
     {
         List<JSONObject> value = Arrays.asList(
-                new JSONObject()
-                {{
-                        this.put("type", "Text");
-                    }}
+                jsonTextContentItemValue("Text", null)
         );
 
         List<JSONObject> result = Arrays.asList(
-                new JSONObject()
-                {{
-                        this.put("value", value);
-                    }}
+                jsonTextContentItem(value)
         );
 
-        JSONObject response = new JSONObject();
-        response.put("success", true);
-        response.put("result", result);
+        JSONObject response = jsonResponse(result);
         return response.toJSONString();
     }
 
     private String jsonWithEmptyTextValue()
     {
         List<JSONObject> value = Arrays.asList(
-                new JSONObject()
-                {{
-                        this.put("type", "Text");
-                        this.put("value", "");
-                    }}
+                jsonTextContentItemValue("Text", "")
         );
 
         List<JSONObject> result = Arrays.asList(
-                new JSONObject()
-                {{
-                        this.put("value", value);
-                    }}
+                jsonTextContentItem(value)
         );
 
-        JSONObject response = new JSONObject();
-        response.put("success", true);
-        response.put("result", result);
+        JSONObject response = jsonResponse(result);
         return response.toJSONString();
     }
 
-    private EmailContentItem.Value getContentItemValue(String type, String value) {
-        EmailContentItem.Value item = new EmailContentItem.Value();
+    private String jsonWithSnippetItem()
+    {
+        List<JSONObject> value = Arrays.asList(
+                jsonTextContentItemValue("HTML", "<p>html"),
+                jsonTextContentItemValue("Text", "text")
+        );
+
+        List<JSONObject> result = Arrays.asList(jsonSnippetContentItem(), jsonTextContentItem(value));
+
+        JSONObject response = jsonResponse(result);
+        return response.toJSONString();
+    }
+
+    private JSONObject jsonTextContentItem(List<JSONObject> value) {
+        return new JSONObject() {{
+            this.put("htmlId", "edit_content");
+            this.put("value", value);
+            this.put("contentType", CONTENT_TYPE_TEXT);
+        }};
+    }
+
+    private JSONObject jsonSnippetContentItem() {
+        return new JSONObject() {{
+            this.put("htmlId", "edit_content");
+            this.put("value", "Snippet text value");
+            this.put("contentType", CONTENT_TYPE_SNIPPET);
+        }};
+    }
+
+    private JSONObject jsonResponse(List<JSONObject> result) {
+        JSONObject response = new JSONObject();
+        response.put("success", true);
+        response.put("result", result);
+        return response;
+    }
+
+    private JSONObject jsonTextContentItemValue(String type, String value) {
+        return new JSONObject()
+        {{
+            this.put("type", type);
+            this.put("value", value);
+        }};
+    }
+
+    private EmailTextContentItem.Value getTextContentItemValue(String type, String value) {
+        EmailTextContentItem.Value item = new EmailTextContentItem.Value();
         item.setType(type);
         item.setValue(value);
         return item;
     }
-
 }

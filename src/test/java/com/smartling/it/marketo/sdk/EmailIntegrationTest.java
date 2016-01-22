@@ -4,6 +4,8 @@ import com.smartling.marketo.sdk.AuthenticationErrorException;
 import com.smartling.marketo.sdk.Email;
 import com.smartling.marketo.sdk.Asset.Status;
 import com.smartling.marketo.sdk.EmailContentItem;
+import com.smartling.marketo.sdk.EmailSnippetContentItem;
+import com.smartling.marketo.sdk.EmailTextContentItem;
 import com.smartling.marketo.sdk.FolderDetails;
 import com.smartling.marketo.sdk.FolderId;
 import com.smartling.marketo.sdk.FolderType;
@@ -24,6 +26,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
 
 public class EmailIntegrationTest extends BaseIntegrationTest {
     private static final int TEST_EMAIL_ID = 1109;
+    private static final int TEST_EMAIL_WITH_SNIPPET_ID = 2180;
     private static final String TEST_EMAIL_NAME = "Email For Integration Tests";
     private static final FolderId TEST_FOLDER_ID = new FolderId(44, FolderType.FOLDER);
     private static final int TEST_PROGRAM_EMAIL_ID = 1596;
@@ -124,12 +127,26 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
         List<EmailContentItem> contentItems = marketoClient.loadEmailContent(TEST_EMAIL_ID);
 
         assertThat(contentItems).hasSize(2);
-        assertThat(contentItems.get(0).getHtmlId()).isEqualTo("greeting");
-        assertThat(contentItems.get(0).getValue()).hasSize(2);
-        assertThat(contentItems.get(0).getValue().get(0).getType()).isEqualTo("HTML");
-        assertThat(contentItems.get(0).getValue().get(0).getValue()).isNotEmpty();
-        assertThat(contentItems.get(0).getValue().get(1).getType()).isEqualTo("Text");
-        assertThat(contentItems.get(0).getValue().get(1).getValue()).isNotEmpty();
+        assertThat(contentItems.get(0)).isInstanceOf(EmailTextContentItem.class);
+        EmailTextContentItem textContentItem = (EmailTextContentItem)contentItems.get(0);
+        assertThat(textContentItem.getHtmlId()).isEqualTo("greeting");
+        assertThat(textContentItem.getValue()).hasSize(2);
+        assertThat(textContentItem.getValue().get(0).getType()).isEqualTo("HTML");
+        assertThat(textContentItem.getValue().get(0).getValue()).isNotEmpty();
+        assertThat(textContentItem.getValue().get(1).getType()).isEqualTo("Text");
+        assertThat(textContentItem.getValue().get(1).getValue()).isNotEmpty();
+    }
+
+    @Test
+    public void shouldReadEmailContentWithSnippetItem() throws Exception {
+        List<EmailContentItem> contentItems = marketoClient.loadEmailContent(TEST_EMAIL_WITH_SNIPPET_ID);
+
+        assertThat(contentItems).hasSize(2);
+        assertThat(contentItems.get(0)).isInstanceOf(EmailTextContentItem.class);
+        assertThat(contentItems.get(1)).isInstanceOf(EmailSnippetContentItem.class);
+        EmailSnippetContentItem snippetContentItem = (EmailSnippetContentItem)contentItems.get(0);
+        assertThat(snippetContentItem.getHtmlId()).isEqualTo("sign");
+        assertThat(snippetContentItem.getValue()).isEqualTo("2");
     }
 
     @Test
@@ -170,10 +187,10 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
 
     @Test
     public void shouldUpdateEmailContent() throws Exception {
-        EmailContentItem newItem = new EmailContentItem();
+        EmailTextContentItem newItem = new EmailTextContentItem();
         newItem.setHtmlId("greeting");
-        newItem.setContentType("Text");
-        newItem.setValue(Arrays.asList(new EmailContentItem.Value(), new EmailContentItem.Value()));
+        newItem.setContentType(EmailContentItem.ContentType.TEXT);
+        newItem.setValue(Arrays.asList(new EmailTextContentItem.Value(), new EmailTextContentItem.Value()));
         newItem.getValue().get(0).setType("HTML");
         newItem.getValue().get(0).setValue("<strong>" + UUID.randomUUID() + "<strong>");
         newItem.getValue().get(1).setType("Text");

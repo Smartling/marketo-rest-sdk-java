@@ -1,6 +1,7 @@
 package com.smartling.marketo.sdk.rest;
 
 import com.smartling.marketo.sdk.Asset;
+import com.smartling.marketo.sdk.EmailTextContentItem;
 import com.smartling.marketo.sdk.SnippetContentItem;
 import com.smartling.marketo.sdk.Email;
 import com.smartling.marketo.sdk.EmailContentItem;
@@ -122,7 +123,7 @@ public class MarketoRestClientTest {
 
     @Test
     public void shouldLoadEmailContent() throws Exception {
-        EmailContentItem contentItem = new EmailContentItem();
+        EmailContentItem contentItem = new EmailTextContentItem();
         given(executor.execute(isA(LoadEmailContent.class))).willReturn(Collections.singletonList(contentItem));
 
         List<EmailContentItem> result = testedInstance.loadEmailContent(42);
@@ -152,7 +153,7 @@ public class MarketoRestClientTest {
 
     @Test
     public void shouldUpdateEmailContent() throws Exception {
-        testedInstance.updateEmailContent(42, Arrays.asList(new EmailContentItem(), new EmailContentItem()));
+        testedInstance.updateEmailContent(42, Arrays.asList(new EmailTextContentItem(), new EmailTextContentItem()));
 
         verify(executor, times(2)).execute(isA(UpdateEmailEditableSection.class));
     }

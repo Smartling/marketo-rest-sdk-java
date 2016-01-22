@@ -1,6 +1,7 @@
 package com.smartling.marketo.sdk.rest.command;
 
 import com.smartling.marketo.sdk.EmailContentItem;
+import com.smartling.marketo.sdk.EmailTextContentItem;
 import com.smartling.marketo.sdk.rest.Command;
 
 import java.lang.reflect.Type;
@@ -38,7 +39,7 @@ public class UpdateEmailEditableSection implements Command<Void> {
 
         map.put("type", contentItem.getContentType());
 
-        for (EmailContentItem.Value value : contentItem.getValue()) {
+        for (EmailTextContentItem.Value value : ((EmailTextContentItem)contentItem).getValue()) {
             if (value.getType().equals("HTML")) {
                 map.put("value", value.getValue());
             } else if (value.getType().equals("Text")) {
