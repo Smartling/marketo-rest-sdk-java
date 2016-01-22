@@ -1,6 +1,5 @@
 package com.smartling.marketo.sdk.rest.command;
 
-import com.smartling.marketo.sdk.EmailContentItem;
 import com.smartling.marketo.sdk.EmailTextContentItem;
 import com.smartling.marketo.sdk.rest.Command;
 
@@ -11,9 +10,9 @@ import java.util.Map;
 
 public class UpdateEmailEditableSection implements Command<Void> {
     private final int emailId;
-    private final EmailContentItem contentItem;
+    private final EmailTextContentItem contentItem;
 
-    public UpdateEmailEditableSection(int emailId, EmailContentItem contentItem) {
+    public UpdateEmailEditableSection(int emailId, EmailTextContentItem contentItem) {
         this.emailId = emailId;
         this.contentItem = contentItem;
     }
@@ -39,14 +38,13 @@ public class UpdateEmailEditableSection implements Command<Void> {
 
         map.put("type", contentItem.getContentType());
 
-        for (EmailTextContentItem.Value value : ((EmailTextContentItem)contentItem).getValue()) {
+        for (EmailTextContentItem.Value value : contentItem.getValue()) {
             if (value.getType().equals("HTML")) {
                 map.put("value", value.getValue());
             } else if (value.getType().equals("Text")) {
                 map.put("textValue", value.getValue());
             }
         }
-
 
         return map;
     }

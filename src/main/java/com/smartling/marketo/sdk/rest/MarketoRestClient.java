@@ -2,6 +2,7 @@ package com.smartling.marketo.sdk.rest;
 
 import com.google.common.base.Preconditions;
 import com.smartling.marketo.sdk.Asset;
+import com.smartling.marketo.sdk.EmailTextContentItem;
 import com.smartling.marketo.sdk.SnippetContentItem;
 import com.smartling.marketo.sdk.Email;
 import com.smartling.marketo.sdk.EmailContentItem;
@@ -79,8 +80,8 @@ public class MarketoRestClient implements MarketoClient {
     }
 
     @Override
-    public void updateEmailContent(int id, List<EmailContentItem> contentItems) throws MarketoApiException {
-        for (EmailContentItem contentItem : contentItems) {
+    public void updateEmailContent(int id, List<EmailTextContentItem> contentItems) throws MarketoApiException {
+        for (EmailTextContentItem contentItem : contentItems) {
             httpCommandExecutor.execute(new UpdateEmailEditableSection(id, contentItem));
         }
     }

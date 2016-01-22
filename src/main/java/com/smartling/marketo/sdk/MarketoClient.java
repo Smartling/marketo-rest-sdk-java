@@ -17,7 +17,7 @@ public interface MarketoClient {
 
     Email cloneEmail(Email existingEmail, String newEmailName) throws MarketoApiException;
 
-    void updateEmailContent(int id, List<EmailContentItem> contentItems) throws MarketoApiException;
+    void updateEmailContent(int id, List<EmailTextContentItem> contentItems) throws MarketoApiException;
 
     void updateEmail(Email email) throws MarketoApiException;
 

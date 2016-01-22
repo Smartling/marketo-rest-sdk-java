@@ -4,6 +4,7 @@ import com.smartling.marketo.sdk.AuthenticationErrorException;
 import com.smartling.marketo.sdk.Email;
 import com.smartling.marketo.sdk.Asset.Status;
 import com.smartling.marketo.sdk.EmailContentItem;
+import com.smartling.marketo.sdk.EmailDynamicContentItem;
 import com.smartling.marketo.sdk.EmailSnippetContentItem;
 import com.smartling.marketo.sdk.EmailTextContentItem;
 import com.smartling.marketo.sdk.FolderDetails;
@@ -27,6 +28,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
 public class EmailIntegrationTest extends BaseIntegrationTest {
     private static final int TEST_EMAIL_ID = 1109;
     private static final int TEST_EMAIL_WITH_SNIPPET_ID = 2180;
+    private static final int TEST_EMAIL_WITH_DYNAMIC_CONTENT_ID = 2193;
     private static final String TEST_EMAIL_NAME = "Email For Integration Tests";
     private static final FolderId TEST_FOLDER_ID = new FolderId(44, FolderType.FOLDER);
     private static final int TEST_PROGRAM_EMAIL_ID = 1596;
@@ -150,6 +152,18 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    public void shouldReadEmailContentWithDynamicContentItem() throws Exception {
+        List<EmailContentItem> contentItems = marketoClient.loadEmailContent(TEST_EMAIL_WITH_DYNAMIC_CONTENT_ID);
+
+        assertThat(contentItems).hasSize(2);
+        assertThat(contentItems.get(0)).isInstanceOf(EmailTextContentItem.class);
+        assertThat(contentItems.get(1)).isInstanceOf(EmailDynamicContentItem.class);
+        EmailDynamicContentItem dynamicContentItem = (EmailDynamicContentItem)contentItems.get(1);
+        assertThat(dynamicContentItem.getHtmlId()).isEqualTo("sign");
+        assertThat(dynamicContentItem.getValue()).isEqualTo("RVMtc2lnbg==");
+    }
+
+    @Test
     public void shouldCloneEmail() throws Exception {
         String newEmailName = "integration-test-clone-" + UUID.randomUUID().toString();
 
@@ -189,7 +203,7 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
     public void shouldUpdateEmailContent() throws Exception {
         EmailTextContentItem newItem = new EmailTextContentItem();
         newItem.setHtmlId("greeting");
-        newItem.setContentType(EmailContentItem.ContentType.TEXT);
+        newItem.setContentType("Text");
         newItem.setValue(Arrays.asList(new EmailTextContentItem.Value(), new EmailTextContentItem.Value()));
         newItem.getValue().get(0).setType("HTML");
         newItem.getValue().get(0).setValue("<strong>" + UUID.randomUUID() + "<strong>");

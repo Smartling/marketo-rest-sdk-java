@@ -1,7 +1,6 @@
 package com.smartling.marketo.sdk.rest.command;
 
 import com.google.common.collect.Lists;
-import com.smartling.marketo.sdk.EmailContentItem;
 import com.smartling.marketo.sdk.EmailTextContentItem;
 import org.junit.Test;
 
@@ -15,7 +14,7 @@ import static org.fest.assertions.api.Assertions.entry;
 public class UpdateEmailEditableSectionTest {
     @Test
     public void shouldBuildRequestPath() throws Exception {
-        EmailContentItem contentItem = new EmailTextContentItem();
+        EmailTextContentItem contentItem = new EmailTextContentItem();
         contentItem.setHtmlId("test");
 
         String path = new UpdateEmailEditableSection(42, contentItem).getPath();
@@ -25,18 +24,18 @@ public class UpdateEmailEditableSectionTest {
 
     @Test
     public void shouldAddContentTypeParameter() throws Exception {
-        EmailContentItem contentItem = new EmailTextContentItem();
-        contentItem.setContentType(EmailContentItem.ContentType.TEXT);
+        EmailTextContentItem contentItem = new EmailTextContentItem();
+        contentItem.setContentType("Text");
 
         Map<String, Object> parameters = new UpdateEmailEditableSection(42, contentItem).getParameters();
 
-        assertThat(parameters).contains(entry("type", EmailContentItem.ContentType.TEXT));
+        assertThat(parameters).contains(entry("type", "Text"));
     }
 
     @Test
     public void shouldAddTextContentToParameters() throws Exception {
         EmailTextContentItem contentItem = new EmailTextContentItem();
-        contentItem.setContentType(EmailContentItem.ContentType.TEXT);
+        contentItem.setContentType("Text");
         contentItem.setValue(Collections.singletonList(new EmailTextContentItem.Value()));
         contentItem.getValue().get(0).setType("Text");
         contentItem.getValue().get(0).setValue("text value");
@@ -49,7 +48,7 @@ public class UpdateEmailEditableSectionTest {
     @Test
     public void shouldAddHtmlContentToParameters() throws Exception {
         EmailTextContentItem contentItem = new EmailTextContentItem();
-        contentItem.setContentType(EmailContentItem.ContentType.TEXT);
+        contentItem.setContentType("Text");
         contentItem.setValue(Collections.singletonList(new EmailTextContentItem.Value()));
         contentItem.getValue().get(0).setType("HTML");
         contentItem.getValue().get(0).setValue("<b>HTML</b> value");
@@ -62,7 +61,7 @@ public class UpdateEmailEditableSectionTest {
     @Test
     public void shouldTolerateNullValuesInContentItem(){
         EmailTextContentItem contentItem = new EmailTextContentItem();
-        contentItem.setContentType(EmailContentItem.ContentType.TEXT);
+        contentItem.setContentType("Text");
         contentItem.setValue(Lists.newArrayList(new EmailTextContentItem.Value(), new EmailTextContentItem.Value()));
         contentItem.getValue().get(0).setType("HTML");
         contentItem.getValue().get(0).setValue(null);
