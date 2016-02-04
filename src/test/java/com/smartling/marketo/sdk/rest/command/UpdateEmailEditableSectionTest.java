@@ -59,7 +59,7 @@ public class UpdateEmailEditableSectionTest {
     }
 
     @Test
-    public void shouldTolerateNullValuesInContentItem(){
+    public void shouldSkipNullValuesInContentItem(){
         EmailTextContentItem contentItem = new EmailTextContentItem();
         contentItem.setContentType("Text");
         contentItem.setValue(Lists.newArrayList(new EmailTextContentItem.Value(), new EmailTextContentItem.Value()));
@@ -69,7 +69,7 @@ public class UpdateEmailEditableSectionTest {
         contentItem.getValue().get(1).setValue(null);
 
         Map<String, Object> parameters = new UpdateEmailEditableSection(42, contentItem).getParameters();
-        assertThat(parameters).contains(entry("value", null));
-        assertThat(parameters).contains(entry("textValue", null));
+        assertThat(parameters).doesNotContain(entry("value", null));
+        assertThat(parameters).doesNotContain(entry("textValue", null));
     }
 }

@@ -1,12 +1,11 @@
 package com.smartling.marketo.sdk.rest.command;
 
+import com.google.common.collect.ImmutableMap;
 import com.smartling.marketo.sdk.EmailTextContentItem;
 import com.smartling.marketo.sdk.rest.Command;
 
 import java.lang.reflect.Type;
-import java.util.HashMap;
 import java.util.Map;
-
 
 public class UpdateEmailEditableSection implements Command<Void> {
     private final int emailId;
@@ -34,18 +33,18 @@ public class UpdateEmailEditableSection implements Command<Void> {
 
     @Override
     public Map<String, Object> getParameters() {
-        Map<String, Object> map = new HashMap<>();
+        ImmutableMap.Builder<String, Object> builder = ImmutableMap.<String, Object>builder();
 
-        map.put("type", contentItem.getContentType());
+        builder.put("type", contentItem.getContentType());
 
-        for (EmailTextContentItem.Value value : contentItem.getValue()) {
+        contentItem.getValue().stream().filter(value -> value.getValue() != null).forEach(value -> {
             if (value.getType().equals("HTML")) {
-                map.put("value", value.getValue());
+                builder.put("value", value.getValue());
             } else if (value.getType().equals("Text")) {
-                map.put("textValue", value.getValue());
+                builder.put("textValue", value.getValue());
             }
-        }
+        });
 
-        return map;
+        return builder.build();
     }
 }

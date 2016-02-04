@@ -216,6 +216,38 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    public void shouldUpdateNullableValueEmailContent() throws Exception {
+        EmailTextContentItem newItem = new EmailTextContentItem();
+        newItem.setHtmlId("greeting");
+        newItem.setContentType("Text");
+        newItem.setValue(Arrays.asList(new EmailTextContentItem.Value(), new EmailTextContentItem.Value()));
+        newItem.getValue().get(0).setType("HTML");
+        newItem.getValue().get(0).setValue(null);
+        newItem.getValue().get(1).setType("Text");
+        newItem.getValue().get(1).setValue(null);
+
+        marketoClient.updateEmailContent(TEST_EMAIL_ID, Collections.singletonList(newItem));
+
+        // Can not verify - no way to fetch not approved content
+    }
+
+    @Test
+    public void shouldUpdateHtmlOnlyValueEmailContent() throws Exception {
+        EmailTextContentItem newItem = new EmailTextContentItem();
+        newItem.setHtmlId("greeting");
+        newItem.setContentType("Text");
+        newItem.setValue(Arrays.asList(new EmailTextContentItem.Value(), new EmailTextContentItem.Value()));
+        newItem.getValue().get(0).setType("HTML");
+        newItem.getValue().get(0).setValue("<strong>" + UUID.randomUUID() + "<strong>");
+        newItem.getValue().get(1).setType("Text");
+        newItem.getValue().get(1).setValue(null);
+
+        marketoClient.updateEmailContent(TEST_EMAIL_ID, Collections.singletonList(newItem));
+
+        // Can not verify - no way to fetch not approved content
+    }
+
+    @Test
     public void shouldUpdateEmailSubject() throws Exception {
 
         Email email = new Email();
