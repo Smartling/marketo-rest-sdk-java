@@ -19,6 +19,8 @@ public interface MarketoClient {
 
     void updateEmailContent(int id, List<EmailTextContentItem> contentItems) throws MarketoApiException;
 
+    void updateEmailContentItem(int id, EmailTextContentItem contentItem) throws MarketoApiException;
+
     void updateEmail(Email email) throws MarketoApiException;
 
     List<FolderDetails> getFolders(FolderId root, int offset, int maxDepth, int limit, String workspace) throws MarketoApiException;

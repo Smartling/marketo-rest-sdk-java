@@ -64,7 +64,9 @@ public class HttpCommandExecutor {
             return marketoResponse.getResult();
         } else {
             MarketoResponse.Error firstError = marketoResponse.getErrors().get(0);
-            throw new MarketoApiException(firstError.getCode(), firstError.getMessage());
+            throw new MarketoApiException(firstError.getCode(),
+                    String.format("%s (%s:%s, parameters=%s)", firstError.getMessage(), command.getMethod(), command.getPath(),
+                            command.getParameters()));
         }
     }
 

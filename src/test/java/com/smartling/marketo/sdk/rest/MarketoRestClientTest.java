@@ -159,6 +159,13 @@ public class MarketoRestClientTest {
     }
 
     @Test
+    public void shouldUpdateEmailContentItem() throws Exception {
+        testedInstance.updateEmailContentItem(42, new EmailTextContentItem());
+
+        verify(executor).execute(isA(UpdateEmailEditableSection.class));
+    }
+
+    @Test
     public void shouldReturnFolder() throws Exception {
         FolderDetails folder = new FolderDetails();
         given(executor.execute(isA(GetFoldersCommand.class))).willReturn(Collections.singletonList(folder));
