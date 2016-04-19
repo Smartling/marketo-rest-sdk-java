@@ -11,7 +11,7 @@ import java.util.Map;
 public abstract class BaseMarketoCommand<T> implements Command<List<T>> {
     private final Class<T> type;
 
-    BaseMarketoCommand(Class<T> type) {
+    protected BaseMarketoCommand(Class<T> type) {
         this.type = type;
     }
 

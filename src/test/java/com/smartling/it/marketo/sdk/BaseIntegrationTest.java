@@ -1,9 +1,9 @@
 package com.smartling.it.marketo.sdk;
 
-import com.smartling.marketo.sdk.Asset;
-import com.smartling.marketo.sdk.FolderId;
-import com.smartling.marketo.sdk.MarketoClient;
-import com.smartling.marketo.sdk.rest.MarketoRestClient;
+import com.smartling.marketo.sdk.domain.Asset;
+import com.smartling.marketo.sdk.domain.folder.FolderId;
+import com.smartling.marketo.sdk.MarketoClientManager;
+import com.smartling.marketo.sdk.rest.MarketoRestClientManager;
 import org.fest.assertions.core.Condition;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -17,7 +17,7 @@ public abstract class BaseIntegrationTest {
     protected static String clientId;
     protected static String clientSecret;
     protected static String nonRoutableHostUrl;
-    protected MarketoClient marketoClient;
+    protected MarketoClientManager marketoClientManager;
 
     @BeforeClass
     public static void checkPreconditions() {
@@ -35,8 +35,8 @@ public abstract class BaseIntegrationTest {
     }
 
     @Before
-    public void setUp() throws Exception {
-        marketoClient = MarketoRestClient.create(identityEndpoint, restEndpoint).withCredentials(clientId, clientSecret);
+    public void setUpBase() throws Exception {
+        marketoClientManager = MarketoRestClientManager.create(identityEndpoint, restEndpoint).withCredentials(clientId, clientSecret);
     }
 
     protected class AssetWithName extends Condition<Asset> {

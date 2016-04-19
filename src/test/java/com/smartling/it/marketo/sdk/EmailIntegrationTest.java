@@ -1,25 +1,22 @@
 package com.smartling.it.marketo.sdk;
 
-import com.smartling.marketo.sdk.AuthenticationErrorException;
-import com.smartling.marketo.sdk.Email;
-import com.smartling.marketo.sdk.Asset.Status;
-import com.smartling.marketo.sdk.EmailContentItem;
-import com.smartling.marketo.sdk.EmailDynamicContentItem;
-import com.smartling.marketo.sdk.EmailSnippetContentItem;
-import com.smartling.marketo.sdk.EmailTextContentItem;
-import com.smartling.marketo.sdk.FolderDetails;
-import com.smartling.marketo.sdk.FolderId;
-import com.smartling.marketo.sdk.FolderType;
+import com.smartling.marketo.sdk.domain.email.Email;
+import com.smartling.marketo.sdk.domain.Asset.Status;
+import com.smartling.marketo.sdk.domain.email.EmailContentItem;
+import com.smartling.marketo.sdk.domain.email.EmailDynamicContentItem;
+import com.smartling.marketo.sdk.domain.email.EmailSnippetContentItem;
+import com.smartling.marketo.sdk.domain.email.EmailTextContentItem;
+import com.smartling.marketo.sdk.domain.folder.FolderId;
+import com.smartling.marketo.sdk.domain.folder.FolderType;
 import com.smartling.marketo.sdk.MarketoApiException;
-import com.smartling.marketo.sdk.MarketoClient;
-import com.smartling.marketo.sdk.rest.MarketoRestClient;
+import com.smartling.marketo.sdk.MarketoEmailClient;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -36,10 +33,16 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
 
     @Rule
     public final ExpectedException thrown = ExpectedException.none();
+    private MarketoEmailClient marketoEmailClient;
+
+    @Before
+    public void setUp() {
+        marketoEmailClient = marketoClientManager.getMarketoEmailClient();
+    }
 
     @Test
     public void shouldListEmails() throws Exception {
-        List<Email> emails = marketoClient.listEmails(0, 1);
+        List<Email> emails = marketoEmailClient.listEmails(0, 1);
 
         assertThat(emails).hasSize(1);
         assertThat(emails.get(0).getId()).isPositive();
@@ -52,7 +55,7 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
 
     @Test
     public void shouldListEmailsWithFilter() throws Exception {
-        List<Email> emails = marketoClient.listEmails(0, 1, TEST_FOLDER_ID, Status.APPROVED);
+        List<Email> emails = marketoEmailClient.listEmails(0, 1, TEST_FOLDER_ID, Status.APPROVED);
 
         assertThat(emails).hasSize(1);
         assertThat(emails.get(0).getId()).isPositive();
@@ -65,25 +68,19 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
 
     @Test
     public void shouldReturnEmptyListWhenEndReached() throws Exception {
-        List<Email> emails = marketoClient.listEmails(10000, 1);
+        List<Email> emails = marketoEmailClient.listEmails(10000, 1);
 
         assertThat(emails).isEmpty();
     }
 
-    @Test(expected = AuthenticationErrorException.class)
-    public void shouldThrowAuthenticationError() throws Exception {
-        MarketoClient invalid = MarketoRestClient.create(identityEndpoint, restEndpoint).withCredentials("notCachedClientId", "invalid");
-        invalid.listEmails(0, 1);
-    }
-
     @Test(expected = MarketoApiException.class)
     public void shouldThrowLogicException() throws Exception {
-        marketoClient.listEmails(-5, 5);
+        marketoEmailClient.listEmails(-5, 5);
     }
 
     @Test
     public void shouldLoadEmailById() throws Exception {
-        Email email = marketoClient.loadEmailById(TEST_EMAIL_ID);
+        Email email = marketoEmailClient.loadEmailById(TEST_EMAIL_ID);
 
         assertThat(email).isNotNull();
         assertThat(email.getId()).isEqualTo(TEST_EMAIL_ID);
@@ -100,33 +97,33 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
         thrown.expect(MarketoApiException.class);
         thrown.expectMessage("Email[id = 42] not found");
 
-        marketoClient.loadEmailById(42);
+        marketoEmailClient.loadEmailById(42);
     }
 
     @Test
     public void shouldGetEmailsByName() throws Exception {
-        List<Email> emails = marketoClient.getEmailsByName(TEST_EMAIL_NAME, null, null);
+        List<Email> emails = marketoEmailClient.getEmailsByName(TEST_EMAIL_NAME, null, null);
 
         assertThat(emails).haveAtLeast(1, new AssetWithName(TEST_EMAIL_NAME));
     }
 
     @Test
     public void shouldGetEmailsByNameWithFolder() throws Exception {
-        List<Email> emails = marketoClient.getEmailsByName(TEST_EMAIL_NAME, TEST_FOLDER_ID, null);
+        List<Email> emails = marketoEmailClient.getEmailsByName(TEST_EMAIL_NAME, TEST_FOLDER_ID, null);
 
         assertThat(emails).haveAtLeast(1, new AssetWithNameAndFolderId(TEST_EMAIL_NAME, TEST_FOLDER_ID));
     }
 
     @Test
     public void shouldGetEmailsByNameWithStatus() throws Exception {
-        List<Email> emails = marketoClient.getEmailsByName(TEST_EMAIL_NAME, null, Status.APPROVED);
+        List<Email> emails = marketoEmailClient.getEmailsByName(TEST_EMAIL_NAME, null, Status.APPROVED);
 
         assertThat(emails).haveAtLeast(1, new AssetWithNameAndStatus(TEST_EMAIL_NAME, Status.APPROVED));
     }
 
     @Test
     public void shouldReadEmailContent() throws Exception {
-        List<EmailContentItem> contentItems = marketoClient.loadEmailContent(TEST_EMAIL_ID);
+        List<EmailContentItem> contentItems = marketoEmailClient.loadEmailContent(TEST_EMAIL_ID);
 
         assertThat(contentItems).hasSize(2);
         assertThat(contentItems.get(0)).isInstanceOf(EmailTextContentItem.class);
@@ -141,7 +138,7 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
 
     @Test
     public void shouldReadEmailContentWithSnippetItem() throws Exception {
-        List<EmailContentItem> contentItems = marketoClient.loadEmailContent(TEST_EMAIL_WITH_SNIPPET_ID);
+        List<EmailContentItem> contentItems = marketoEmailClient.loadEmailContent(TEST_EMAIL_WITH_SNIPPET_ID);
 
         assertThat(contentItems).hasSize(2);
         assertThat(contentItems.get(0)).isInstanceOf(EmailTextContentItem.class);
@@ -153,7 +150,7 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
 
     @Test
     public void shouldReadEmailContentWithDynamicContentItem() throws Exception {
-        List<EmailContentItem> contentItems = marketoClient.loadEmailContent(TEST_EMAIL_WITH_DYNAMIC_CONTENT_ID);
+        List<EmailContentItem> contentItems = marketoEmailClient.loadEmailContent(TEST_EMAIL_WITH_DYNAMIC_CONTENT_ID);
 
         assertThat(contentItems).hasSize(2);
         assertThat(contentItems.get(0)).isInstanceOf(EmailTextContentItem.class);
@@ -167,7 +164,7 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
     public void shouldCloneEmail() throws Exception {
         String newEmailName = "integration-test-clone-" + UUID.randomUUID().toString();
 
-        Email clone = marketoClient.cloneEmail(TEST_EMAIL_ID, newEmailName, TEST_FOLDER_ID);
+        Email clone = marketoEmailClient.cloneEmail(TEST_EMAIL_ID, newEmailName, TEST_FOLDER_ID);
 
         assertThat(clone).isNotNull();
         assertThat(clone.getId()).isPositive();
@@ -179,7 +176,7 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
     public void shouldCloneEmailInProgram() throws Exception {
         String newEmailName = "integration-test-clone-" + UUID.randomUUID().toString();
 
-        Email clone = marketoClient.cloneEmail(TEST_PROGRAM_EMAIL_ID, newEmailName, new FolderId(TEST_PROGRAM_ID, FolderType.PROGRAM));
+        Email clone = marketoEmailClient.cloneEmail(TEST_PROGRAM_EMAIL_ID, newEmailName, new FolderId(TEST_PROGRAM_ID, FolderType.PROGRAM));
 
         assertThat(clone).isNotNull();
         assertThat(clone.getId()).isPositive();
@@ -189,9 +186,9 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
     @Test
     public void shouldCloneEmailViaShorthandMethod() throws Exception {
         String newEmailName = "integration-test-clone-" + UUID.randomUUID().toString();
-        Email existingEmail = marketoClient.loadEmailById(TEST_EMAIL_ID);
+        Email existingEmail = marketoEmailClient.loadEmailById(TEST_EMAIL_ID);
 
-        Email clone = marketoClient.cloneEmail(existingEmail, newEmailName);
+        Email clone = marketoEmailClient.cloneEmail(existingEmail, newEmailName);
 
         assertThat(clone).isNotNull();
         assertThat(clone.getId()).isPositive();
@@ -210,7 +207,7 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
         newItem.getValue().get(1).setType("Text");
         newItem.getValue().get(1).setValue(UUID.randomUUID().toString());
 
-        marketoClient.updateEmailContent(TEST_EMAIL_ID, Collections.singletonList(newItem));
+        marketoEmailClient.updateEmailContent(TEST_EMAIL_ID, Collections.singletonList(newItem));
 
         // Can not verify - no way to fetch not approved content
     }
@@ -226,7 +223,7 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
         newItem.getValue().get(1).setType("Text");
         newItem.getValue().get(1).setValue(null);
 
-        marketoClient.updateEmailContent(TEST_EMAIL_ID, Collections.singletonList(newItem));
+        marketoEmailClient.updateEmailContent(TEST_EMAIL_ID, Collections.singletonList(newItem));
 
         // Can not verify - no way to fetch not approved content
     }
@@ -242,7 +239,7 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
         newItem.getValue().get(1).setType("Text");
         newItem.getValue().get(1).setValue(null);
 
-        marketoClient.updateEmailContent(TEST_EMAIL_ID, Collections.singletonList(newItem));
+        marketoEmailClient.updateEmailContent(TEST_EMAIL_ID, Collections.singletonList(newItem));
 
         // Can not verify - no way to fetch not approved content
     }
@@ -255,27 +252,8 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
         email.setSubject("Subject from integration test");
         email.setFromName("From SDK committer");
 
-        marketoClient.updateEmail(email);
+        marketoEmailClient.updateEmail(email);
 
         // Can not verify - no way to fetch not approved content
     }
-
-    @Test
-    public void shouldGetFolders() throws Exception {
-        List<FolderDetails> folders = marketoClient.getFolders(new FolderId(1, FolderType.FOLDER), 0, 1, 1, null);
-
-        assertThat(folders).hasSize(1);
-        assertThat(folders.get(0).getId()).isPositive();
-        assertThat(folders.get(0).getName()).isNotEmpty();
-        assertThat(folders.get(0).getDescription()).isNotEmpty();
-        assertThat(folders.get(0).getCreatedAt()).isBefore(new Date());
-        assertThat(folders.get(0).getUpdatedAt()).isBefore(new Date());
-        assertThat(folders.get(0).getFolderId()).isNotNull();
-        assertThat(folders.get(0).getPath()).isNotEmpty();
-        assertThat(folders.get(0).getFolderId()).isNotNull();
-        assertThat(folders.get(0).getFolderType()).isNotEmpty();
-        assertThat(folders.get(0).getParent()).isNull();
-        assertThat(folders.get(0).getWorkspace()).isNotEmpty();
-    }
-
 }

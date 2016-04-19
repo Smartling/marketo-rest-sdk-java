@@ -1,14 +1,14 @@
 package com.smartling.marketo.sdk.rest.transport;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import com.smartling.marketo.sdk.EmailContentItem;
-import com.smartling.marketo.sdk.EmailSnippetContentItem;
-import com.smartling.marketo.sdk.EmailTextContentItem;
-import com.smartling.marketo.sdk.FolderId;
-import com.smartling.marketo.sdk.FolderType;
+import com.smartling.marketo.sdk.domain.email.EmailContentItem;
+import com.smartling.marketo.sdk.domain.email.EmailSnippetContentItem;
+import com.smartling.marketo.sdk.domain.email.EmailTextContentItem;
+import com.smartling.marketo.sdk.domain.folder.FolderId;
+import com.smartling.marketo.sdk.domain.folder.FolderType;
 import com.smartling.marketo.sdk.rest.Command;
 import com.smartling.marketo.sdk.MarketoApiException;
-import com.smartling.marketo.sdk.rest.command.LoadEmailContent;
+import com.smartling.marketo.sdk.rest.command.email.LoadEmailContent;
 import net.minidev.json.JSONObject;
 import org.junit.Before;
 import org.junit.Rule;

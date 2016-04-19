@@ -1,7 +1,8 @@
 package com.smartling.marketo.sdk.rest.command;
 
 import com.google.common.collect.Lists;
-import com.smartling.marketo.sdk.EmailTextContentItem;
+import com.smartling.marketo.sdk.domain.email.EmailTextContentItem;
+import com.smartling.marketo.sdk.rest.command.email.UpdateEmailEditableSection;
 import org.junit.Test;
 
 import java.util.Collections;

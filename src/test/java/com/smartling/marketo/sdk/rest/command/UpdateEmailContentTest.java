@@ -1,7 +1,7 @@
 package com.smartling.marketo.sdk.rest.command;
 
-import com.smartling.marketo.sdk.Email;
-import org.junit.Before;
+import com.smartling.marketo.sdk.domain.email.Email;
+import com.smartling.marketo.sdk.rest.command.email.UpdateEmailContent;
 import org.junit.Test;
 
 import java.util.Map;
