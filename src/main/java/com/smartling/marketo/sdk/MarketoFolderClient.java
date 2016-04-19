@@ -5,7 +5,7 @@ import com.smartling.marketo.sdk.domain.folder.FolderId;
 
 import java.util.List;
 
-public interface MarketoFolderClient extends MarketoClient {
+public interface MarketoFolderClient {
 
     List<FolderDetails> getFolders(FolderId root, int offset, int maxDepth, int limit, String workspace) throws MarketoApiException;
 

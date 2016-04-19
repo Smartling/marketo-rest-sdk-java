@@ -7,7 +7,7 @@ import com.smartling.marketo.sdk.domain.folder.FolderId;
 
 import java.util.List;
 
-public interface MarketoEmailClient extends MarketoClient {
+public interface MarketoEmailClient {
     List<Email> listEmails(int offset, int limit) throws MarketoApiException;
 
     List<Email> listEmails(int offset, int limit, FolderId folder, Email.Status status) throws MarketoApiException;
