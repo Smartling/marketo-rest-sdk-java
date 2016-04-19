@@ -1,12 +1,43 @@
 package com.smartling.marketo.sdk.rest;
 
-import com.smartling.marketo.sdk.rest.transport.HttpCommandExecutor;
-import org.mockito.Mock;
+import com.smartling.marketo.sdk.MarketoEmailClient;
+import com.smartling.marketo.sdk.MarketoFolderClient;
+import com.smartling.marketo.sdk.MarketoSnippetClient;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.fest.assertions.api.Assertions.assertThat;
 
 public class MarketoRestClientManagerTest {
 
-    @Mock
-    private HttpCommandExecutor executor;
+    private MarketoRestClientManager testedInstance;
 
+    @Before
+    public void setUp() {
+        testedInstance = MarketoRestClientManager.create("IdentityURL", "RestURL").withCredentials("ClientId", "ClientSecret");
+    }
 
+    @Test
+    public void shouldReturnFolderRestClient() throws Exception {
+        final MarketoFolderClient client = testedInstance.getMarketoFolderClient();
+
+        assertThat(client).isNotNull();
+        assertThat(client).isInstanceOf(MarketoFolderRestClient.class);
+    }
+
+    @Test
+    public void shouldReturnEmailRestClient() throws Exception {
+        final MarketoEmailClient client = testedInstance.getMarketoEmailClient();
+
+        assertThat(client).isNotNull();
+        assertThat(client).isInstanceOf(MarketoEmailRestClient.class);
+    }
+
+    @Test
+    public void shouldReturnSnippetRestClient() throws Exception {
+        final MarketoSnippetClient client = testedInstance.getMarketoSnippetClient();
+
+        assertThat(client).isNotNull();
+        assertThat(client).isInstanceOf(MarketoSnippetRestClient.class);
+    }
 }
