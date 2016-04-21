@@ -1,0 +1,30 @@
+package com.smartling.marketo.sdk.domain.landingpage;
+
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
+@JsonTypeInfo(use=JsonTypeInfo.Id.NAME, include=JsonTypeInfo.As.PROPERTY, property="type", visible=true, defaultImpl=LandingPageExternalContentItem.class)
+@JsonSubTypes({
+        @JsonSubTypes.Type(name="RichText", value=LandingPageTextContentItem.class),
+        @JsonSubTypes.Type(name="HTML",     value=LandingPageTextContentItem.class)})
+
+public abstract class LandingPageContentItem {
+    private String id;
+    private String type;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+}

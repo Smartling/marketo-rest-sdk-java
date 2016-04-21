@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.smartling.marketo.sdk.MarketoClientManager;
 import com.smartling.marketo.sdk.MarketoEmailClient;
 import com.smartling.marketo.sdk.MarketoFolderClient;
+import com.smartling.marketo.sdk.MarketoLandingPageClient;
 import com.smartling.marketo.sdk.MarketoSnippetClient;
 import com.smartling.marketo.sdk.rest.transport.BasicTokenProvider;
 import com.smartling.marketo.sdk.rest.transport.CacheableTokenProvider;
@@ -39,6 +40,11 @@ public class MarketoRestClientManager implements MarketoClientManager {
     @Override
     public MarketoSnippetClient getMarketoSnippetClient() {
         return new MarketoSnippetRestClient(httpCommandExecutor);
+    }
+
+    @Override
+    public MarketoLandingPageClient getMarketoLandingPageClient() {
+        return new MarketoLandingPageRestClient(httpCommandExecutor);
     }
 
     public final static class Builder {

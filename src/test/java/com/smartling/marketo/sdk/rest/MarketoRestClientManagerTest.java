@@ -2,6 +2,7 @@ package com.smartling.marketo.sdk.rest;
 
 import com.smartling.marketo.sdk.MarketoEmailClient;
 import com.smartling.marketo.sdk.MarketoFolderClient;
+import com.smartling.marketo.sdk.MarketoLandingPageClient;
 import com.smartling.marketo.sdk.MarketoSnippetClient;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,5 +40,13 @@ public class MarketoRestClientManagerTest {
 
         assertThat(client).isNotNull();
         assertThat(client).isInstanceOf(MarketoSnippetRestClient.class);
+    }
+
+    @Test
+    public void shouldReturnLandingPageRestClient() throws Exception {
+        final MarketoLandingPageClient client = testedInstance.getMarketoLandingPageClient();
+
+        assertThat(client).isNotNull();
+        assertThat(client).isInstanceOf(MarketoLandingPageRestClient.class);
     }
 }

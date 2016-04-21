@@ -4,4 +4,5 @@ public interface MarketoClientManager {
     MarketoFolderClient getMarketoFolderClient();
     MarketoEmailClient getMarketoEmailClient();
     MarketoSnippetClient getMarketoSnippetClient();
+    MarketoLandingPageClient getMarketoLandingPageClient();
 }

@@ -5,6 +5,8 @@ import java.util.Date;
 public class FolderDetails {
 
     private static final String EMAIL_FOLDER_TYPE = "Email";
+    private static final String FORM_FOLDER_TYPE = "Landing Page Form";
+    private static final String LANDING_PAGE_FOLDER_TYPE = "Landing Page";
     private static final String PROGRAM_FOLDER_TYPE = "Email Batch Program";
     private static final String EVENT_FOLDER_TYPE = "Marketing Event";
     private static final String MARKETING_FOLDER_TYPE = "Marketing Folder";
@@ -143,8 +145,15 @@ public class FolderDetails {
                 (this.folderType.equals(MARKETING_FOLDER_TYPE) && this.parent.getType().equals(FolderType.PROGRAM));
     }
 
-    public boolean isFolderForFormss() {
-        return this.folderType.equals(EMAIL_FOLDER_TYPE) ||
+    public boolean isFolderForForms() {
+        return this.folderType.equals(FORM_FOLDER_TYPE) ||
+                this.folderType.equals(EVENT_FOLDER_TYPE) ||
+                this.folderType.equals(PROGRAM_FOLDER_TYPE) ||
+                (this.folderType.equals(MARKETING_FOLDER_TYPE) && this.parent.getType().equals(FolderType.PROGRAM));
+    }
+
+    public boolean isFolderForLandingPages() {
+        return this.folderType.equals(LANDING_PAGE_FOLDER_TYPE) ||
                 this.folderType.equals(EVENT_FOLDER_TYPE) ||
                 this.folderType.equals(PROGRAM_FOLDER_TYPE) ||
                 (this.folderType.equals(MARKETING_FOLDER_TYPE) && this.parent.getType().equals(FolderType.PROGRAM));
