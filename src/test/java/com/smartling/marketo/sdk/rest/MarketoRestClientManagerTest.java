@@ -49,4 +49,12 @@ public class MarketoRestClientManagerTest {
         assertThat(client).isNotNull();
         assertThat(client).isInstanceOf(MarketoLandingPageRestClient.class);
     }
+
+    @Test
+    public void shouldReturnFormRestClient() throws Exception {
+        final MarketoLandingPageClient client = testedInstance.getMarketoLandingPageClient();
+
+        assertThat(client).isNotNull();
+        assertThat(client).isInstanceOf(MarketoLandingPageRestClient.class);
+    }
 }
