@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 public abstract class LandingPageContentItem {
     private String id;
     private String type;
+    private int index;
 
     public String getId() {
         return id;
@@ -26,5 +27,13 @@ public abstract class LandingPageContentItem {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
     }
 }
