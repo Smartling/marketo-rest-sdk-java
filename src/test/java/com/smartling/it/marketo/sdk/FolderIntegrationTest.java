@@ -16,8 +16,6 @@ import static org.fest.assertions.api.Assertions.assertThat;
 
 public class FolderIntegrationTest extends BaseIntegrationTest {
 
-    private static final int MARKETO_MAX_FOLDER_DEPTH = 200;
-    private static final int MARKETO_PAGE_LIMIT = 200;
     @Rule
     public final ExpectedException thrown = ExpectedException.none();
     private MarketoFolderClient marketoFolderClient;
@@ -44,24 +42,4 @@ public class FolderIntegrationTest extends BaseIntegrationTest {
         assertThat(folders.get(0).getParent()).isNull();
         assertThat(folders.get(0).getWorkspace()).isNotEmpty();
     }
-
-//    @Test
-//    public void shouldGetAllFolders() throws Exception {
-//        List<FolderDetails> marketoFolders = new ArrayList<>();
-//
-//        List<FolderDetails> page;
-//        int offset = 0;
-//        do
-//        {
-//            page = marketoClient.getFolders(null, offset, MARKETO_MAX_FOLDER_DEPTH, MARKETO_PAGE_LIMIT, null);
-//            marketoFolders.addAll(page.stream().collect(Collectors.toList())
-//            );
-//            offset += MARKETO_PAGE_LIMIT;
-//        }
-//        while (page.size() == MARKETO_PAGE_LIMIT);
-//
-//        for (FolderDetails folder : marketoFolders) {
-//            System.out.println(folder.getId() + ";" + folder.getFolderId().getType() + ";" + folder.getName() + ";" + folder.getFolderType() + ";" + folder.getPath());
-//        }
-//    }
 }
