@@ -28,4 +28,6 @@ public interface MarketoLandingPageClient {
     void updateLandingPageContent(int id, List<LandingPageTextContentItem> contentItems) throws MarketoApiException;
 
     void discardLandingPageDraft(int id) throws MarketoApiException;
+
+    void updateLandingPageMetadata(int id, String title) throws MarketoApiException;
 }

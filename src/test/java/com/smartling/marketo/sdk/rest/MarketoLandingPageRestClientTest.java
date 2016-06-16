@@ -15,6 +15,7 @@ import com.smartling.marketo.sdk.rest.command.landingpage.GetLandingPages;
 import com.smartling.marketo.sdk.rest.command.landingpage.GetLandingPageById;
 import com.smartling.marketo.sdk.rest.command.landingpage.GetLandingPageContent;
 import com.smartling.marketo.sdk.rest.command.landingpage.UpdateLandingPageEditableSection;
+import com.smartling.marketo.sdk.rest.command.landingpage.UpdateLandingPageMetadata;
 import com.smartling.marketo.sdk.rest.transport.HttpCommandExecutor;
 import org.junit.Rule;
 import org.junit.Test;
@@ -177,5 +178,12 @@ public class MarketoLandingPageRestClientTest {
         testedInstance.discardLandingPageDraft(42);
 
         verify(executor).execute(isA(DiscardLandingPageDraft.class));
+    }
+
+    @Test
+    public void shouldUpdateLandingPageMetadata() throws Exception {
+        testedInstance.updateLandingPageMetadata(42, "title");
+
+        verify(executor).execute(isA(UpdateLandingPageMetadata.class));
     }
 }

@@ -31,7 +31,6 @@ public class LandingPageIntegrationTest extends BaseIntegrationTest {
     private static final int TEST_PROGRAM_ID = 1008;
     private static final int TEST_TEMPLATE_ID = 1;
     private static final String TEST_CONTENT_ITEM_ID = "1506";
-    private static final String TEST_CONTENT_ITEM_ID_IN_LP_TO_DISCARD = "1344";
     private static final String TEST_CONTENT_ITEM_TYPE = "RichText";
 
     @Rule
@@ -195,7 +194,7 @@ public class LandingPageIntegrationTest extends BaseIntegrationTest {
     @Test
     public void shouldUpdateLandingPageContent() throws Exception {
         discardOldDraft(TEST_LANDING_PAGE_ID);
-        doFakeUpdateToCreateDraft("1012", TEST_LANDING_PAGE_ID);
+        marketoLandingPageClient.updateLandingPageMetadata(TEST_LANDING_PAGE_ID, "title");
         LandingPageTextContentItem newItem = (LandingPageTextContentItem) getFirstItemFromDraft(TEST_LANDING_PAGE_ID, TEST_CONTENT_ITEM_TYPE);
         newItem.setContent("New content: " + UUID.randomUUID());
 
@@ -207,7 +206,7 @@ public class LandingPageIntegrationTest extends BaseIntegrationTest {
 
     @Test
     public void shouldDiscardLandingPageDraft() throws Exception {
-        doFakeUpdateToCreateDraft(TEST_CONTENT_ITEM_ID_IN_LP_TO_DISCARD, TEST_LANDING_PAGE_TO_DESCARD_ID);
+        marketoLandingPageClient.updateLandingPageMetadata(TEST_LANDING_PAGE_TO_DESCARD_ID, "title");
 
         marketoLandingPageClient.discardLandingPageDraft(TEST_LANDING_PAGE_TO_DESCARD_ID);
 
@@ -217,14 +216,20 @@ public class LandingPageIntegrationTest extends BaseIntegrationTest {
 
     }
 
+    @Test
+    public void shouldUpdateLandingPageMetadata() throws Exception {
+        String title = "title" + UUID.randomUUID();
+
+        marketoLandingPageClient.updateLandingPageMetadata(TEST_LANDING_PAGE_ID, title);
+
+        LandingPage page = marketoLandingPageClient.getLandingPageById(TEST_LANDING_PAGE_ID, Status.DRAFT);
+
+        assertThat(page.getTitle()).isEqualTo(title);
+    }
+
     private LandingPageContentItem getFirstItemFromDraft(int testLandingPageId, String testContentItemType) throws MarketoApiException {
         List<LandingPageContentItem> contentItems = marketoLandingPageClient.getLandingPageContent(testLandingPageId, Status.DRAFT);
         return contentItems.stream().filter(i -> i.getType().equals(testContentItemType)).findFirst().get();
-    }
-
-    private void doFakeUpdateToCreateDraft(String contentItemId, int landingPageId) throws MarketoApiException {
-        LandingPageTextContentItem newItem = contentItem(contentItemId, TEST_CONTENT_ITEM_TYPE);
-        marketoLandingPageClient.updateLandingPageContent(landingPageId, Collections.singletonList(newItem));
     }
 
     private void discardOldDraft(int landingPageId) {
@@ -235,19 +240,11 @@ public class LandingPageIntegrationTest extends BaseIntegrationTest {
         }
     }
 
-    private LandingPageTextContentItem contentItem(String contentItemId, String contentItemType) {
-        LandingPageTextContentItem newItem = new LandingPageTextContentItem();
-        newItem.setId(contentItemId);
-        newItem.setType(contentItemType);
-        newItem.setContent("New content: " + UUID.randomUUID());
-        return newItem;
-    }
-
-    protected class ContentItemWithIdAndText extends Condition<LandingPageContentItem> {
+    private class ContentItemWithIdAndText extends Condition<LandingPageContentItem> {
         private final String id;
         private final String text;
 
-        public ContentItemWithIdAndText(String id, String text) {
+        ContentItemWithIdAndText(String id, String text) {
             this.id = id;
             this.text = text;
         }

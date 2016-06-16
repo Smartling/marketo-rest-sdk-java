@@ -14,6 +14,7 @@ import com.smartling.marketo.sdk.rest.command.landingpage.GetLandingPagesByName;
 import com.smartling.marketo.sdk.rest.command.landingpage.GetLandingPages;
 import com.smartling.marketo.sdk.rest.command.landingpage.GetLandingPageById;
 import com.smartling.marketo.sdk.rest.command.landingpage.UpdateLandingPageEditableSection;
+import com.smartling.marketo.sdk.rest.command.landingpage.UpdateLandingPageMetadata;
 import com.smartling.marketo.sdk.rest.transport.HttpCommandExecutor;
 
 import java.util.Collections;
@@ -86,5 +87,10 @@ public class MarketoLandingPageRestClient implements MarketoLandingPageClient {
     @Override
     public void discardLandingPageDraft(int id) throws MarketoApiException {
         httpCommandExecutor.execute(new DiscardLandingPageDraft(id));
+    }
+
+    @Override
+    public void updateLandingPageMetadata(int id, String title) throws MarketoApiException {
+        httpCommandExecutor.execute(new UpdateLandingPageMetadata(id, title));
     }
 }

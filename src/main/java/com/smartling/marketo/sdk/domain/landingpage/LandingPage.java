@@ -7,6 +7,7 @@ public class LandingPage extends Asset {
     private String styleOverRide;
     private boolean mobileEnabled;
     private String computedUrl;
+    private String title;
 
     public int getTemplate() {
         return template;
@@ -38,5 +39,13 @@ public class LandingPage extends Asset {
 
     public void setComputedUrl(String computedUrl) {
         this.computedUrl = computedUrl;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }
