@@ -8,15 +8,15 @@ import com.smartling.marketo.sdk.domain.form.FormField;
 import java.util.List;
 
 public interface MarketoFormClient {
-    List<Form> listForms(int offset, int limit) throws MarketoApiException;
+    List<Form> getForms(int offset, int limit) throws MarketoApiException;
 
-    List<Form> listForms(int offset, int limit, FolderId folder, Email.Status status) throws MarketoApiException;
+    List<Form> getForms(int offset, int limit, FolderId folder, Email.Status status) throws MarketoApiException;
 
-    Form loadFormById(int id) throws MarketoApiException;
+    Form getFormById(int id) throws MarketoApiException;
 
     List<Form> getFormsByName(String name, FolderId folder, Form.Status status) throws MarketoApiException;
 
-    List<FormField> loadFormFields(int formId) throws MarketoApiException;
+    List<FormField> getFormFields(int formId) throws MarketoApiException;
 
     Form cloneForm(int sourceFormId, String newFormName, FolderId folderId, String description) throws MarketoApiException;
 

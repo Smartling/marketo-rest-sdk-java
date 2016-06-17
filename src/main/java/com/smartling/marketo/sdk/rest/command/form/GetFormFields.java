@@ -3,10 +3,10 @@ package com.smartling.marketo.sdk.rest.command.form;
 import com.smartling.marketo.sdk.domain.form.FormField;
 import com.smartling.marketo.sdk.rest.command.BaseGetCommand;
 
-public class LoadFormFields extends BaseGetCommand<FormField> {
+public class GetFormFields extends BaseGetCommand<FormField> {
     private final int formId;
 
-    public LoadFormFields(int formId) {
+    public GetFormFields(int formId) {
         super(FormField.class);
         this.formId = formId;
     }

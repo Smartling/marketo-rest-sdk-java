@@ -10,7 +10,7 @@ import com.smartling.marketo.sdk.rest.command.form.CloneFormCommand;
 import com.smartling.marketo.sdk.rest.command.form.GetFormsByNameCommand;
 import com.smartling.marketo.sdk.rest.command.form.GetFormsCommand;
 import com.smartling.marketo.sdk.rest.command.form.LoadFormByIdCommand;
-import com.smartling.marketo.sdk.rest.command.form.LoadFormFields;
+import com.smartling.marketo.sdk.rest.command.form.GetFormFields;
 import com.smartling.marketo.sdk.rest.command.form.UpdateFormCommand;
 import com.smartling.marketo.sdk.rest.command.form.UpdateFormFieldCommand;
 import com.smartling.marketo.sdk.rest.transport.HttpCommandExecutor;
@@ -26,18 +26,18 @@ public class MarketoFormRestClient implements MarketoFormClient {
     }
 
     @Override
-    public List<Form> listForms(int offset, int limit) throws MarketoApiException {
-        final List<Form> forms = listForms(offset, limit, null, null);
+    public List<Form> getForms(int offset, int limit) throws MarketoApiException {
+        final List<Form> forms = getForms(offset, limit, null, null);
         return forms != null ? forms : Collections.emptyList();
     }
 
     @Override
-    public List<Form> listForms(int offset, int limit, FolderId folder, Email.Status status) throws MarketoApiException {
+    public List<Form> getForms(int offset, int limit, FolderId folder, Email.Status status) throws MarketoApiException {
         return httpCommandExecutor.execute(new GetFormsCommand(offset, limit, folder, status));
     }
 
-    @Override //TODO check
-    public Form loadFormById(int id) throws MarketoApiException {
+    @Override
+    public Form getFormById(int id) throws MarketoApiException {
         List<Form> execute = httpCommandExecutor.execute(new LoadFormByIdCommand(id));
         if (execute != null && !execute.isEmpty()) {
             return execute.get(0);
@@ -53,8 +53,8 @@ public class MarketoFormRestClient implements MarketoFormClient {
     }
 
     @Override
-    public List<FormField> loadFormFields(int formId) throws MarketoApiException {
-        return httpCommandExecutor.execute(new LoadFormFields(formId));
+    public List<FormField> getFormFields(int formId) throws MarketoApiException {
+        return httpCommandExecutor.execute(new GetFormFields(formId));
     }
 
     @Override

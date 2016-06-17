@@ -36,8 +36,8 @@ public class FormIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void shouldListForms() throws Exception {
-        List<Form> forms = marketoFormClient.listForms(0, 1);
+    public void shouldGetForms() throws Exception {
+        List<Form> forms = marketoFormClient.getForms(0, 1);
 
         assertThat(forms).hasSize(1);
         assertThat(forms.get(0).getId()).isPositive();
@@ -49,8 +49,8 @@ public class FormIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void shouldListFormsWithFilter() throws Exception {
-        List<Form> forms = marketoFormClient.listForms(0, 1, TEST_FOLDER_ID, Status.APPROVED);
+    public void shouldGetFormsWithFilter() throws Exception {
+        List<Form> forms = marketoFormClient.getForms(0, 1, TEST_FOLDER_ID, Status.APPROVED);
 
         assertThat(forms).hasSize(1);
         assertThat(forms.get(0).getId()).isPositive();
@@ -63,19 +63,19 @@ public class FormIntegrationTest extends BaseIntegrationTest {
 
     @Test
     public void shouldReturnEmptyListWhenEndReached() throws Exception {
-        List<Form> forms = marketoFormClient.listForms(10000, 1);
+        List<Form> forms = marketoFormClient.getForms(10000, 1);
 
         assertThat(forms).isEmpty();
     }
 
     @Test(expected = MarketoApiException.class)
     public void shouldThrowLogicException() throws Exception {
-        marketoFormClient.listForms(-5, 5);
+        marketoFormClient.getForms(-5, 5);
     }
 
     @Test
-    public void shouldLoadFormById() throws Exception {
-        Form form = marketoFormClient.loadFormById(TEST_FORM_ID);
+    public void shouldGetFormById() throws Exception {
+        Form form = marketoFormClient.getFormById(TEST_FORM_ID);
 
         assertThat(form).isNotNull();
         assertThat(form.getId()).isEqualTo(TEST_FORM_ID);
@@ -90,7 +90,7 @@ public class FormIntegrationTest extends BaseIntegrationTest {
         thrown.expect(MarketoApiException.class);
         thrown.expectMessage("Form[id = 42] not found");
 
-        marketoFormClient.loadFormById(42);
+        marketoFormClient.getFormById(42);
     }
 
     @Test
@@ -116,7 +116,7 @@ public class FormIntegrationTest extends BaseIntegrationTest {
 
     @Test
     public void shouldReadFormFields() throws Exception {
-        List<FormField> formFields = marketoFormClient.loadFormFields(TEST_FORM_ID);
+        List<FormField> formFields = marketoFormClient.getFormFields(TEST_FORM_ID);
 
         assertThat(formFields).hasSize(21);
         FormField formField = formFields.get(0);
@@ -155,7 +155,7 @@ public class FormIntegrationTest extends BaseIntegrationTest {
     @Test
     public void shouldCloneFormViaShorthandMethod() throws Exception {
         String newFormName = "integration-test-clone-" + UUID.randomUUID().toString();
-        Form existingForm = marketoFormClient.loadFormById(TEST_FORM_ID);
+        Form existingForm = marketoFormClient.getFormById(TEST_FORM_ID);
 
         Form clone = marketoFormClient.cloneForm(existingForm, newFormName);
 
