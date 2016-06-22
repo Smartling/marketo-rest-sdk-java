@@ -26,14 +26,9 @@ public class MarketoFormRestClient implements MarketoFormClient {
     }
 
     @Override
-    public List<Form> getForms(int offset, int limit) throws MarketoApiException {
-        final List<Form> forms = getForms(offset, limit, null, null);
-        return forms != null ? forms : Collections.emptyList();
-    }
-
-    @Override
     public List<Form> getForms(int offset, int limit, FolderId folder, Email.Status status) throws MarketoApiException {
-        return httpCommandExecutor.execute(new GetFormsCommand(offset, limit, folder, status));
+        final List<Form> forms = httpCommandExecutor.execute(new GetFormsCommand(offset, limit, folder, status));
+        return forms != null ? forms : Collections.emptyList();
     }
 
     @Override

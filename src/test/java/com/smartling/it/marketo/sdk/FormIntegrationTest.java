@@ -36,19 +36,6 @@ public class FormIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void shouldGetForms() throws Exception {
-        List<Form> forms = marketoFormClient.getForms(0, 1);
-
-        assertThat(forms).hasSize(1);
-        assertThat(forms.get(0).getId()).isPositive();
-        assertThat(forms.get(0).getName()).isNotEmpty();
-        assertThat(forms.get(0).getUpdatedAt()).isNotNull();
-        assertThat(forms.get(0).getStatus()).isNotNull();
-        assertThat(forms.get(0).getUrl()).isNotEmpty();
-        assertThat(forms.get(0).getFolder()).isNotNull();
-    }
-
-    @Test
     public void shouldGetFormsWithFilter() throws Exception {
         List<Form> forms = marketoFormClient.getForms(0, 1, TEST_FOLDER_ID, Status.APPROVED);
 
@@ -63,14 +50,14 @@ public class FormIntegrationTest extends BaseIntegrationTest {
 
     @Test
     public void shouldReturnEmptyListWhenEndReached() throws Exception {
-        List<Form> forms = marketoFormClient.getForms(10000, 1);
+        List<Form> forms = marketoFormClient.getForms(10000, 1, null, null);
 
         assertThat(forms).isEmpty();
     }
 
     @Test(expected = MarketoApiException.class)
     public void shouldThrowLogicException() throws Exception {
-        marketoFormClient.getForms(-5, 5);
+        marketoFormClient.getForms(-5, 5, null, null);
     }
 
     @Test
