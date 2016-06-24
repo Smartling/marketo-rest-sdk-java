@@ -32,10 +32,14 @@ public class UpdateForm implements Command<Form> {
 
     @Override
     public Map<String, Object> getParameters() {
-        ImmutableMap.Builder<String, Object> builder = ImmutableMap.<String, Object>builder()
-                .put("language", form.getLanguage())
-                .put("locale", form.getLocale());
+        ImmutableMap.Builder<String, Object> builder = ImmutableMap.builder();
 
+        if(form.getLanguage() != null) {
+            builder.put("language", form.getLanguage());
+        }
+        if(form.getLocale() != null) {
+            builder.put("locale", form.getLocale());
+        }
         if(form.getKnownVisitor().getType() == Form.KnownVisitorType.CUSTOM) {
             builder.put("knownVisitor", form.getKnownVisitor());
         }

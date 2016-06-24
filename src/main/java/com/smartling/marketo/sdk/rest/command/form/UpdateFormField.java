@@ -34,9 +34,15 @@ public class UpdateFormField implements Command<FormField> {
     @Override
     public Map<String, Object> getParameters() {
         ImmutableMap.Builder<String, Object> builder = ImmutableMap.<String, Object>builder()
-                .put("label", formField.getLabel())
-                .put("instructions", formField.getInstructions())
-                .put("validationMessage", formField.getValidationMessage());
+                .put("label", formField.getLabel());
+
+        if (formField.getInstructions() != null) {
+            builder.put("instructions", formField.getInstructions());
+        }
+        if (formField.getValidationMessage() != null) {
+            builder.put("validationMessage", formField.getValidationMessage());
+        }
+
         return builder.build();
     }
 }
