@@ -1,18 +1,21 @@
 package com.smartling.marketo.sdk.rest;
 
-import com.smartling.marketo.sdk.domain.email.Email;
+import com.smartling.marketo.sdk.domain.Asset.Status;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.domain.form.Form;
 import com.smartling.marketo.sdk.domain.form.FormField;
 import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.MarketoFormClient;
-import com.smartling.marketo.sdk.rest.command.form.CloneFormCommand;
-import com.smartling.marketo.sdk.rest.command.form.GetFormsByNameCommand;
-import com.smartling.marketo.sdk.rest.command.form.GetFormsCommand;
-import com.smartling.marketo.sdk.rest.command.form.LoadFormByIdCommand;
+import com.smartling.marketo.sdk.domain.form.VisibilityRules;
+import com.smartling.marketo.sdk.rest.command.form.CloneForm;
+import com.smartling.marketo.sdk.rest.command.form.GetFormsByName;
+import com.smartling.marketo.sdk.rest.command.form.GetForms;
+import com.smartling.marketo.sdk.rest.command.form.GetFormById;
 import com.smartling.marketo.sdk.rest.command.form.GetFormFields;
-import com.smartling.marketo.sdk.rest.command.form.UpdateFormCommand;
-import com.smartling.marketo.sdk.rest.command.form.UpdateFormFieldCommand;
+import com.smartling.marketo.sdk.rest.command.form.UpdateForm;
+import com.smartling.marketo.sdk.rest.command.form.UpdateFormField;
+import com.smartling.marketo.sdk.rest.command.form.UpdateFormFieldVisibilityRules;
+import com.smartling.marketo.sdk.rest.command.form.UpdateSubmitButton;
 import com.smartling.marketo.sdk.rest.transport.HttpCommandExecutor;
 
 import java.util.Collections;
@@ -26,14 +29,14 @@ public class MarketoFormRestClient implements MarketoFormClient {
     }
 
     @Override
-    public List<Form> getForms(int offset, int limit, FolderId folder, Email.Status status) throws MarketoApiException {
-        final List<Form> forms = httpCommandExecutor.execute(new GetFormsCommand(offset, limit, folder, status));
+    public List<Form> getForms(int offset, int limit, FolderId folder, Status status) throws MarketoApiException {
+        final List<Form> forms = httpCommandExecutor.execute(new GetForms(offset, limit, folder, status));
         return forms != null ? forms : Collections.emptyList();
     }
 
     @Override
     public Form getFormById(int id) throws MarketoApiException {
-        List<Form> execute = httpCommandExecutor.execute(new LoadFormByIdCommand(id));
+        List<Form> execute = httpCommandExecutor.execute(new GetFormById(id));
         if (execute != null && !execute.isEmpty()) {
             return execute.get(0);
         } else {
@@ -42,19 +45,19 @@ public class MarketoFormRestClient implements MarketoFormClient {
     }
 
     @Override
-    public List<Form> getFormsByName(final String name, FolderId folder, Form.Status status) throws MarketoApiException {
-        final List<Form> forms = httpCommandExecutor.execute(new GetFormsByNameCommand(name, folder, status));
+    public List<Form> getFormsByName(final String name, FolderId folder, Status status) throws MarketoApiException {
+        final List<Form> forms = httpCommandExecutor.execute(new GetFormsByName(name, folder, status));
         return forms != null ? forms : Collections.emptyList();
     }
 
     @Override
-    public List<FormField> getFormFields(int formId) throws MarketoApiException {
-        return httpCommandExecutor.execute(new GetFormFields(formId));
+    public List<FormField> getFormFields(int formId, Status status) throws MarketoApiException {
+        return httpCommandExecutor.execute(new GetFormFields(formId, status));
     }
 
     @Override
     public Form cloneForm(int sourceFormId, String newFormName, FolderId folderId, String description) throws MarketoApiException {
-        List<Form> cloned = httpCommandExecutor.execute(new CloneFormCommand(sourceFormId, newFormName, folderId, description));
+        List<Form> cloned = httpCommandExecutor.execute(new CloneForm(sourceFormId, newFormName, folderId, description));
         return cloned.get(0);
     }
 
@@ -65,7 +68,7 @@ public class MarketoFormRestClient implements MarketoFormClient {
 
     @Override
     public void updateForm(Form form) throws MarketoApiException {
-        httpCommandExecutor.execute(new UpdateFormCommand(form));
+        httpCommandExecutor.execute(new UpdateForm(form));
     }
 
     @Override
@@ -77,6 +80,16 @@ public class MarketoFormRestClient implements MarketoFormClient {
 
     @Override
     public void updateFormField(int formId, FormField formField) throws MarketoApiException {
-        httpCommandExecutor.execute(new UpdateFormFieldCommand(formId, formField));
+        httpCommandExecutor.execute(new UpdateFormField(formId, formField));
+    }
+
+    @Override
+    public void updateSubmitButton(int formId, String label, String waitingLabel) throws MarketoApiException {
+        httpCommandExecutor.execute(new UpdateSubmitButton(formId, label, waitingLabel));
+    }
+
+    @Override
+    public void updateFormFieldVisibilityRules(int formId, String formField, VisibilityRules visibilityRule) throws MarketoApiException {
+        httpCommandExecutor.execute(new UpdateFormFieldVisibilityRules(formId, formField, visibilityRule));
     }
 }

@@ -7,11 +7,11 @@ import com.smartling.marketo.sdk.rest.Command;
 import java.lang.reflect.Type;
 import java.util.Map;
 
-public class UpdateFormFieldCommand implements Command<FormField> {
+public class UpdateFormField implements Command<FormField> {
     private final int formId;
     private final FormField formField;
 
-    public UpdateFormFieldCommand(int formId, FormField formField) {
+    public UpdateFormField(int formId, FormField formField) {
         this.formId = formId;
         this.formField = formField;
     }

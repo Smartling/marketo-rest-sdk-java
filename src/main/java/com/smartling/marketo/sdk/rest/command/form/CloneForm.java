@@ -7,13 +7,13 @@ import jersey.repackaged.com.google.common.collect.ImmutableMap;
 
 import java.util.Map;
 
-public class CloneFormCommand extends BaseMarketoCommand<Form> {
+public class CloneForm extends BaseMarketoCommand<Form> {
     private final int sourceFormId;
     private final String newFormName;
     private final FolderId folderId;
     private final String description;
 
-    public CloneFormCommand(int sourceFormId, String newFormName, FolderId folderId, String description) {
+    public CloneForm(int sourceFormId, String newFormName, FolderId folderId, String description) {
         super(Form.class);
         this.sourceFormId = sourceFormId;
         this.newFormName = newFormName;

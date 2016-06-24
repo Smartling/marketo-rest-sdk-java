@@ -1,9 +1,11 @@
 package com.smartling.marketo.sdk;
 
+import com.smartling.marketo.sdk.domain.Asset;
 import com.smartling.marketo.sdk.domain.email.Email;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.domain.form.Form;
 import com.smartling.marketo.sdk.domain.form.FormField;
+import com.smartling.marketo.sdk.domain.form.VisibilityRules;
 
 import java.util.List;
 
@@ -14,7 +16,7 @@ public interface MarketoFormClient {
 
     List<Form> getFormsByName(String name, FolderId folder, Form.Status status) throws MarketoApiException;
 
-    List<FormField> getFormFields(int formId) throws MarketoApiException;
+    List<FormField> getFormFields(int formId, Asset.Status status) throws MarketoApiException;
 
     Form cloneForm(int sourceFormId, String newFormName, FolderId folderId, String description) throws MarketoApiException;
 
@@ -25,4 +27,8 @@ public interface MarketoFormClient {
     void updateFormFields(int formId, List<FormField> formFields) throws MarketoApiException;
 
     void updateFormField(int formId, FormField formField) throws MarketoApiException;
+
+    void updateSubmitButton(int formId, String label, String waitingLabel) throws MarketoApiException;
+
+    void updateFormFieldVisibilityRules(int formId, String formField, VisibilityRules visibilityRules) throws MarketoApiException;
 }

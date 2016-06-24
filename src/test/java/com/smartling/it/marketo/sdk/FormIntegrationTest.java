@@ -5,13 +5,17 @@ import com.smartling.marketo.sdk.domain.Asset.Status;
 import com.smartling.marketo.sdk.domain.form.Form;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.domain.folder.FolderType;
+import com.smartling.marketo.sdk.domain.form.Form.KnownVisitor;
 import com.smartling.marketo.sdk.domain.form.FormField;
 import com.smartling.marketo.sdk.MarketoApiException;
+import com.smartling.marketo.sdk.domain.form.VisibilityRules;
+import com.smartling.marketo.sdk.domain.form.VisibilityRules.RuleType;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -24,6 +28,7 @@ public class FormIntegrationTest extends BaseIntegrationTest {
     private static final FolderId TEST_FOLDER_ID = new FolderId(123, FolderType.FOLDER);
     private static final int TEST_PROGRAM_FORM_ID = 1013;
     private static final FolderId TEST_PROGRAM_ID = new FolderId(1008, FolderType.PROGRAM);
+    private static final String TEST_FORM_FIELD = "Address";
 
     @Rule
     public final ExpectedException thrown = ExpectedException.none();
@@ -103,7 +108,7 @@ public class FormIntegrationTest extends BaseIntegrationTest {
 
     @Test
     public void shouldReadFormFields() throws Exception {
-        List<FormField> formFields = marketoFormClient.getFormFields(TEST_FORM_ID);
+        List<FormField> formFields = marketoFormClient.getFormFields(TEST_FORM_ID, Status.APPROVED);
 
         assertThat(formFields).hasSize(21);
         FormField formField = formFields.get(0);
@@ -113,6 +118,12 @@ public class FormIntegrationTest extends BaseIntegrationTest {
         assertThat(formField.getDataType()).isEqualTo("text");
         assertThat(formField.getValidationMessage()).isEqualTo("Integration test validation message");
         assertThat(formField.getHintText()).isEqualTo("Your first name here, please");
+        assertThat(formField.getVisibilityRules().getRuleType()).isEqualTo(RuleType.ALWAYSSHOW);
+
+        VisibilityRules visibilityRules = formFields.get(3).getVisibilityRules();
+        assertThat(visibilityRules.getRuleType()).isEqualTo(RuleType.SHOW);
+        assertThat(visibilityRules.getRules().get(0).getSubjectField()).isEqualTo("FirstName");
+        assertThat(visibilityRules.getRules().get(0).getAltLabel()).isEqualTo("Address:");
     }
 
     @Test
@@ -171,13 +182,47 @@ public class FormIntegrationTest extends BaseIntegrationTest {
 
         Form form = new Form();
         form.setId(TEST_FORM_ID);
-        form.setName("New name");
-        form.setDescription("new description");
-        form.setFormLanguage("French");
-        form.setFormLocale("French");
+        form.setLanguage("English");
+        form.setLocale("en_US");
+
+        KnownVisitor knownVisitor = new KnownVisitor();
+        knownVisitor.setType(Form.KnownVisitorType.CUSTOM);
+        knownVisitor.setTemplate("hello");
+
+        form.setKnownVisitor(knownVisitor);
 
         marketoFormClient.updateForm(form);
 
         // Can not verify - no way to fetch not approved content
     }
+
+    @Test
+    public void shouldUpdateSubmitButton() throws Exception {
+        marketoFormClient.updateSubmitButton(TEST_FORM_ID, "New button label", "New waiting message");
+
+        // Can not verify - no way to fetch not approved content
+    }
+
+    @Test
+    public void shouldUpdateFormFieldVisibilityRules() throws Exception {
+        VisibilityRules visibilityRule = new VisibilityRules();
+        visibilityRule.setRuleType(RuleType.SHOW);
+
+        List<VisibilityRules.Rule> rules = Collections.singletonList(rule("FirstName", "isNotEmpty", "Der address"));
+        visibilityRule.setRules(rules);
+
+        marketoFormClient.updateFormFieldVisibilityRules(TEST_FORM_ID, TEST_FORM_FIELD, visibilityRule);
+
+        // Can not verify - no way to fetch not approved content
+    }
+
+    private VisibilityRules.Rule rule(String subjectField, String operator, String altLabel) {
+        VisibilityRules.Rule rule = new VisibilityRules.Rule();
+        rule.setSubjectField(subjectField);
+        rule.setOperator(operator);
+        rule.setValues(Collections.emptyList());
+        rule.setAltLabel(altLabel);
+        return rule;
+    }
+
 }

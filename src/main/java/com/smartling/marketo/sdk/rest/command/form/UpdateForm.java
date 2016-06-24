@@ -7,11 +7,11 @@ import com.smartling.marketo.sdk.rest.Command;
 import java.lang.reflect.Type;
 import java.util.Map;
 
-public class UpdateFormCommand implements Command<Void> {
+public class UpdateForm implements Command<Form> {
 
     private final Form form;
 
-    public UpdateFormCommand(Form form) {
+    public UpdateForm(Form form) {
         this.form = form;
     }
 
@@ -33,10 +33,13 @@ public class UpdateFormCommand implements Command<Void> {
     @Override
     public Map<String, Object> getParameters() {
         ImmutableMap.Builder<String, Object> builder = ImmutableMap.<String, Object>builder()
-                .put("description", form.getDescription())
-                .put("formLanguage", form.getFormLanguage())
-                .put("formLocale", form.getFormLocale());
-//                .put("knownVisitor", form.getKnownVisitor());
+                .put("language", form.getLanguage())
+                .put("locale", form.getLocale());
+
+        if(form.getKnownVisitor().getType() == Form.KnownVisitorType.CUSTOM) {
+            builder.put("knownVisitor", form.getKnownVisitor());
+        }
+
         return builder.build();
     }
 }

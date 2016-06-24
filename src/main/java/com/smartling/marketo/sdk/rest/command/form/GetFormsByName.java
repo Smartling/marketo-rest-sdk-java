@@ -7,12 +7,12 @@ import com.smartling.marketo.sdk.rest.command.BaseGetCommand;
 
 import java.util.Map;
 
-public class GetFormsByNameCommand extends BaseGetCommand<Form> {
+public class GetFormsByName extends BaseGetCommand<Form> {
     private final String name;
     private final FolderId folder;
     private final Form.Status status;
 
-    public GetFormsByNameCommand(String name, FolderId folder, Form.Status status) {
+    public GetFormsByName(String name, FolderId folder, Form.Status status) {
         super(Form.class);
         this.name = name;
         this.folder = folder;
