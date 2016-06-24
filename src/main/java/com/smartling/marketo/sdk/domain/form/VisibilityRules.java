@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.smartling.marketo.sdk.HasToBeMappedToJson;
 
+import java.util.Collections;
 import java.util.List;
 
 public class VisibilityRules implements HasToBeMappedToJson {
@@ -57,7 +58,7 @@ public class VisibilityRules implements HasToBeMappedToJson {
         }
 
         public List<String> getValues() {
-            return values;
+            return values != null ? values : Collections.EMPTY_LIST;
         }
 
         public void setValues(List<String> values) {
