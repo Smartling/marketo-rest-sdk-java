@@ -24,6 +24,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
 
 public class EmailIntegrationTest extends BaseIntegrationTest {
     private static final int TEST_EMAIL_ID = 1109;
+    private static final int TEST_EMAIL_V2_ID = 2466;
     private static final int TEST_EMAIL_WITH_SNIPPET_ID = 2180;
     private static final int TEST_EMAIL_WITH_DYNAMIC_CONTENT_ID = 2193;
     private static final String TEST_EMAIL_NAME = "Email For Integration Tests";
@@ -134,6 +135,16 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
         assertThat(textContentItem.getValue().get(0).getValue()).isNotEmpty();
         assertThat(textContentItem.getValue().get(1).getType()).isEqualTo("Text");
         assertThat(textContentItem.getValue().get(1).getValue()).isNotEmpty();
+    }
+
+    @Test
+    public void shouldNotFailOnUnsupportedContentItems() throws Exception {
+        List<EmailContentItem> contentItems = marketoEmailClient.loadEmailContent(TEST_EMAIL_V2_ID);
+
+        assertThat(contentItems).hasSize(59);
+
+        contentItems.forEach(System.out::println);
+
     }
 
     @Test
