@@ -1,6 +1,7 @@
 package com.smartling.it.marketo.sdk;
 
 import com.smartling.marketo.sdk.domain.Asset;
+import com.smartling.marketo.sdk.domain.BaseEntity;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.MarketoClientManager;
 import com.smartling.marketo.sdk.rest.MarketoRestClientManager;
@@ -39,44 +40,45 @@ public abstract class BaseIntegrationTest {
         marketoClientManager = MarketoRestClientManager.create(identityEndpoint, restEndpoint).withCredentials(clientId, clientSecret);
     }
 
-    protected class AssetWithName extends Condition<Asset> {
+    protected class EntityWithName extends Condition<BaseEntity> {
         private final String name;
 
-        public AssetWithName(String name) {
+        public EntityWithName(String name) {
             this.name = name;
         }
 
         @Override
-        public boolean matches(Asset value) {
-            return value.getName().endsWith(name);
+        public boolean matches(BaseEntity value) {
+            return value.getName().toUpperCase().endsWith(name.toUpperCase());
         }
     }
 
-    protected class AssetWithNameAndFolderId extends AssetWithName {
+    protected class EntityWithNameAndFolderId extends EntityWithName {
         private final FolderId folderId;
 
-        public AssetWithNameAndFolderId(String name, FolderId folderId) {
+        public EntityWithNameAndFolderId(String name, FolderId folderId) {
             super(name);
             this.folderId = folderId;
         }
 
         @Override
-        public boolean matches(Asset value) {
+        public boolean matches(BaseEntity value) {
             return super.matches(value) && new FolderId(value.getFolder()).equals(folderId);
         }
     }
 
-    protected class AssetWithNameAndStatus extends AssetWithName {
+    protected class AssetWithNameAndStatus  extends Condition<Asset> {
         private final Asset.Status status;
+        private final String name;
 
         public AssetWithNameAndStatus(String name, Asset.Status status) {
-            super(name);
             this.status = status;
+            this.name = name;
         }
 
         @Override
         public boolean matches(Asset value) {
-            return super.matches(value) && value.getStatus().equals(status);
+            return value.getName().toUpperCase().endsWith(name.toUpperCase()) && value.getStatus().equals(status);
         }
     }
 }

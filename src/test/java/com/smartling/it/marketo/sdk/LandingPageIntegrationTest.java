@@ -113,7 +113,7 @@ public class LandingPageIntegrationTest extends BaseIntegrationTest {
     public void shouldGetLandingPagesByName() throws Exception {
         List<LandingPage> landingPages = marketoLandingPageClient.getLandingPagesByName(LANDING_PAGE_FOR_INTEGRATION_TESTS, null, null);
 
-        assertThat(landingPages).haveAtLeast(1, new AssetWithName(LANDING_PAGE_FOR_INTEGRATION_TESTS));
+        assertThat(landingPages).haveAtLeast(1, new EntityWithName(LANDING_PAGE_FOR_INTEGRATION_TESTS));
     }
 
     @Test
@@ -121,7 +121,7 @@ public class LandingPageIntegrationTest extends BaseIntegrationTest {
         List<LandingPage> landingPages = marketoLandingPageClient
                 .getLandingPagesByName(LANDING_PAGE_FOR_INTEGRATION_TESTS, TEST_FOLDER_ID, null);
 
-        assertThat(landingPages).haveAtLeast(1, new AssetWithNameAndFolderId(LANDING_PAGE_FOR_INTEGRATION_TESTS, TEST_FOLDER_ID));
+        assertThat(landingPages).haveAtLeast(1, new EntityWithNameAndFolderId(LANDING_PAGE_FOR_INTEGRATION_TESTS, TEST_FOLDER_ID));
     }
 
     @Test

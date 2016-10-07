@@ -15,7 +15,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -89,14 +88,14 @@ public class FormIntegrationTest extends BaseIntegrationTest {
     public void shouldGetFormsByName() throws Exception {
         List<Form> forms = marketoFormClient.getFormsByName(TEST_FORM_NAME, null, null);
 
-        assertThat(forms).haveAtLeast(1, new AssetWithName(TEST_FORM_NAME));
+        assertThat(forms).haveAtLeast(1, new EntityWithName(TEST_FORM_NAME));
     }
 
     @Test
     public void shouldGetFormsByNameWithFolder() throws Exception {
         List<Form> forms = marketoFormClient.getFormsByName(TEST_FORM_NAME, TEST_FOLDER_ID, null);
 
-        assertThat(forms).haveAtLeast(1, new AssetWithNameAndFolderId(TEST_FORM_NAME, TEST_FOLDER_ID));
+        assertThat(forms).haveAtLeast(1, new EntityWithNameAndFolderId(TEST_FORM_NAME, TEST_FOLDER_ID));
     }
 
     @Test

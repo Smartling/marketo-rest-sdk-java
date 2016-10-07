@@ -51,4 +51,9 @@ public class FolderId implements HasToBeMappedToJson {
     public int hashCode() {
         return Objects.hash(id, type);
     }
+
+    @Override
+    public String toString() {
+        return "FolderId{" + "id=" + id + ", type=" + type + '}';
+    }
 }

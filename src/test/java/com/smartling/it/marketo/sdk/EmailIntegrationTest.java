@@ -105,14 +105,14 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
     public void shouldGetEmailsByName() throws Exception {
         List<Email> emails = marketoEmailClient.getEmailsByName(TEST_EMAIL_NAME, null, null);
 
-        assertThat(emails).haveAtLeast(1, new AssetWithName(TEST_EMAIL_NAME));
+        assertThat(emails).haveAtLeast(1, new EntityWithName(TEST_EMAIL_NAME));
     }
 
     @Test
     public void shouldGetEmailsByNameWithFolder() throws Exception {
         List<Email> emails = marketoEmailClient.getEmailsByName(TEST_EMAIL_NAME, TEST_FOLDER_ID, null);
 
-        assertThat(emails).haveAtLeast(1, new AssetWithNameAndFolderId(TEST_EMAIL_NAME, TEST_FOLDER_ID));
+        assertThat(emails).haveAtLeast(1, new EntityWithNameAndFolderId(TEST_EMAIL_NAME, TEST_FOLDER_ID));
     }
 
     @Test
@@ -142,9 +142,6 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
         List<EmailContentItem> contentItems = marketoEmailClient.loadEmailContent(TEST_EMAIL_V2_ID);
 
         assertThat(contentItems).hasSize(59);
-
-        contentItems.forEach(System.out::println);
-
     }
 
     @Test
@@ -232,7 +229,7 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
         newItem.getValue().get(0).setType("HTML");
         newItem.getValue().get(0).setValue(null);
         newItem.getValue().get(1).setType("Text");
-        newItem.getValue().get(1).setValue(null);
+        newItem.getValue().get(1).setValue("");
 
         marketoEmailClient.updateEmailContent(TEST_EMAIL_ID, Collections.singletonList(newItem));
 
