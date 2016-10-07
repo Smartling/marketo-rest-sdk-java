@@ -59,6 +59,11 @@ public class MarketoRestClientManager implements MarketoClientManager {
         return new MarketoProgramRestClient(httpCommandExecutor);
     }
 
+    @Override
+    public MarketoTokenClient getMarketoTokenClient() {
+        return new MarketoTokenRestClient(httpCommandExecutor);
+    }
+
     public final static class Builder {
         private final String identityUrl;
         private final String restUrl;

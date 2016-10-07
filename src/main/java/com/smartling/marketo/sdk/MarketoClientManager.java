@@ -12,4 +12,6 @@ public interface MarketoClientManager {
     MarketoFormClient getMarketoFormClient();
 
     MarketoProgramClient getMarketoProgramClient();
+
+    MarketoTokenClient getMarketoTokenClient();
 }
