@@ -22,7 +22,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
 
 public class LandingPageIntegrationTest extends BaseIntegrationTest {
     private static final int TEST_LANDING_PAGE_ID = 1015;
-    private static final int TEST_PROGRAM_LANDING_PAGE_ID = 1053;
+    private static final int TEST_PROGRAM_LANDING_PAGE_ID = 1347;
     private static final int EMPTY_TEST_LANDING_PAGE_ID = 1049;
     private static final int TEST_LANDING_PAGE_TO_DESCARD_ID = 1065;
     private static final int TEST_LANDING_PAGE_WITH_DRAFT_ID = 1096;

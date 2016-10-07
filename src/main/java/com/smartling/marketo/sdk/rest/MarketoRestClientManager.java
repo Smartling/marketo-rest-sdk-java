@@ -8,7 +8,6 @@ import com.smartling.marketo.sdk.MarketoFormClient;
 import com.smartling.marketo.sdk.MarketoLandingPageClient;
 import com.smartling.marketo.sdk.MarketoProgramClient;
 import com.smartling.marketo.sdk.MarketoSnippetClient;
-import com.smartling.marketo.sdk.MarketoTokenClient;
 import com.smartling.marketo.sdk.rest.transport.BasicTokenProvider;
 import com.smartling.marketo.sdk.rest.transport.CacheableTokenProvider;
 import com.smartling.marketo.sdk.rest.transport.HttpCommandExecutor;
