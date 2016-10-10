@@ -52,6 +52,7 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
         assertThat(emails.get(0).getStatus()).isNotNull();
         assertThat(emails.get(0).getUrl()).isNotEmpty();
         assertThat(emails.get(0).getFolder()).isNotNull();
+        assertThat(emails.get(0).getVersion()).isPositive();
     }
 
     @Test
@@ -65,6 +66,7 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
         assertThat(emails.get(0).getStatus()).isNotNull();
         assertThat(emails.get(0).getUrl()).isNotEmpty();
         assertThat(emails.get(0).getFolder()).isNotNull();
+        assertThat(emails.get(0).getVersion()).isPositive();
     }
 
     @Test
@@ -90,6 +92,8 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
         assertThat(email.getFromName()).isNotEmpty();
         assertThat(email.getUrl()).isNotEmpty();
         assertThat(email.getFolder()).isNotNull();
+        assertThat(email.getVersion()).isPositive();
+        assertThat(email.getTemplate()).isNotNull();
     }
 
     @Test
