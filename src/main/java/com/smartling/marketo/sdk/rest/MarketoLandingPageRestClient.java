@@ -51,7 +51,7 @@ public class MarketoLandingPageRestClient implements MarketoLandingPageClient {
 
     @Override
     public List<LandingPage> getLandingPagesByName(String name, FolderId folder, Status status) throws MarketoApiException {
-        final List<LandingPage> emails = httpCommandExecutor.execute(new GetLandingPagesByName(name, status));
+        final List<LandingPage> emails = httpCommandExecutor.execute(new GetLandingPagesByName(name, folder, status));
         return emails != null ? emails : Collections.<LandingPage>emptyList();
     }
 

@@ -121,7 +121,8 @@ public class LandingPageIntegrationTest extends BaseIntegrationTest {
         List<LandingPage> landingPages = marketoLandingPageClient
                 .getLandingPagesByName(LANDING_PAGE_FOR_INTEGRATION_TESTS, TEST_FOLDER_ID, null);
 
-        assertThat(landingPages).haveAtLeast(1, new EntityWithNameAndFolderId(LANDING_PAGE_FOR_INTEGRATION_TESTS, TEST_FOLDER_ID));
+        assertThat(landingPages).hasSize(1);
+        assertThat(landingPages).haveExactly(1, new EntityWithNameAndFolderId(LANDING_PAGE_FOR_INTEGRATION_TESTS, TEST_FOLDER_ID));
     }
 
     @Test
