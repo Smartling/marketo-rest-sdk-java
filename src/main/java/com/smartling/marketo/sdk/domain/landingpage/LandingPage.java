@@ -8,6 +8,12 @@ public class LandingPage extends Asset {
     private boolean mobileEnabled;
     private String computedUrl;
     private String title;
+    private String keywords;
+    private String robots;
+    private String facebookOgTags;
+    private String customHeadHTML;
+    private boolean formPrefill;
+
 
     public int getTemplate() {
         return template;
@@ -47,5 +53,45 @@ public class LandingPage extends Asset {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getKeywords() {
+        return keywords;
+    }
+
+    public void setKeywords(String keywords) {
+        this.keywords = keywords;
+    }
+
+    public String getRobots() {
+        return robots;
+    }
+
+    public void setRobots(String robots) {
+        this.robots = robots;
+    }
+
+    public String getFacebookOgTags() {
+        return facebookOgTags;
+    }
+
+    public void setFacebookOgTags(String facebookOgTags) {
+        this.facebookOgTags = facebookOgTags;
+    }
+
+    public String getCustomHeadHTML() {
+        return customHeadHTML;
+    }
+
+    public void setCustomHeadHTML(String customHeadHTML) {
+        this.customHeadHTML = customHeadHTML;
+    }
+
+    public boolean isFormPrefill() {
+        return formPrefill;
+    }
+
+    public void setFormPrefill(boolean formPrefill) {
+        this.formPrefill = formPrefill;
     }
 }
