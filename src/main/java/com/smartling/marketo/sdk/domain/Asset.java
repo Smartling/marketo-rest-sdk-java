@@ -1,5 +1,7 @@
 package com.smartling.marketo.sdk.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public abstract class Asset extends BaseEntity{
     private Status status;
 
@@ -12,7 +14,12 @@ public abstract class Asset extends BaseEntity{
     }
 
     public enum Status {
-        DRAFT, APPROVED, DELETED;
+        @JsonProperty("draft")
+        DRAFT,
+        @JsonProperty("approved")
+        APPROVED,
+        @JsonProperty("deleted")
+        DELETED;
 
         @Override
         public String toString() {

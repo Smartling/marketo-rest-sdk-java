@@ -1,5 +1,6 @@
 package com.smartling.marketo.sdk.rest.transport;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.smartling.marketo.sdk.domain.email.EmailContentItem;
 import com.smartling.marketo.sdk.domain.email.EmailSnippetContentItem;
@@ -21,7 +22,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
-import java.lang.annotation.ElementType;
 import java.net.URLEncoder;
 
 import static java.time.LocalDateTime.now;
@@ -266,13 +266,13 @@ public class HttpCommandExecutorTest extends BaseTransportTest {
     }
 
     @Test
-    public void shouldDeserializeEnumsIgnoringCase() throws Exception {
+    public void shouldDeserializeEnumsAccordingToJsonAnnotations() throws Exception {
         givenThat(get(path("/rest/some/path")).willReturn(
-                aJsonResponse("{\"success\": true, \"result\": {\"enumeration\": \"method\"}}")));
+                aJsonResponse("{\"success\": true, \"result\": {\"enumeration\": \"val-1\"}}")));
 
         Data response = testedInstance.execute(command);
 
-        assertThat(response.enumeration).isEqualTo(ElementType.METHOD);
+        assertThat(response.enumeration).isEqualTo(Data.CustomEnum.VALUE_ONE);
     }
 
     @Test(timeout = 2 * 1000, expected = ProcessingException.class)
@@ -308,7 +308,14 @@ public class HttpCommandExecutorTest extends BaseTransportTest {
     private static class Data {
         private String string;
         private Date date;
-        private ElementType enumeration;
+        private CustomEnum enumeration;
+
+        private enum CustomEnum {
+            @JsonProperty("val-1")
+            VALUE_ONE,
+            @JsonProperty("val-2")
+            VALUE_TWO
+        }
     }
 
     private String json()
