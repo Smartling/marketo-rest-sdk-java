@@ -5,6 +5,7 @@ import com.smartling.marketo.sdk.MarketoFolderClient;
 import com.smartling.marketo.sdk.MarketoLandingPageClient;
 import com.smartling.marketo.sdk.MarketoProgramClient;
 import com.smartling.marketo.sdk.MarketoSnippetClient;
+import com.smartling.marketo.sdk.MarketoTokenClient;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -65,5 +66,13 @@ public class MarketoRestClientManagerTest {
 
         assertThat(client).isNotNull();
         assertThat(client).isInstanceOf(MarketoProgramRestClient.class);
+    }
+
+    @Test
+    public void shouldReturnTokenRestClient() throws Exception {
+        final MarketoTokenClient client = testedInstance.getMarketoTokenClient();
+
+        assertThat(client).isNotNull();
+        assertThat(client).isInstanceOf(MarketoTokenRestClient.class);
     }
 }

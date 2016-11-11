@@ -42,7 +42,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class HttpCommandExecutorTest extends BaseTransportTest {
 
-    private static final String FOLDER_ID_JSON = "{\"id\":42,\"type\":\"FOLDER\"}";
+    private static final String FOLDER_ID_JSON = "{\"id\":42,\"type\":\"Folder\"}";
     private static final String CONTENT_TYPE_TEXT = "Text";
     private static final String CONTENT_TYPE_SNIPPET = "Snippet";
 

@@ -3,18 +3,19 @@ package com.smartling.marketo.sdk.rest.command.token;
 import com.google.common.collect.ImmutableMap;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.domain.token.Token;
+import com.smartling.marketo.sdk.domain.token.TokenResult;
 import com.smartling.marketo.sdk.rest.command.BaseMarketoCommand;
 
 import java.util.Map;
 
-public class CreateToken extends BaseMarketoCommand<Token> {
+public class CreateToken extends BaseMarketoCommand<TokenResult> {
     private final FolderId folder;
     private final String name;
     private final Token.Type type;
     private final String value;
 
     public CreateToken(FolderId folder, String name, Token.Type type, String value) {
-        super(Token.class);
+        super(TokenResult.class);
         this.folder = folder;
         this.name = name;
         this.type = type;

@@ -35,8 +35,8 @@ public class MarketoTokenRestClient implements MarketoTokenClient {
 
     @Override
     public Token createToken(FolderId folder, String name, Token.Type type, String value) throws MarketoApiException {
-        List<Token> tokens = httpCommandExecutor.execute(new CreateToken(folder, name, type, value));
+        List<TokenResult> tokenResults = httpCommandExecutor.execute(new CreateToken(folder, name, type, value));
 
-        return tokens.get(0);
+        return tokenResults.get(0).getTokens().get(0);
     }
 }

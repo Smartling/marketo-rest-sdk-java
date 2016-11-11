@@ -1,18 +1,13 @@
 package com.smartling.marketo.sdk.domain.token;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public class Token {
-    String name;
     Type type;
-    String value;
+    String name;
     String computedUrl;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
+    String value;
 
     public Type getType() {
         return type;
@@ -22,12 +17,12 @@ public class Token {
         this.type = type;
     }
 
-    public String getValue() {
-        return value;
+    public String getName() {
+        return name;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getComputedUrl() {
@@ -38,20 +33,48 @@ public class Token {
         this.computedUrl = computedUrl;
     }
 
-    public static enum Type {
-        SCRIPT_BLOCK, RICH_TEXT, TEXT, SCORE, NUMBER, DATE, ICALENDAR
+    public String getValue() {
+        return value;
     }
 
-//    public static enum Type {
-//        SCRIPT_BLOCK("script block"), RICH_TEXT("rich text"), TEXT("text");
-//
-//        private final String name;
-//
-//        Type(String name) {
-//            this.name = name;
-//        }
-//
-//        @Override
-//        public Type valueOf
-//    }
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public enum Type {
+        SCRIPT_BLOCK("script block"),
+        RICH_TEXT("rich text"),
+        TEXT("text"),
+        SCORE("score"),
+        NUMBER("number"),
+        DATE("date"),
+        ICALENDAR("iCalendar");
+
+        private final String name;
+
+        Type(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
+
+        @JsonValue
+        public String getName() {
+            return this.name;
+        }
+
+        @JsonCreator
+        public static Type create(String name) {
+            Type[] types = Type.values();
+            for (Type type : types) {
+                if (type.getName().equalsIgnoreCase(name)) {
+                    return type;
+                }
+            }
+            return null;
+        }
+    }
 }
