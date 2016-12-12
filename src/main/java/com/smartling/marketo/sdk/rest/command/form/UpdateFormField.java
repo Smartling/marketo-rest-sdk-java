@@ -51,7 +51,7 @@ public class UpdateFormField implements Command<FormField> {
             builder.put("defaultValue", formField.getDefaultValue());
         }
         if (formField.getFieldMetaData() != null && formField.getFieldMetaData().getValues() != null) {
-            builder.put("values", formField.getFieldMetaData().getValues());
+            builder.put("values", formField.getFieldMetaData());
         }
 
         return builder.build();
