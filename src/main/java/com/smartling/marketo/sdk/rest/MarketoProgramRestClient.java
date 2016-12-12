@@ -38,8 +38,8 @@ public class MarketoProgramRestClient implements MarketoProgramClient {
     }
 
     @Override
-    public List<Program> getProgramsByName(final String name) throws MarketoApiException {
-        final List<Program> programs = httpCommandExecutor.execute(new GetProgramsByName(name));
+    public List<Program> getProgramsByName(String name) throws MarketoApiException {
+        List<Program> programs = httpCommandExecutor.execute(new GetProgramsByName(name));
         return programs != null ? programs : Collections.emptyList();
     }
 

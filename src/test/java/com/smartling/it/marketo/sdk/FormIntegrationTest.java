@@ -2,6 +2,8 @@ package com.smartling.it.marketo.sdk;
 
 import com.smartling.marketo.sdk.MarketoFormClient;
 import com.smartling.marketo.sdk.domain.Asset.Status;
+import com.smartling.marketo.sdk.domain.form.FieldMetaData;
+import com.smartling.marketo.sdk.domain.form.FieldMetaData.Value;
 import com.smartling.marketo.sdk.domain.form.Form;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.domain.folder.FolderType;
@@ -15,6 +17,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -123,6 +126,14 @@ public class FormIntegrationTest extends BaseIntegrationTest {
         assertThat(visibilityRules.getRuleType()).isEqualTo(RuleType.SHOW);
         assertThat(visibilityRules.getRules().get(0).getSubjectField()).isEqualTo("FirstName");
         assertThat(visibilityRules.getRules().get(0).getAltLabel()).isEqualTo("Address:");
+
+        formField = formFields.get(18);
+        assertThat(formField.getFieldMetaData()).isNotNull();
+        assertThat(formField.getFieldMetaData().getValues()).isNotNull();
+        List<Value> dropdownValues = formField.getFieldMetaData().getValues();
+        assertThat(dropdownValues).hasSize(5);
+        assertThat(dropdownValues.get(0).getLabel()).isEqualTo("Select...");
+        assertThat(dropdownValues.get(2).getLabel()).isEqualTo("Male");
     }
 
     @Test
@@ -163,7 +174,7 @@ public class FormIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void shouldUpdateFormFields() throws Exception {
+    public void shouldUpdateTextField() throws Exception {
         FormField formField = new FormField();
         formField.setId("FirstName");
         formField.setDataType("text");
@@ -174,6 +185,38 @@ public class FormIntegrationTest extends BaseIntegrationTest {
         marketoFormClient.updateFormFields(TEST_FORM_ID, Collections.singletonList(formField));
 
         // Can not verify - no way to fetch not approved content
+    }
+
+    @Test
+    public void shouldUpdateDropdownList() throws Exception {
+        FormField formField = new FormField();
+        formField.setId("MarketoSocialGender");
+        formField.setLabel("Marketo Sociaux De Genre");
+        formField.setValidationMessage("Ce champ est obligatoire");
+        formField.setFieldMetaData(fieldMetaData());
+
+        marketoFormClient.updateFormFields(TEST_FORM_ID, Collections.singletonList(formField));
+
+        // Can not verify - no way to fetch not approved content
+    }
+
+    private FieldMetaData fieldMetaData() {
+        FieldMetaData fieldMetaData = new FieldMetaData();
+        List<Value> values = new ArrayList<>();
+        values.add(metaDataValue("Sélectionnez...", ""));
+        values.add(metaDataValue("Femme", "f"));
+        values.add(metaDataValue("Homme.", "m"));
+        values.add(metaDataValue("D'autres", "o"));
+        values.add(metaDataValue("Je ne sais pas\n", "dk"));
+        fieldMetaData.setValues(values);
+        return fieldMetaData;
+    }
+
+    private Value metaDataValue(String label, String value) {
+        Value metaDataValue = new Value();
+        metaDataValue.setLabel(label);
+        metaDataValue.setValue(value);
+        return metaDataValue;
     }
 
     @Test
@@ -223,5 +266,4 @@ public class FormIntegrationTest extends BaseIntegrationTest {
         rule.setAltLabel(altLabel);
         return rule;
     }
-
 }

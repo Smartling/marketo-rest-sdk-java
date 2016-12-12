@@ -9,6 +9,7 @@ public class FormField {
     private String validationMessage;
     private VisibilityRules visibilityRules;
     private String hintText;
+    private FieldMetaData fieldMetaData;
 
     public String getId() {
         return id;
@@ -74,4 +75,11 @@ public class FormField {
         this.hintText = hintText;
     }
 
+    public FieldMetaData getFieldMetaData() {
+        return fieldMetaData;
+    }
+
+    public void setFieldMetaData(FieldMetaData fieldMetaData) {
+        this.fieldMetaData = fieldMetaData;
+    }
 }
