@@ -1,5 +1,6 @@
 package com.smartling.it.marketo.sdk;
 
+import com.smartling.marketo.sdk.domain.folder.FolderContentItem;
 import com.smartling.marketo.sdk.domain.folder.FolderDetails;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.domain.folder.FolderType;
@@ -40,6 +41,33 @@ public class FolderIntegrationTest extends BaseIntegrationTest {
         assertThat(folders.get(0).getFolderId()).isNotNull();
         assertThat(folders.get(0).getFolderType()).isNotEmpty();
         assertThat(folders.get(0).getParent()).isNull();
+        assertThat(folders.get(0).getWorkspace()).isNotEmpty();
+    }
+
+    @Test
+    public void shouldReturnFolderContents() throws Exception {
+        List<FolderContentItem> assets = marketoFolderClient.getFolderContents(new FolderId(1093, FolderType.PROGRAM), 0, 200);
+
+        assertThat(assets).hasSize(4);
+        assertThat(assets.get(0).getId()).isPositive();
+        assertThat(assets.get(0).getType()).isNotNull();
+
+    }
+
+    @Test
+    public void shouldGetFolderByName() throws Exception {
+        List<FolderDetails> folders = marketoFolderClient.getFolderByName("Engagement program for Inegration Tests", FolderType.PROGRAM, new FolderId(158, FolderType.FOLDER));
+
+        assertThat(folders).hasSize(1);
+        assertThat(folders.get(0).getId()).isPositive();
+        assertThat(folders.get(0).getName()).isEqualTo("Engagement program for Inegration Tests");
+        assertThat(folders.get(0).getCreatedAt()).isBefore(new Date());
+        assertThat(folders.get(0).getUpdatedAt()).isBefore(new Date());
+        assertThat(folders.get(0).getFolderId()).isNotNull();
+        assertThat(folders.get(0).getPath()).isNotEmpty();
+        assertThat(folders.get(0).getFolderId()).isNotNull();
+        assertThat(folders.get(0).getFolderType()).isNotEmpty();
+        assertThat(folders.get(0).getParent()).isNotNull();
         assertThat(folders.get(0).getWorkspace()).isNotEmpty();
     }
 }
