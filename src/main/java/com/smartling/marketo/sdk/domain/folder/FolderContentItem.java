@@ -22,7 +22,7 @@ public class FolderContentItem {
         this.type = type;
     }
 
-    private enum Type {
+    public enum Type {
         @JsonProperty("Email")
         EMAIL,
         @JsonProperty("Email Template")
@@ -50,6 +50,7 @@ public class FolderContentItem {
         @JsonProperty("Report")
         REPORT,
         @JsonProperty("Social App")
-        SOCIAL_APP;
+        SOCIAL_APP,
+        UNKNOWN;
     }
 }
