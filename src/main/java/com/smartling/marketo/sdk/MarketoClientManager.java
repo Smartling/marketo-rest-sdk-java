@@ -9,6 +9,8 @@ public interface MarketoClientManager {
 
     MarketoLandingPageClient getMarketoLandingPageClient();
 
+    MarketoLandingPageTemplateClient getMarketoLandingPageTemplateClient();
+
     MarketoFormClient getMarketoFormClient();
 
     MarketoProgramClient getMarketoProgramClient();
