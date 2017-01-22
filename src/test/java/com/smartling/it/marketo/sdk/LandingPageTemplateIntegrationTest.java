@@ -4,12 +4,16 @@ import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.MarketoLandingPageTemplateClient;
 import com.smartling.marketo.sdk.domain.Asset.Status;
 import com.smartling.marketo.sdk.domain.landingpagetemplate.LandingPageTemplate;
+import com.smartling.marketo.sdk.domain.landingpagetemplate.LandingPageTemplateContentItem;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static com.smartling.marketo.sdk.domain.landingpagetemplate.LandingPageTemplate.TemplateType.*;
+import java.util.List;
+
+import static com.smartling.marketo.sdk.domain.landingpagetemplate.TemplateType.FREEFORM;
+import static com.smartling.marketo.sdk.domain.landingpagetemplate.TemplateType.GUIDED;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public class LandingPageTemplateIntegrationTest extends BaseIntegrationTest {
@@ -56,5 +60,16 @@ public class LandingPageTemplateIntegrationTest extends BaseIntegrationTest {
         thrown.expectMessage("LandingPageTemplate[id = 42] not found");
 
         marketoLandingPageTemplateClient.getLandingPageTemplateById(42);
+    }
+
+    @Test
+    public void shouldReadLandingPageContent() throws Exception {
+        List<LandingPageTemplateContentItem> contentItems = marketoLandingPageTemplateClient.getLandingPageTemplateContent(TEST_LANDING_PAGE_TEMPLATE_ID);
+
+        assertThat(contentItems).hasSize(1);
+        LandingPageTemplateContentItem textContentItem = contentItems.get(0);
+        assertThat(textContentItem.getId()).isEqualTo(TEST_LANDING_PAGE_TEMPLATE_ID);
+        assertThat(textContentItem.getContent()).containsIgnoringCase("Alice's Adventures in Wonderland");
+        assertThat(textContentItem.getTemplateType()).isEqualTo(GUIDED);
     }
 }

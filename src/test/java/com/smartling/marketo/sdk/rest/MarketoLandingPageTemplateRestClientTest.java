@@ -3,7 +3,9 @@ package com.smartling.marketo.sdk.rest;
 import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.domain.Asset.Status;
 import com.smartling.marketo.sdk.domain.landingpagetemplate.LandingPageTemplate;
+import com.smartling.marketo.sdk.domain.landingpagetemplate.LandingPageTemplateContentItem;
 import com.smartling.marketo.sdk.rest.command.landingpagetemplate.GetLandingPageTemplateById;
+import com.smartling.marketo.sdk.rest.command.landingpagetemplate.GetLandingPageTemplateContent;
 import com.smartling.marketo.sdk.rest.transport.HttpCommandExecutor;
 import org.junit.Rule;
 import org.junit.Test;
@@ -14,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Collections;
+import java.util.List;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -62,5 +65,15 @@ public class MarketoLandingPageTemplateRestClientTest {
         thrown.expectMessage("LandingPageTemplate[id = 42] not found");
 
         testedInstance.getLandingPageTemplateById(nonExistingId);
+    }
+
+    @Test
+    public void shouldGetLandingPageContent() throws Exception {
+        LandingPageTemplateContentItem contentItem = new LandingPageTemplateContentItem();
+        given(executor.execute(isA(GetLandingPageTemplateContent.class))).willReturn(Collections.singletonList(contentItem));
+
+        List<LandingPageTemplateContentItem> result = testedInstance.getLandingPageTemplateContent(42);
+
+        assertThat(result).contains(contentItem);
     }
 }
