@@ -1,8 +1,10 @@
 package com.smartling.marketo.sdk.rest;
 
 import com.smartling.marketo.sdk.MarketoEmailClient;
+import com.smartling.marketo.sdk.MarketoEmailTemplateClient;
 import com.smartling.marketo.sdk.MarketoFolderClient;
 import com.smartling.marketo.sdk.MarketoLandingPageClient;
+import com.smartling.marketo.sdk.MarketoLandingPageTemplateClient;
 import com.smartling.marketo.sdk.MarketoProgramClient;
 import com.smartling.marketo.sdk.MarketoSnippetClient;
 import com.smartling.marketo.sdk.MarketoTokenClient;
@@ -37,6 +39,14 @@ public class MarketoRestClientManagerTest {
     }
 
     @Test
+    public void shouldReturnEmailTemplateRestClient() throws Exception {
+        final MarketoEmailTemplateClient client = testedInstance.getMarketoEmailTemplateClient();
+
+        assertThat(client).isNotNull();
+        assertThat(client).isInstanceOf(MarketoEmailTemplateRestClient.class);
+    }
+
+    @Test
     public void shouldReturnSnippetRestClient() throws Exception {
         final MarketoSnippetClient client = testedInstance.getMarketoSnippetClient();
 
@@ -50,6 +60,14 @@ public class MarketoRestClientManagerTest {
 
         assertThat(client).isNotNull();
         assertThat(client).isInstanceOf(MarketoLandingPageRestClient.class);
+    }
+
+    @Test
+    public void shouldReturnLandingPageTemplateRestClient() throws Exception {
+        final MarketoLandingPageTemplateClient client = testedInstance.getMarketoLandingPageTemplateClient();
+
+        assertThat(client).isNotNull();
+        assertThat(client).isInstanceOf(MarketoLandingPageTemplateRestClient.class);
     }
 
     @Test

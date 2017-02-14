@@ -3,6 +3,7 @@ package com.smartling.marketo.sdk.rest;
 import com.google.common.base.Preconditions;
 import com.smartling.marketo.sdk.MarketoClientManager;
 import com.smartling.marketo.sdk.MarketoEmailClient;
+import com.smartling.marketo.sdk.MarketoEmailTemplateClient;
 import com.smartling.marketo.sdk.MarketoFolderClient;
 import com.smartling.marketo.sdk.MarketoFormClient;
 import com.smartling.marketo.sdk.MarketoLandingPageClient;
@@ -39,6 +40,10 @@ public class MarketoRestClientManager implements MarketoClientManager {
     @Override
     public MarketoEmailClient getMarketoEmailClient() {
         return new MarketoEmailRestClient(httpCommandExecutor);
+    }
+
+    public MarketoEmailTemplateClient getMarketoEmailTemplateClient() {
+        return new MarketoEmailTemplateRestClient(httpCommandExecutor);
     }
 
     @Override

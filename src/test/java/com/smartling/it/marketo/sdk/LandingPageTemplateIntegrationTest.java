@@ -30,6 +30,24 @@ public class LandingPageTemplateIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    public void shouldGetAllLandingPages() throws Exception {
+        List<LandingPageTemplate> landingPageTemplates = marketoLandingPageTemplateClient.getLandingPageTemplates(0, 200, null, null);
+
+        assertThat(landingPageTemplates).isNotNull();
+        assertThat(landingPageTemplates).isNotEmpty();
+        assertThat(landingPageTemplates).haveAtLeast(1, new EntityWithName("Blank Template"));
+    }
+
+    @Test
+    public void shouldGetAllLandingPagesFromFolder() throws Exception {
+        List<LandingPageTemplate> landingPageTemplates = marketoLandingPageTemplateClient.getLandingPageTemplates(0, 200, null, null);
+
+        assertThat(landingPageTemplates).isNotNull();
+        assertThat(landingPageTemplates).isNotEmpty();
+        assertThat(landingPageTemplates).haveAtLeast(1, new EntityWithName("Blank Template"));
+    }
+
+    @Test
     public void shouldGetLandingPageById() throws Exception {
         LandingPageTemplate landingPageTemplate = marketoLandingPageTemplateClient.getLandingPageTemplateById(TEST_LANDING_PAGE_TEMPLATE_ID);
 

@@ -6,6 +6,7 @@ import com.smartling.marketo.sdk.domain.landingpagetemplate.LandingPageTemplate;
 import com.smartling.marketo.sdk.domain.landingpagetemplate.LandingPageTemplateContent;
 import com.smartling.marketo.sdk.rest.command.landingpagetemplate.GetLandingPageTemplateById;
 import com.smartling.marketo.sdk.rest.command.landingpagetemplate.GetLandingPageTemplateContent;
+import com.smartling.marketo.sdk.rest.command.landingpagetemplate.GetLandingPageTemplates;
 import com.smartling.marketo.sdk.rest.transport.HttpCommandExecutor;
 import org.junit.Rule;
 import org.junit.Test;
@@ -33,6 +34,18 @@ public class MarketoLandingPageTemplateRestClientTest {
 
     @InjectMocks
     private MarketoLandingPageTemplateRestClient testedInstance;
+
+    @Test
+    public void shouldGetlandingPagetemplates() throws Exception {
+        LandingPageTemplate landingPageTemplate = new LandingPageTemplate();
+
+        given(executor.execute(isA(GetLandingPageTemplates.class))).willReturn(Collections.singletonList(landingPageTemplate));
+
+        List<LandingPageTemplate> result = testedInstance.getLandingPageTemplates(0, 200, null, null);
+
+        assertThat(result).hasSize(1);
+        assertThat(result).contains(landingPageTemplate);
+    }
 
     @Test
     public void shouldGetLandingPageById() throws Exception {
