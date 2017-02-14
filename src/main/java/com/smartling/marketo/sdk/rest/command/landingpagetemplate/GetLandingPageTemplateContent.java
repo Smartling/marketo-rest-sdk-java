@@ -1,18 +1,18 @@
 package com.smartling.marketo.sdk.rest.command.landingpagetemplate;
 
 import com.smartling.marketo.sdk.domain.Asset.Status;
-import com.smartling.marketo.sdk.domain.landingpagetemplate.LandingPageTemplateContentItem;
+import com.smartling.marketo.sdk.domain.landingpagetemplate.LandingPageTemplateContent;
 import com.smartling.marketo.sdk.rest.command.BaseGetCommand;
 
 import java.util.Collections;
 import java.util.Map;
 
-public class GetLandingPageTemplateContent extends BaseGetCommand<LandingPageTemplateContentItem> {
+public class GetLandingPageTemplateContent extends BaseGetCommand<LandingPageTemplateContent> {
     private final int id;
     private final Status status;
 
     public GetLandingPageTemplateContent(int id, Status status) {
-        super(LandingPageTemplateContentItem.class);
+        super(LandingPageTemplateContent.class);
         this.id = id;
         this.status = status;
     }

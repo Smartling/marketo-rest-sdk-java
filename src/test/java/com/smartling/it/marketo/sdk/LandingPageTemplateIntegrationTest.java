@@ -4,7 +4,7 @@ import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.MarketoLandingPageTemplateClient;
 import com.smartling.marketo.sdk.domain.Asset.Status;
 import com.smartling.marketo.sdk.domain.landingpagetemplate.LandingPageTemplate;
-import com.smartling.marketo.sdk.domain.landingpagetemplate.LandingPageTemplateContentItem;
+import com.smartling.marketo.sdk.domain.landingpagetemplate.LandingPageTemplateContent;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -64,10 +64,10 @@ public class LandingPageTemplateIntegrationTest extends BaseIntegrationTest {
 
     @Test
     public void shouldReadLandingPageContent() throws Exception {
-        List<LandingPageTemplateContentItem> contentItems = marketoLandingPageTemplateClient.getLandingPageTemplateContent(TEST_LANDING_PAGE_TEMPLATE_ID);
+        List<LandingPageTemplateContent> contentItems = marketoLandingPageTemplateClient.getLandingPageTemplateContent(TEST_LANDING_PAGE_TEMPLATE_ID);
 
         assertThat(contentItems).hasSize(1);
-        LandingPageTemplateContentItem textContentItem = contentItems.get(0);
+        LandingPageTemplateContent textContentItem = contentItems.get(0);
         assertThat(textContentItem.getId()).isEqualTo(TEST_LANDING_PAGE_TEMPLATE_ID);
         assertThat(textContentItem.getContent()).containsIgnoringCase("Alice's Adventures in Wonderland");
         assertThat(textContentItem.getTemplateType()).isEqualTo(GUIDED);

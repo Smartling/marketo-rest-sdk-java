@@ -4,7 +4,7 @@ import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.MarketoLandingPageTemplateClient;
 import com.smartling.marketo.sdk.domain.Asset.Status;
 import com.smartling.marketo.sdk.domain.landingpagetemplate.LandingPageTemplate;
-import com.smartling.marketo.sdk.domain.landingpagetemplate.LandingPageTemplateContentItem;
+import com.smartling.marketo.sdk.domain.landingpagetemplate.LandingPageTemplateContent;
 import com.smartling.marketo.sdk.rest.command.landingpagetemplate.GetLandingPageTemplateById;
 import com.smartling.marketo.sdk.rest.command.landingpagetemplate.GetLandingPageTemplateContent;
 import com.smartling.marketo.sdk.rest.transport.HttpCommandExecutor;
@@ -36,13 +36,13 @@ public class MarketoLandingPageTemplateRestClient implements MarketoLandingPageT
     }
 
     @Override
-    public List<LandingPageTemplateContentItem> getLandingPageTemplateContent(int id) throws MarketoApiException {
+    public List<LandingPageTemplateContent> getLandingPageTemplateContent(int id) throws MarketoApiException {
         return getLandingPageTemplateContent(id, null);
     }
 
     @Override
-    public List<LandingPageTemplateContentItem> getLandingPageTemplateContent(int id, Status status) throws MarketoApiException {
-        final List<LandingPageTemplateContentItem> contentItems = httpCommandExecutor.execute(new GetLandingPageTemplateContent(id, status));
+    public List<LandingPageTemplateContent> getLandingPageTemplateContent(int id, Status status) throws MarketoApiException {
+        final List<LandingPageTemplateContent> contentItems = httpCommandExecutor.execute(new GetLandingPageTemplateContent(id, status));
         return contentItems != null ? contentItems : Collections.emptyList();
     }
 }
