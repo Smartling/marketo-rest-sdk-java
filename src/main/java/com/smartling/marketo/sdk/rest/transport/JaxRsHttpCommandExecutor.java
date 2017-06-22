@@ -9,6 +9,7 @@ import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.rest.HttpCommandExecutor;
 import com.smartling.marketo.sdk.rest.RequestLimitExceededException;
 import org.glassfish.jersey.client.ClientProperties;
+import org.glassfish.jersey.filter.LoggingFilter;
 import org.glassfish.jersey.jackson.JacksonFeature;
 
 import javax.ws.rs.client.Client;
@@ -48,7 +49,7 @@ public class JaxRsHttpCommandExecutor implements HttpCommandExecutor {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         this.tokenProvider = tokenProvider;
-        this.client = ClientBuilder.newClient().register(JacksonFeature.class).register(ObjectMapperProvider.class);
+        this.client = ClientBuilder.newClient().register(JacksonFeature.class).register(ObjectMapperProvider.class).register(LoggingFilter.class);
     }
 
     public void setConnectionTimeout(int timeout) {
