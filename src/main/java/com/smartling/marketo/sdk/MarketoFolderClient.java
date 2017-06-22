@@ -9,6 +9,8 @@ import java.util.List;
 
 public interface MarketoFolderClient {
 
+    FolderDetails getFolderById(FolderId folderId) throws MarketoApiException;
+
     List<FolderDetails> getFolders(FolderId root, int offset, int maxDepth, int limit, String workspace) throws MarketoApiException;
 
     List<FolderContentItem> getFolderContents(FolderId folder, Integer  offset, Integer maxReturn) throws MarketoApiException;

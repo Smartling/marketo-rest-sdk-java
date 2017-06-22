@@ -6,6 +6,7 @@ import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.MarketoFolderClient;
 import com.smartling.marketo.sdk.domain.folder.FolderType;
+import com.smartling.marketo.sdk.rest.command.folder.GetFolderById;
 import com.smartling.marketo.sdk.rest.command.folder.GetFolderByName;
 import com.smartling.marketo.sdk.rest.command.folder.GetFolderContents;
 import com.smartling.marketo.sdk.rest.command.folder.GetFoldersCommand;
@@ -20,6 +21,13 @@ public class MarketoFolderRestClient implements MarketoFolderClient {
 
     public MarketoFolderRestClient(HttpCommandExecutor httpCommandExecutor) {
         this.httpCommandExecutor = httpCommandExecutor;
+    }
+
+    @Override
+    public FolderDetails getFolderById(FolderId folderId) throws MarketoApiException {
+        List<FolderDetails> folders = httpCommandExecutor.execute(new GetFolderById(folderId));
+
+        return folders != null && !folders.isEmpty()? folders.get(0) : null;
     }
 
     @Override
