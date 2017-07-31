@@ -37,13 +37,16 @@ public abstract class BaseIntegrationTest {
 
     @Before
     public void setUpBase() throws Exception {
-        marketoClientManager = MarketoRestClientManager.create(identityEndpoint, restEndpoint).withCredentials(clientId, clientSecret);
+        marketoClientManager = MarketoRestClientManager.create(identityEndpoint, restEndpoint)
+                .withConnectionTimeout(2000)
+                .withSocketReadTimeout(10000)
+                .withCredentials(clientId, clientSecret);
     }
 
     protected class EntityWithName extends Condition<BaseEntity> {
         private final String name;
 
-        public EntityWithName(String name) {
+        EntityWithName(String name) {
             this.name = name;
         }
 
@@ -56,7 +59,7 @@ public abstract class BaseIntegrationTest {
     protected class EntityWithNameAndFolderId extends EntityWithName {
         private final FolderId folderId;
 
-        public EntityWithNameAndFolderId(String name, FolderId folderId) {
+        EntityWithNameAndFolderId(String name, FolderId folderId) {
             super(name);
             this.folderId = folderId;
         }
@@ -71,7 +74,7 @@ public abstract class BaseIntegrationTest {
         private final Asset.Status status;
         private final String name;
 
-        public AssetWithNameAndStatus(String name, Asset.Status status) {
+        AssetWithNameAndStatus(String name, Asset.Status status) {
             this.status = status;
             this.name = name;
         }
