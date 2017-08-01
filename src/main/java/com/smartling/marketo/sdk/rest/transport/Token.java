@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 import static java.time.LocalDateTime.now;
 
-class Token {
+final class Token {
     private final LocalDateTime validDateTime;
     private final String accessToken;
 
@@ -13,11 +13,11 @@ class Token {
         this.accessToken = accessToken;
     }
 
-    public boolean isValid() {
+    boolean isValid() {
         return validDateTime.isAfter(now());
     }
 
-    public String getAccessToken() {
+    String getAccessToken() {
         return accessToken;
     }
 }

@@ -8,26 +8,26 @@ class ClientConnectionData {
     private final String clientId;
     private final String clientSecret;
 
-    public ClientConnectionData(Client wsClient, String identityUrl, String clientId, String clientSecret) {
+    ClientConnectionData(Client wsClient, String identityUrl, String clientId, String clientSecret) {
         this.wsClient = wsClient;
         this.identityUrl = identityUrl;
         this.clientId = clientId;
         this.clientSecret = clientSecret;
     }
 
-    public Client getWsClient() {
+    Client getWsClient() {
         return wsClient;
     }
 
-    public String getIdentityUrl() {
+    String getIdentityUrl() {
         return identityUrl;
     }
 
-    public String getClientId() {
+    String getClientId() {
         return clientId;
     }
 
-    public String getClientSecret() {
+    String getClientSecret() {
         return clientSecret;
     }
 }

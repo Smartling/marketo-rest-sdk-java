@@ -4,16 +4,16 @@ package com.smartling.marketo.sdk.rest.transport;
 import java.util.Collections;
 import java.util.List;
 
-class MarketoResponse<T> {
+final class MarketoResponse<T> {
     private boolean success;
     private List<Error> errors = Collections.emptyList();
     private T result;
 
-    public boolean isSuccess() {
+    boolean isSuccess() {
         return success;
     }
 
-    public List<Error> getErrors() {
+    List<Error> getErrors() {
         return errors;
     }
 
@@ -25,11 +25,11 @@ class MarketoResponse<T> {
         private String code;
         private String message;
 
-        public String getCode() {
+        String getCode() {
             return code;
         }
 
-        public String getMessage() {
+        String getMessage() {
             return message;
         }
     }
