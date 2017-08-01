@@ -39,7 +39,7 @@ public abstract class BaseIntegrationTest {
     public void setUpBase() throws Exception {
         marketoClientManager = MarketoRestClientManager.create(identityEndpoint, restEndpoint)
                 .withConnectionTimeout(2000)
-                .withSocketReadTimeout(10000)
+                .withSocketReadTimeout(20000)
                 .withCredentials(clientId, clientSecret);
     }
 
