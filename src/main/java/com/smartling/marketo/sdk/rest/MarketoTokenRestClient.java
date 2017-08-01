@@ -8,7 +8,6 @@ import com.smartling.marketo.sdk.domain.token.TokenResult;
 import com.smartling.marketo.sdk.rest.command.token.CreateToken;
 import com.smartling.marketo.sdk.rest.command.token.DeleteToken;
 import com.smartling.marketo.sdk.rest.command.token.GetTokens;
-import com.smartling.marketo.sdk.rest.transport.HttpCommandExecutor;
 
 import java.util.Collections;
 import java.util.List;

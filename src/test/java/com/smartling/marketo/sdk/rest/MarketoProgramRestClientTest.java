@@ -8,7 +8,6 @@ import com.smartling.marketo.sdk.rest.command.program.CloneProgram;
 import com.smartling.marketo.sdk.rest.command.program.GetProgramsByName;
 import com.smartling.marketo.sdk.rest.command.program.GetPrograms;
 import com.smartling.marketo.sdk.rest.command.program.GetProgramById;
-import com.smartling.marketo.sdk.rest.transport.HttpCommandExecutor;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;

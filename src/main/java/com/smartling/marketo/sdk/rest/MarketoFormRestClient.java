@@ -16,7 +16,6 @@ import com.smartling.marketo.sdk.rest.command.form.UpdateForm;
 import com.smartling.marketo.sdk.rest.command.form.UpdateFormField;
 import com.smartling.marketo.sdk.rest.command.form.UpdateFormFieldVisibilityRules;
 import com.smartling.marketo.sdk.rest.command.form.UpdateSubmitButton;
-import com.smartling.marketo.sdk.rest.transport.HttpCommandExecutor;
 
 import java.util.Collections;
 import java.util.List;

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smartling.marketo.sdk.HasToBeMappedToJson;
 import com.smartling.marketo.sdk.rest.Command;
 import com.smartling.marketo.sdk.MarketoApiException;
+import com.smartling.marketo.sdk.rest.HttpCommandExecutor;
 import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.jackson.JacksonFeature;
 
@@ -24,7 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class HttpCommandExecutor {
+public class JaxRsHttpCommandExecutor implements HttpCommandExecutor {
     private final static ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     private final String identityUrl;
@@ -34,7 +35,7 @@ public class HttpCommandExecutor {
     private final TokenProvider tokenProvider;
     private final Client client;
 
-    public HttpCommandExecutor(String identityUrl, String restUrl, String clientId, String clientSecret, TokenProvider tokenProvider) {
+    public JaxRsHttpCommandExecutor(String identityUrl, String restUrl, String clientId, String clientSecret, TokenProvider tokenProvider) {
         this.identityUrl = identityUrl;
         this.restUrl = restUrl;
         this.clientId = clientId;
@@ -51,6 +52,7 @@ public class HttpCommandExecutor {
         client.property(ClientProperties.READ_TIMEOUT, timeout);
     }
 
+    @Override
     public <T> T execute(final Command<T> command) throws MarketoApiException {
         ClientConnectionData clientConnectionData = new ClientConnectionData(client, identityUrl, clientId, clientSecret);
         String token = tokenProvider.authenticate(clientConnectionData).getAccessToken();

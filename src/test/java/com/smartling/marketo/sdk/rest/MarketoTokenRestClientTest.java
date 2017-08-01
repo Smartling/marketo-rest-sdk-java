@@ -6,7 +6,6 @@ import com.smartling.marketo.sdk.domain.token.Token;
 import com.smartling.marketo.sdk.domain.token.TokenResult;
 import com.smartling.marketo.sdk.rest.command.token.CreateToken;
 import com.smartling.marketo.sdk.rest.command.token.GetTokens;
-import com.smartling.marketo.sdk.rest.transport.HttpCommandExecutor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;

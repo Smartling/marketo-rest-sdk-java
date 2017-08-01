@@ -39,13 +39,13 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class HttpCommandExecutorTest extends BaseTransportTest {
+public class JaxRsHttpCommandExecutorTest extends BaseTransportTest {
 
     private static final String FOLDER_ID_JSON = "{\"id\":42,\"type\":\"Folder\"}";
     private static final String CONTENT_TYPE_TEXT = "Text";
     private static final String CONTENT_TYPE_SNIPPET = "Snippet";
 
-    private HttpCommandExecutor testedInstance;
+    private JaxRsHttpCommandExecutor testedInstance;
 
     @Rule
     public final WireMockRule wireMockRule = new WireMockRule(PORT);
@@ -69,7 +69,7 @@ public class HttpCommandExecutorTest extends BaseTransportTest {
         when(tokenProvider.authenticate(getClientConnectionData(any(Client.class), CLIENT_ID)))
                 .thenReturn(new Token(now().plusHours(1), "token"));
 
-        testedInstance = new HttpCommandExecutor(IDENTITY_URL, REST_URL, CLIENT_ID, CLIENT_SECRET, tokenProvider);
+        testedInstance = new JaxRsHttpCommandExecutor(IDENTITY_URL, REST_URL, CLIENT_ID, CLIENT_SECRET, tokenProvider);
     }
 
     @Test

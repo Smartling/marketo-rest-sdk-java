@@ -12,7 +12,6 @@ import com.smartling.marketo.sdk.rest.command.email.GetEmailsCommand;
 import com.smartling.marketo.sdk.rest.command.email.LoadEmailById;
 import com.smartling.marketo.sdk.rest.command.email.LoadEmailContent;
 import com.smartling.marketo.sdk.rest.command.email.UpdateEmailEditableSection;
-import com.smartling.marketo.sdk.rest.transport.HttpCommandExecutor;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;

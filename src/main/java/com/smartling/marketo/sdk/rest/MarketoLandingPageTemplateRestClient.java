@@ -7,7 +7,6 @@ import com.smartling.marketo.sdk.domain.landingpagetemplate.LandingPageTemplate;
 import com.smartling.marketo.sdk.domain.landingpagetemplate.LandingPageTemplateContentItem;
 import com.smartling.marketo.sdk.rest.command.landingpagetemplate.GetLandingPageTemplateById;
 import com.smartling.marketo.sdk.rest.command.landingpagetemplate.GetLandingPageTemplateContent;
-import com.smartling.marketo.sdk.rest.transport.HttpCommandExecutor;
 
 import java.util.Collections;
 import java.util.List;

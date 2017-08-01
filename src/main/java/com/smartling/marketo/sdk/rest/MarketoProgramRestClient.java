@@ -8,7 +8,6 @@ import com.smartling.marketo.sdk.rest.command.program.CloneProgram;
 import com.smartling.marketo.sdk.rest.command.program.GetProgramById;
 import com.smartling.marketo.sdk.rest.command.program.GetPrograms;
 import com.smartling.marketo.sdk.rest.command.program.GetProgramsByName;
-import com.smartling.marketo.sdk.rest.transport.HttpCommandExecutor;
 
 import java.util.Collections;
 import java.util.List;

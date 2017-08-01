@@ -11,7 +11,6 @@ import com.smartling.marketo.sdk.rest.command.snippet.GetSnippets;
 import com.smartling.marketo.sdk.rest.command.snippet.LoadSnippetById;
 import com.smartling.marketo.sdk.rest.command.snippet.LoadSnippetContent;
 import com.smartling.marketo.sdk.rest.command.snippet.UpdateSnippetContent;
-import com.smartling.marketo.sdk.rest.transport.HttpCommandExecutor;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;

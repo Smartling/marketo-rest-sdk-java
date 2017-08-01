@@ -10,10 +10,7 @@ import com.smartling.marketo.sdk.MarketoLandingPageTemplateClient;
 import com.smartling.marketo.sdk.MarketoProgramClient;
 import com.smartling.marketo.sdk.MarketoSnippetClient;
 import com.smartling.marketo.sdk.MarketoTokenClient;
-import com.smartling.marketo.sdk.rest.transport.BasicTokenProvider;
-import com.smartling.marketo.sdk.rest.transport.CacheableTokenProvider;
-import com.smartling.marketo.sdk.rest.transport.HttpCommandExecutor;
-import com.smartling.marketo.sdk.rest.transport.TokenProvider;
+import com.smartling.marketo.sdk.rest.transport.*;
 
 public class MarketoRestClientManager implements MarketoClientManager {
     private static final TokenProvider tokenProvider = new CacheableTokenProvider(new BasicTokenProvider());
@@ -86,7 +83,7 @@ public class MarketoRestClientManager implements MarketoClientManager {
             Preconditions.checkNotNull(clientId, "Client ID is empty");
             Preconditions.checkNotNull(clientSecret, "Client secret is empty");
 
-            HttpCommandExecutor executor = new HttpCommandExecutor(identityUrl, restUrl, clientId, clientSecret, tokenProvider);
+            JaxRsHttpCommandExecutor executor = new JaxRsHttpCommandExecutor(identityUrl, restUrl, clientId, clientSecret, tokenProvider);
             executor.setConnectionTimeout(connectionTimeout);
             executor.setSocketReadTimeout(socketReadTimeout);
             return new MarketoRestClientManager(executor);

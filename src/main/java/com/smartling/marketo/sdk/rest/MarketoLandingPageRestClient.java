@@ -15,7 +15,6 @@ import com.smartling.marketo.sdk.rest.command.landingpage.GetLandingPages;
 import com.smartling.marketo.sdk.rest.command.landingpage.GetLandingPageById;
 import com.smartling.marketo.sdk.rest.command.landingpage.UpdateLandingPageEditableSection;
 import com.smartling.marketo.sdk.rest.command.landingpage.UpdateLandingPageMetadata;
-import com.smartling.marketo.sdk.rest.transport.HttpCommandExecutor;
 
 import java.util.Collections;
 import java.util.List;

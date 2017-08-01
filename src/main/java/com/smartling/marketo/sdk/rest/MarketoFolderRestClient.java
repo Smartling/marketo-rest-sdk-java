@@ -9,7 +9,6 @@ import com.smartling.marketo.sdk.domain.folder.FolderType;
 import com.smartling.marketo.sdk.rest.command.folder.GetFolderByName;
 import com.smartling.marketo.sdk.rest.command.folder.GetFolderContents;
 import com.smartling.marketo.sdk.rest.command.folder.GetFoldersCommand;
-import com.smartling.marketo.sdk.rest.transport.HttpCommandExecutor;
 
 import java.util.Collections;
 import java.util.List;

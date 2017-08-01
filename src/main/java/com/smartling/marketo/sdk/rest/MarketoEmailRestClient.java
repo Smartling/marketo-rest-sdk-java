@@ -13,7 +13,6 @@ import com.smartling.marketo.sdk.rest.command.email.LoadEmailById;
 import com.smartling.marketo.sdk.rest.command.email.LoadEmailContent;
 import com.smartling.marketo.sdk.rest.command.email.UpdateEmailContent;
 import com.smartling.marketo.sdk.rest.command.email.UpdateEmailEditableSection;
-import com.smartling.marketo.sdk.rest.transport.HttpCommandExecutor;
 
 import java.util.Collections;
 import java.util.List;
