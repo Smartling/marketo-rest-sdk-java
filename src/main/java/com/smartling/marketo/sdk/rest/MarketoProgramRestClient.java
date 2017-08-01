@@ -17,7 +17,7 @@ public class MarketoProgramRestClient implements MarketoProgramClient {
 
     private final HttpCommandExecutor httpCommandExecutor;
 
-    public MarketoProgramRestClient(HttpCommandExecutor httpCommandExecutor) {
+    MarketoProgramRestClient(HttpCommandExecutor httpCommandExecutor) {
         this.httpCommandExecutor = httpCommandExecutor;
     }
 

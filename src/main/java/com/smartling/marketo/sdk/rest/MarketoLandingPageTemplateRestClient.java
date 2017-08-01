@@ -16,7 +16,7 @@ public class MarketoLandingPageTemplateRestClient implements MarketoLandingPageT
 
     private final HttpCommandExecutor httpCommandExecutor;
 
-    public MarketoLandingPageTemplateRestClient(HttpCommandExecutor httpCommandExecutor) {
+    MarketoLandingPageTemplateRestClient(HttpCommandExecutor httpCommandExecutor) {
         this.httpCommandExecutor = httpCommandExecutor;
     }
 

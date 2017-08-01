@@ -24,7 +24,7 @@ public class MarketoLandingPageRestClient implements MarketoLandingPageClient {
 
     private final HttpCommandExecutor httpCommandExecutor;
 
-    public MarketoLandingPageRestClient(HttpCommandExecutor httpCommandExecutor) {
+    MarketoLandingPageRestClient(HttpCommandExecutor httpCommandExecutor) {
         this.httpCommandExecutor = httpCommandExecutor;
     }
 
@@ -52,7 +52,7 @@ public class MarketoLandingPageRestClient implements MarketoLandingPageClient {
     @Override
     public List<LandingPage> getLandingPagesByName(String name, FolderId folder, Status status) throws MarketoApiException {
         final List<LandingPage> emails = httpCommandExecutor.execute(new GetLandingPagesByName(name, folder, status));
-        return emails != null ? emails : Collections.<LandingPage>emptyList();
+        return emails != null ? emails : Collections.emptyList();
     }
 
     @Override
@@ -74,7 +74,7 @@ public class MarketoLandingPageRestClient implements MarketoLandingPageClient {
     @Override
     public List<LandingPageContentItem> getLandingPageContent(int id, Status status) throws MarketoApiException {
         final List<LandingPageContentItem> contentItems = httpCommandExecutor.execute(new GetLandingPageContent(id, status));
-        return contentItems != null ? contentItems : Collections.<LandingPageContentItem>emptyList();
+        return contentItems != null ? contentItems : Collections.emptyList();
     }
 
     @Override

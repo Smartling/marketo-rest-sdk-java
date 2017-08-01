@@ -19,14 +19,14 @@ import java.util.List;
 public class MarketoSnippetRestClient implements MarketoSnippetClient {
     private final HttpCommandExecutor httpCommandExecutor;
 
-    public MarketoSnippetRestClient(HttpCommandExecutor httpCommandExecutor) {
+    MarketoSnippetRestClient(HttpCommandExecutor httpCommandExecutor) {
         this.httpCommandExecutor = httpCommandExecutor;
     }
 
     @Override
     public List<Snippet> listSnippets(int offset, int limit, Asset.Status status) throws MarketoApiException {
         List<Snippet> snippets = httpCommandExecutor.execute(new GetSnippets(offset, limit, status));
-        return snippets != null ? snippets : Collections.<Snippet>emptyList();
+        return snippets != null ? snippets : Collections.emptyList();
     }
 
     @Override

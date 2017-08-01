@@ -18,7 +18,7 @@ public class MarketoFolderRestClient implements MarketoFolderClient {
 
     private final HttpCommandExecutor httpCommandExecutor;
 
-    public MarketoFolderRestClient(HttpCommandExecutor httpCommandExecutor) {
+    MarketoFolderRestClient(HttpCommandExecutor httpCommandExecutor) {
         this.httpCommandExecutor = httpCommandExecutor;
     }
 

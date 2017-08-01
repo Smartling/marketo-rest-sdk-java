@@ -24,7 +24,7 @@ import java.util.List;
 public class MarketoFormRestClient implements MarketoFormClient {
     private final HttpCommandExecutor httpCommandExecutor;
 
-    public MarketoFormRestClient(HttpCommandExecutor httpCommandExecutor) {
+    MarketoFormRestClient(HttpCommandExecutor httpCommandExecutor) {
         this.httpCommandExecutor = httpCommandExecutor;
     }
 

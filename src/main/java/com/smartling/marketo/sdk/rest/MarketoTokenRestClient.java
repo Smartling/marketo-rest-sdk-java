@@ -17,7 +17,7 @@ public class MarketoTokenRestClient implements MarketoTokenClient {
 
     private final HttpCommandExecutor httpCommandExecutor;
 
-    public MarketoTokenRestClient(HttpCommandExecutor httpCommandExecutor) {
+    MarketoTokenRestClient(HttpCommandExecutor httpCommandExecutor) {
         this.httpCommandExecutor = httpCommandExecutor;
     }
 
