@@ -20,6 +20,12 @@ public class MarketoRestClientManagerTest {
         testedInstance = MarketoRestClientManager.create("IdentityURL", "RestURL").withCredentials("ClientId", "ClientSecret");
     }
 
+    @Test(expected = NullPointerException.class)
+    public void shouldValidateRetryPolicy() throws Exception {
+        MarketoRestClientManager.create("IdentityURL", "RestURL")
+                .withRetryPolicy(null);
+    }
+
     @Test
     public void shouldReturnFolderRestClient() throws Exception {
         final MarketoFolderClient client = testedInstance.getMarketoFolderClient();
