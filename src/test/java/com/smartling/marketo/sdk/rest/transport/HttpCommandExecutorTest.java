@@ -157,7 +157,7 @@ public class HttpCommandExecutorTest extends BaseTransportTest {
     @Test
     public void shouldQueryParameters() throws Exception {
         given(command.getPath()).willReturn("/some/path");
-        given(command.getParameters()).willReturn(Collections.<String, Object>singletonMap("key", "value"));
+        given(command.getParameters()).willReturn(Collections.singletonMap("key", "value"));
 
         testedInstance.execute(command);
 
@@ -232,7 +232,7 @@ public class HttpCommandExecutorTest extends BaseTransportTest {
     @Test
     public void shouldPassPostParameters() throws Exception {
         given(command.getMethod()).willReturn("POST");
-        given(command.getParameters()).willReturn(Collections.<String, Object>singletonMap("key", "value"));
+        given(command.getParameters()).willReturn(Collections.singletonMap("key", "value"));
 
         testedInstance.execute(command);
 
@@ -286,7 +286,7 @@ public class HttpCommandExecutorTest extends BaseTransportTest {
     @Test
     public void shouldSerializeAndUrlEncodeJsonParametersOnPost() throws Exception {
         given(command.getMethod()).willReturn("POST");
-        given(command.getParameters()).willReturn(Collections.<String, Object>singletonMap("folderId", new FolderId(42, FolderType.FOLDER)));
+        given(command.getParameters()).willReturn(Collections.singletonMap("folderId", new FolderId(42, FolderType.FOLDER)));
 
         testedInstance.execute(command);
 
@@ -297,7 +297,7 @@ public class HttpCommandExecutorTest extends BaseTransportTest {
     @Test
     public void shouldSerializeAndUrlEncodeJsonParametersOnGet() throws Exception {
         given(command.getPath()).willReturn("/some/path");
-        given(command.getParameters()).willReturn(Collections.<String, Object>singletonMap("folderId", new FolderId(42, FolderType.FOLDER)));
+        given(command.getParameters()).willReturn(Collections.singletonMap("folderId", new FolderId(42, FolderType.FOLDER)));
 
         testedInstance.execute(command);
 
@@ -325,7 +325,7 @@ public class HttpCommandExecutorTest extends BaseTransportTest {
                 jsonTextContentItemValue("Text", "text")
         );
 
-        List<JSONObject> result = Arrays.asList(
+        List<JSONObject> result = Collections.singletonList(
                 jsonTextContentItem(value)
         );
 
@@ -335,11 +335,11 @@ public class HttpCommandExecutorTest extends BaseTransportTest {
 
     private String jsonWithNoTextValue()
     {
-        List<JSONObject> value = Arrays.asList(
+        List<JSONObject> value = Collections.singletonList(
                 jsonTextContentItemValue("Text", null)
         );
 
-        List<JSONObject> result = Arrays.asList(
+        List<JSONObject> result = Collections.singletonList(
                 jsonTextContentItem(value)
         );
 
@@ -349,11 +349,11 @@ public class HttpCommandExecutorTest extends BaseTransportTest {
 
     private String jsonWithEmptyTextValue()
     {
-        List<JSONObject> value = Arrays.asList(
+        List<JSONObject> value = Collections.singletonList(
                 jsonTextContentItemValue("Text", "")
         );
 
-        List<JSONObject> result = Arrays.asList(
+        List<JSONObject> result = Collections.singletonList(
                 jsonTextContentItem(value)
         );
 

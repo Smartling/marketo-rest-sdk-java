@@ -25,15 +25,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 public class HttpCommandExecutor {
+    private final static ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
     private final String identityUrl;
     private final String restUrl;
     private final String clientId;
     private final String clientSecret;
     private final TokenProvider tokenProvider;
-
     private final Client client;
-
-    private final static ObjectMapper objectMapper = new ObjectMapper();
 
     public HttpCommandExecutor(String identityUrl, String restUrl, String clientId, String clientSecret, TokenProvider tokenProvider) {
         this.identityUrl = identityUrl;
@@ -94,7 +93,7 @@ public class HttpCommandExecutor {
                 Object value = entry.getValue();
                 Object newValue = value;
                 if (value instanceof HasToBeMappedToJson) {
-                    newValue = objectMapper.writeValueAsString(newValue);
+                    newValue = OBJECT_MAPPER.writeValueAsString(newValue);
                     if (needUrlEncode) {
                         newValue = URLEncoder.encode((String) newValue, "UTF-8");
                     }
@@ -145,5 +144,4 @@ public class HttpCommandExecutor {
             }
         };
     }
-
 }
