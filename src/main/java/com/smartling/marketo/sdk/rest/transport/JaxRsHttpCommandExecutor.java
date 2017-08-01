@@ -6,6 +6,7 @@ import com.smartling.marketo.sdk.HasToBeMappedToJson;
 import com.smartling.marketo.sdk.rest.Command;
 import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.rest.HttpCommandExecutor;
+import com.smartling.marketo.sdk.rest.RequestLimitExceededException;
 import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.jackson.JacksonFeature;
 
@@ -22,11 +23,16 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 public class JaxRsHttpCommandExecutor implements HttpCommandExecutor {
     private final static ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+    private static final String RATE_LIMIT_CODE = "606";
+    private static final String CONCURRENT_REQUEST_LIMIT_CODE = "615";
 
     private final String identityUrl;
     private final String restUrl;
@@ -64,10 +70,7 @@ public class JaxRsHttpCommandExecutor implements HttpCommandExecutor {
         if (marketoResponse.isSuccess()) {
             return marketoResponse.getResult();
         } else {
-            MarketoResponse.Error firstError = marketoResponse.getErrors().get(0);
-            throw new MarketoApiException(firstError.getCode(),
-                    String.format("%s (%s:%s, parameters=%s)", firstError.getMessage(), command.getMethod(), command.getPath(),
-                            command.getParameters()));
+            throw newApiException(command, marketoResponse.getErrors());
         }
     }
 
@@ -85,6 +88,24 @@ public class JaxRsHttpCommandExecutor implements HttpCommandExecutor {
         }
 
         return marketoResponse;
+    }
+
+    private static MarketoApiException newApiException(Command<?> command, List<MarketoResponse.Error> errors) {
+        Optional<MarketoResponse.Error> requestLimitError = errors.stream()
+                .filter(e -> RATE_LIMIT_CODE.equals(e.getCode()) || CONCURRENT_REQUEST_LIMIT_CODE.equals(e.getCode()))
+                .findFirst();
+
+        if (requestLimitError.isPresent()) {
+            MarketoResponse.Error error = requestLimitError.get();
+            return new RequestLimitExceededException(error.getCode(),
+                    String.format("%s (%s:%s, parameters=%s)", error.getMessage(), command.getMethod(), command.getPath(),
+                            command.getParameters()));
+        } else {
+            MarketoResponse.Error firstError = errors.get(0);
+            return new MarketoApiException(firstError.getCode(),
+                    String.format("%s (%s:%s, parameters=%s)", firstError.getMessage(), command.getMethod(), command.getPath(),
+                            command.getParameters()));
+        }
     }
 
     private Map<String, Object> processParameters(Map<String, Object> parameters, boolean needUrlEncode) throws MarketoApiException {
