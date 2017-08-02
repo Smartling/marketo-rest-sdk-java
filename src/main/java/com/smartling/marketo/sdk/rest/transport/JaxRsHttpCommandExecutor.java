@@ -2,6 +2,7 @@ package com.smartling.marketo.sdk.rest.transport;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableSet;
 import com.smartling.marketo.sdk.HasToBeMappedToJson;
 import com.smartling.marketo.sdk.rest.Command;
 import com.smartling.marketo.sdk.MarketoApiException;
@@ -22,17 +23,17 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Optional;
 
 public class JaxRsHttpCommandExecutor implements HttpCommandExecutor {
     private final static ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    private static final String RATE_LIMIT_CODE = "606";
-    private static final String CONCURRENT_REQUEST_LIMIT_CODE = "615";
+    private static final Set<String> API_LIMIT_ERROR_CODES = ImmutableSet.of(
+            "606",  // Rate limit
+            "607",  // Daily quota
+            "615"   // Concurrent request limit
+    );
 
     private final String identityUrl;
     private final String restUrl;
@@ -92,7 +93,7 @@ public class JaxRsHttpCommandExecutor implements HttpCommandExecutor {
 
     private static MarketoApiException newApiException(Command<?> command, List<MarketoResponse.Error> errors) {
         Optional<MarketoResponse.Error> requestLimitError = errors.stream()
-                .filter(e -> RATE_LIMIT_CODE.equals(e.getCode()) || CONCURRENT_REQUEST_LIMIT_CODE.equals(e.getCode()))
+                .filter(e -> API_LIMIT_ERROR_CODES.contains(e.getCode()))
                 .findFirst();
 
         if (requestLimitError.isPresent()) {

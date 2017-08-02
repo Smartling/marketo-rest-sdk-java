@@ -241,6 +241,18 @@ public class JaxRsHttpCommandExecutorTest extends BaseTransportTest {
     }
 
     @Test
+    public void shouldHandleDailyQuotaErrors() throws Exception {
+        givenThat(get(urlStartingWith("/rest")).willReturn(
+                aJsonResponse("{\"success\": false, \"errors\":[{\"code\": \"607\",\"message\": \"Error!\"}]}")));
+
+        thrown.expect(RequestLimitExceededException.class);
+        thrown.expect(exceptionWithCode("607"));
+        thrown.expectMessage("Error!");
+
+        testedInstance.execute(command);
+    }
+
+    @Test
     public void shouldExecutePostCommands() throws Exception {
         given(command.getMethod()).willReturn("POST");
         given(command.getPath()).willReturn("/some/path");
