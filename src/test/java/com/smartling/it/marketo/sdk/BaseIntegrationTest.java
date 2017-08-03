@@ -5,6 +5,7 @@ import com.smartling.marketo.sdk.domain.BaseEntity;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.MarketoClientManager;
 import com.smartling.marketo.sdk.rest.MarketoRestClientManager;
+import com.smartling.marketo.sdk.rest.RetryPolicy;
 import org.fest.assertions.core.Condition;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -40,6 +41,7 @@ public abstract class BaseIntegrationTest {
         marketoClientManager = MarketoRestClientManager.create(identityEndpoint, restEndpoint)
                 .withConnectionTimeout(2000)
                 .withSocketReadTimeout(20000)
+                .withRetryPolicy(RetryPolicy.NONE)
                 .withCredentials(clientId, clientSecret);
     }
 

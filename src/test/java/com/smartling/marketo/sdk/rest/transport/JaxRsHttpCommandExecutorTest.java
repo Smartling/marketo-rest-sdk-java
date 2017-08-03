@@ -9,6 +9,7 @@ import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.domain.folder.FolderType;
 import com.smartling.marketo.sdk.rest.Command;
 import com.smartling.marketo.sdk.MarketoApiException;
+import com.smartling.marketo.sdk.rest.RequestLimitExceededException;
 import com.smartling.marketo.sdk.rest.command.email.LoadEmailContent;
 import net.minidev.json.JSONObject;
 import org.junit.Before;
@@ -210,6 +211,42 @@ public class JaxRsHttpCommandExecutorTest extends BaseTransportTest {
 
         thrown.expect(MarketoApiException.class);
         thrown.expect(exceptionWithCode("100"));
+        thrown.expectMessage("Error!");
+
+        testedInstance.execute(command);
+    }
+
+    @Test
+    public void shouldHandleRequestRateLimitErrors() throws Exception {
+        givenThat(get(urlStartingWith("/rest")).willReturn(
+                aJsonResponse("{\"success\": false, \"errors\":[{\"code\": \"606\",\"message\": \"Error!\"}]}")));
+
+        thrown.expect(RequestLimitExceededException.class);
+        thrown.expect(exceptionWithCode("606"));
+        thrown.expectMessage("Error!");
+
+        testedInstance.execute(command);
+    }
+
+    @Test
+    public void shouldHandleConcurrentRequestLimitErrors() throws Exception {
+        givenThat(get(urlStartingWith("/rest")).willReturn(
+                aJsonResponse("{\"success\": false, \"errors\":[{\"code\": \"615\",\"message\": \"Error!\"}]}")));
+
+        thrown.expect(RequestLimitExceededException.class);
+        thrown.expect(exceptionWithCode("615"));
+        thrown.expectMessage("Error!");
+
+        testedInstance.execute(command);
+    }
+
+    @Test
+    public void shouldHandleDailyQuotaErrors() throws Exception {
+        givenThat(get(urlStartingWith("/rest")).willReturn(
+                aJsonResponse("{\"success\": false, \"errors\":[{\"code\": \"607\",\"message\": \"Error!\"}]}")));
+
+        thrown.expect(RequestLimitExceededException.class);
+        thrown.expect(exceptionWithCode("607"));
         thrown.expectMessage("Error!");
 
         testedInstance.execute(command);

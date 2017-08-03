@@ -73,6 +73,7 @@ public class MarketoRestClientManager implements MarketoClientManager {
         private final String restUrl;
         private int connectionTimeout;
         private int socketReadTimeout;
+        private RetryPolicy retryPolicy = RetryPolicy.NONE;
 
         private Builder(String identityUrl, String restUrl) {
             this.identityUrl = identityUrl;
@@ -86,7 +87,7 @@ public class MarketoRestClientManager implements MarketoClientManager {
             JaxRsHttpCommandExecutor executor = new JaxRsHttpCommandExecutor(identityUrl, restUrl, clientId, clientSecret, tokenProvider);
             executor.setConnectionTimeout(connectionTimeout);
             executor.setSocketReadTimeout(socketReadTimeout);
-            return new MarketoRestClientManager(executor);
+            return new MarketoRestClientManager(new RetryingHttpCommandExecutor(executor, retryPolicy));
         }
 
         public Builder withConnectionTimeout(int connectionTimeout) {
@@ -96,6 +97,11 @@ public class MarketoRestClientManager implements MarketoClientManager {
 
         public Builder withSocketReadTimeout(int socketReadTimeout) {
             this.socketReadTimeout = socketReadTimeout;
+            return this;
+        }
+
+        public Builder withRetryPolicy(RetryPolicy retryPolicy) {
+            this.retryPolicy = Preconditions.checkNotNull(retryPolicy, "Retry Policy can not be null");
             return this;
         }
     }
