@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import javax.ws.rs.ext.ContextResolver;
 import java.text.SimpleDateFormat;
 
-class ObjectMapperProvider implements ContextResolver<ObjectMapper> {
+public class ObjectMapperProvider implements ContextResolver<ObjectMapper> {
     @Override
     public ObjectMapper getContext(Class<?> type) {
         ObjectMapper objectMapper = new ObjectMapper();
