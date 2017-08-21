@@ -272,7 +272,7 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
     @Test
     public void shouldSendSample() throws Exception {
 
-        marketoEmailClient.sendSample(42, "foo@bar@baz", true);
+        marketoEmailClient.sendSample(42, "foo@bar.baz", true);
 
         // Can not verify - no way to fetch sent sample
     }
