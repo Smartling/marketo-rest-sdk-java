@@ -268,4 +268,12 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
 
         // Can not verify - no way to fetch not approved content
     }
+
+    @Test
+    public void shouldSendSample() throws Exception {
+
+        marketoEmailClient.sendSample(42, "foo@bar@baz", true);
+
+        // Can not verify - no way to fetch sent sample
+    }
 }

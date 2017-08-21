@@ -27,4 +27,6 @@ public interface MarketoEmailClient {
     void updateEmailContentItem(int id, EmailTextContentItem contentItem) throws MarketoApiException;
 
     void updateEmail(Email email) throws MarketoApiException;
+
+    void sendSample(int emailId, String emailAddress, boolean textOnly) throws MarketoApiException;
 }

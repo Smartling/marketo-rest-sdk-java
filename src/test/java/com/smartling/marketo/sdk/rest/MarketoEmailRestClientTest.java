@@ -6,12 +6,7 @@ import com.smartling.marketo.sdk.domain.email.EmailContentItem;
 import com.smartling.marketo.sdk.domain.email.EmailTextContentItem;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.domain.folder.FolderType;
-import com.smartling.marketo.sdk.rest.command.email.CloneEmail;
-import com.smartling.marketo.sdk.rest.command.email.GetEmailsByName;
-import com.smartling.marketo.sdk.rest.command.email.GetEmailsCommand;
-import com.smartling.marketo.sdk.rest.command.email.LoadEmailById;
-import com.smartling.marketo.sdk.rest.command.email.LoadEmailContent;
-import com.smartling.marketo.sdk.rest.command.email.UpdateEmailEditableSection;
+import com.smartling.marketo.sdk.rest.command.email.*;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -163,5 +158,19 @@ public class MarketoEmailRestClientTest {
         testedInstance.updateEmailContentItem(42, new EmailTextContentItem());
 
         verify(executor).execute(isA(UpdateEmailEditableSection.class));
+    }
+
+    @Test
+    public void shouldUpdateEmail() throws Exception {
+        testedInstance.updateEmail(new Email());
+
+        verify(executor).execute(isA(UpdateEmailContent.class));
+    }
+
+    @Test
+    public void shouldSendSample() throws Exception {
+        testedInstance.sendSample(42, "foo@bar.baz", false);
+
+        verify(executor).execute(isA(SendSample.class));
     }
 }

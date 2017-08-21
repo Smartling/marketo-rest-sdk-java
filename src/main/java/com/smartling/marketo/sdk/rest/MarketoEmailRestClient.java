@@ -6,13 +6,7 @@ import com.smartling.marketo.sdk.domain.email.EmailTextContentItem;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.MarketoEmailClient;
-import com.smartling.marketo.sdk.rest.command.email.CloneEmail;
-import com.smartling.marketo.sdk.rest.command.email.GetEmailsByName;
-import com.smartling.marketo.sdk.rest.command.email.GetEmailsCommand;
-import com.smartling.marketo.sdk.rest.command.email.LoadEmailById;
-import com.smartling.marketo.sdk.rest.command.email.LoadEmailContent;
-import com.smartling.marketo.sdk.rest.command.email.UpdateEmailContent;
-import com.smartling.marketo.sdk.rest.command.email.UpdateEmailEditableSection;
+import com.smartling.marketo.sdk.rest.command.email.*;
 
 import java.util.Collections;
 import java.util.List;
@@ -83,5 +77,10 @@ public class MarketoEmailRestClient implements MarketoEmailClient {
     @Override
     public void updateEmail(Email email) throws MarketoApiException {
         httpCommandExecutor.execute(new UpdateEmailContent(email));
+    }
+
+    @Override
+    public void sendSample(int emailId, String emailAddress, boolean textOnly) throws MarketoApiException {
+        httpCommandExecutor.execute(new SendSample(emailId, emailAddress, textOnly));
     }
 }
