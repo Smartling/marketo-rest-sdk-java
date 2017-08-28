@@ -1,0 +1,33 @@
+[
+  {
+    "id": "16391",
+    "type": "RichText",
+    "index": 1,
+    "content": {
+      "content": "RVMtMTY2Ng==",
+      "contentType": "DynamicContent"
+    }
+  },
+  {
+    "id": "16392",
+    "type": "RichText",
+    "index": 2,
+    "content": {
+      "content": "RVMtMTY2Nw==",
+      "contentType": "DynamicContent"
+    }
+  },
+  {
+    "id": "16393",
+    "type": "RichText",
+    "index": 3,
+    "content": "plain content",
+    "formattingOptions": {
+      "width": "393px",
+      "zIndex": 15,
+      "left": "137px",
+      "top": "355px",
+      "height": "177px"
+    }
+  }
+]
