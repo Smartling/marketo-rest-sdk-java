@@ -7,14 +7,17 @@ import com.smartling.marketo.sdk.domain.landingpage.LandingPageContentItem;
 import com.smartling.marketo.sdk.domain.landingpage.LandingPageTextContentItem;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.domain.folder.FolderType;
+import com.smartling.marketo.sdk.domain.landingpage.LandingPageVariable;
 import com.smartling.marketo.sdk.rest.command.landingpage.CloneLandingPage;
 import com.smartling.marketo.sdk.rest.command.landingpage.DiscardLandingPageDraft;
+import com.smartling.marketo.sdk.rest.command.landingpage.GetLandingPageVariables;
 import com.smartling.marketo.sdk.rest.command.landingpage.GetLandingPagesByName;
 import com.smartling.marketo.sdk.rest.command.landingpage.GetLandingPages;
 import com.smartling.marketo.sdk.rest.command.landingpage.GetLandingPageById;
 import com.smartling.marketo.sdk.rest.command.landingpage.GetLandingPageContent;
 import com.smartling.marketo.sdk.rest.command.landingpage.UpdateLandingPageEditableSection;
 import com.smartling.marketo.sdk.rest.command.landingpage.UpdateLandingPageMetadata;
+import com.smartling.marketo.sdk.rest.command.landingpage.UpdateLandingPageVariable;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -183,5 +186,23 @@ public class MarketoLandingPageRestClientTest {
         testedInstance.updateLandingPageMetadata(42, "title");
 
         verify(executor).execute(isA(UpdateLandingPageMetadata.class));
+    }
+
+    @Test
+    public void shouldGetLandingPageVariables() throws Exception {
+        LandingPageVariable variable = new LandingPageVariable();
+        given(executor.execute(isA(GetLandingPageVariables.class))).willReturn(Collections.singletonList(variable));
+
+        List<LandingPageVariable> result = testedInstance.getlandingPageVariables(42);
+
+        assertThat(result).contains(variable).hasSize(1);
+    }
+
+    @Test
+    public void shouldUpdateLandingPageVariables() throws Exception {
+        LandingPageVariable variable = new LandingPageVariable();
+        testedInstance.updateLandingPageVariable(42, variable);
+
+        verify(executor).execute(isA(UpdateLandingPageVariable.class));
     }
 }

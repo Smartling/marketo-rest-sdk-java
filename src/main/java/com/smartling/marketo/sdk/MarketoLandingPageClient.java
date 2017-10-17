@@ -5,6 +5,7 @@ import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.domain.landingpage.LandingPage;
 import com.smartling.marketo.sdk.domain.landingpage.LandingPageContentItem;
 import com.smartling.marketo.sdk.domain.landingpage.LandingPageTextContentItem;
+import com.smartling.marketo.sdk.domain.landingpage.LandingPageVariable;
 
 import java.util.List;
 
@@ -30,4 +31,8 @@ public interface MarketoLandingPageClient {
     void discardLandingPageDraft(int id) throws MarketoApiException;
 
     void updateLandingPageMetadata(int id, String title) throws MarketoApiException;
+
+    List<LandingPageVariable> getlandingPageVariables(int id) throws MarketoApiException;
+
+    void updateLandingPageVariable(int pageId, LandingPageVariable variable) throws MarketoApiException;
 }

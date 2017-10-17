@@ -8,6 +8,7 @@ import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.domain.folder.FolderType;
 import com.smartling.marketo.sdk.domain.landingpage.LandingPageContentItem;
 import com.smartling.marketo.sdk.domain.landingpage.LandingPageTextContentItem;
+import com.smartling.marketo.sdk.domain.landingpage.LandingPageVariable;
 import org.fest.assertions.core.Condition;
 import org.junit.Before;
 import org.junit.Rule;
@@ -22,6 +23,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
 
 public class LandingPageIntegrationTest extends BaseIntegrationTest {
     private static final int TEST_LANDING_PAGE_ID = 1015;
+    private static final int TEST_GUIDED_LANDING_PAGE_ID = 3749;
     private static final int TEST_PROGRAM_LANDING_PAGE_ID = 1347;
     private static final int EMPTY_TEST_LANDING_PAGE_ID = 1049;
     private static final int TEST_LANDING_PAGE_TO_DESCARD_ID = 1065;
@@ -226,6 +228,26 @@ public class LandingPageIntegrationTest extends BaseIntegrationTest {
         LandingPage page = marketoLandingPageClient.getLandingPageById(TEST_LANDING_PAGE_ID, Status.DRAFT);
 
         assertThat(page.getTitle()).isEqualTo(title);
+    }
+
+    @Test
+    public void shouldGetLandingPageVariables() throws Exception {
+        List<LandingPageVariable> variables = marketoLandingPageClient.getlandingPageVariables(TEST_GUIDED_LANDING_PAGE_ID);
+
+        assertThat(variables).hasSize(11);
+        assertThat(variables.get(1).getId()).isEqualTo("ShowWhiteLogo");
+        assertThat(variables.get(1).getType()).isEqualTo("boolean");
+        assertThat(variables.get(1).getValue()).isEqualTo("false");
+    }
+
+    @Test
+    public void shouldUpdateLandingPageVariable() throws Exception {
+        LandingPageVariable variable = new LandingPageVariable();
+        variable.setId("MainBg");
+        variable.setType("String");
+        variable.setValue(UUID.randomUUID().toString());
+
+        marketoLandingPageClient.updateLandingPageVariable(TEST_GUIDED_LANDING_PAGE_ID, variable);
     }
 
     private LandingPageContentItem getFirstItemFromDraft(int testLandingPageId, String testContentItemType) throws MarketoApiException {
