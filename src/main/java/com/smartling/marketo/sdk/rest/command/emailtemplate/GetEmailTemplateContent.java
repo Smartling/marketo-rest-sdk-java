@@ -1,25 +1,25 @@
-package com.smartling.marketo.sdk.rest.command.landingpagetemplate;
+package com.smartling.marketo.sdk.rest.command.emailtemplate;
 
 import com.smartling.marketo.sdk.domain.Asset.Status;
-import com.smartling.marketo.sdk.domain.landingpagetemplate.LandingPageTemplateContent;
+import com.smartling.marketo.sdk.domain.emailtemplate.EmailTemplateContent;
 import com.smartling.marketo.sdk.rest.command.BaseGetCommand;
 
 import java.util.Collections;
 import java.util.Map;
 
-public class GetLandingPageTemplateContent extends BaseGetCommand<LandingPageTemplateContent> {
+public class GetEmailTemplateContent extends BaseGetCommand<EmailTemplateContent> {
     private final int id;
     private final Status status;
 
-    public GetLandingPageTemplateContent(int id, Status status) {
-        super(LandingPageTemplateContent.class);
+    public GetEmailTemplateContent(int id, Status status) {
+        super(EmailTemplateContent.class);
         this.id = id;
         this.status = status;
     }
 
     @Override
     public String getPath() {
-        return "/asset/v1/landingPageTemplate/" + id + "/content.json";
+        return "/asset/v1/emailTemplate/" + id + "/content.json";
     }
 
     @Override

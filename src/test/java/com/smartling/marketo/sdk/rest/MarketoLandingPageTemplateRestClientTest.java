@@ -3,9 +3,10 @@ package com.smartling.marketo.sdk.rest;
 import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.domain.Asset.Status;
 import com.smartling.marketo.sdk.domain.landingpagetemplate.LandingPageTemplate;
-import com.smartling.marketo.sdk.domain.landingpagetemplate.LandingPageTemplateContentItem;
+import com.smartling.marketo.sdk.domain.landingpagetemplate.LandingPageTemplateContent;
 import com.smartling.marketo.sdk.rest.command.landingpagetemplate.GetLandingPageTemplateById;
 import com.smartling.marketo.sdk.rest.command.landingpagetemplate.GetLandingPageTemplateContent;
+import com.smartling.marketo.sdk.rest.command.landingpagetemplate.GetLandingPageTemplates;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -32,6 +33,18 @@ public class MarketoLandingPageTemplateRestClientTest {
 
     @InjectMocks
     private MarketoLandingPageTemplateRestClient testedInstance;
+
+    @Test
+    public void shouldGetlandingPagetemplates() throws Exception {
+        LandingPageTemplate landingPageTemplate = new LandingPageTemplate();
+
+        given(executor.execute(isA(GetLandingPageTemplates.class))).willReturn(Collections.singletonList(landingPageTemplate));
+
+        List<LandingPageTemplate> result = testedInstance.getLandingPageTemplates(0, 200, null, null);
+
+        assertThat(result).hasSize(1);
+        assertThat(result).contains(landingPageTemplate);
+    }
 
     @Test
     public void shouldGetLandingPageById() throws Exception {
@@ -68,10 +81,10 @@ public class MarketoLandingPageTemplateRestClientTest {
 
     @Test
     public void shouldGetLandingPageContent() throws Exception {
-        LandingPageTemplateContentItem contentItem = new LandingPageTemplateContentItem();
+        LandingPageTemplateContent contentItem = new LandingPageTemplateContent();
         given(executor.execute(isA(GetLandingPageTemplateContent.class))).willReturn(Collections.singletonList(contentItem));
 
-        List<LandingPageTemplateContentItem> result = testedInstance.getLandingPageTemplateContent(42);
+        List<LandingPageTemplateContent> result = testedInstance.getLandingPageTemplateContent(42);
 
         assertThat(result).contains(contentItem);
     }

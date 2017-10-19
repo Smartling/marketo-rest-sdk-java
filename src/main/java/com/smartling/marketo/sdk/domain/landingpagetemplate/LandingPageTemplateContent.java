@@ -2,7 +2,7 @@ package com.smartling.marketo.sdk.domain.landingpagetemplate;
 
 import com.smartling.marketo.sdk.domain.Asset;
 
-public class LandingPageTemplateContentItem {
+public class LandingPageTemplateContent {
     private int id;
     private Asset.Status status;
     private String content;

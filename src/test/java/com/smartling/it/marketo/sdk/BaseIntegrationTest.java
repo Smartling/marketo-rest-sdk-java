@@ -22,7 +22,10 @@ public abstract class BaseIntegrationTest {
     protected MarketoClientManager marketoClientManager;
 
     @BeforeClass
-    public static void checkPreconditions() {
+    public static void checkPreconditions() throws Exception {
+        // Avoid hitting Marketo rate limits
+        Thread.sleep(500L);
+
         identityEndpoint = System.getProperty("marketo.identity");
         restEndpoint = System.getProperty("marketo.rest");
         clientId = System.getProperty("marketo.clientId");

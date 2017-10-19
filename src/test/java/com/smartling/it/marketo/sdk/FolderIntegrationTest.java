@@ -27,6 +27,22 @@ public class FolderIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    public void shouldGetFolderById() throws Exception {
+        FolderDetails folder = marketoFolderClient.getFolderById(new FolderId(158, FolderType.FOLDER));
+
+        assertThat(folder.getId()).isPositive();
+        assertThat(folder.getName()).isEqualTo("Integration Tests Folder");
+        assertThat(folder.getCreatedAt()).isBefore(new Date());
+        assertThat(folder.getUpdatedAt()).isBefore(new Date());
+        assertThat(folder.getFolderId()).isNotNull();
+        assertThat(folder.getPath()).isNotEmpty();
+        assertThat(folder.getFolderId()).isNotNull();
+        assertThat(folder.getFolderType()).isNotEmpty();
+        assertThat(folder.getParent()).isNotNull();
+        assertThat(folder.getWorkspace()).isNotEmpty();
+    }
+
+    @Test
     public void shouldGetFolders() throws Exception {
         List<FolderDetails> folders = marketoFolderClient.getFolders(new FolderId(1, FolderType.FOLDER), 0, 1, 1, null);
 

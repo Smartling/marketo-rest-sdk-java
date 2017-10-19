@@ -3,8 +3,10 @@ package com.smartling.it.marketo.sdk;
 import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.MarketoLandingPageTemplateClient;
 import com.smartling.marketo.sdk.domain.Asset.Status;
+import com.smartling.marketo.sdk.domain.folder.FolderId;
+import com.smartling.marketo.sdk.domain.folder.FolderType;
 import com.smartling.marketo.sdk.domain.landingpagetemplate.LandingPageTemplate;
-import com.smartling.marketo.sdk.domain.landingpagetemplate.LandingPageTemplateContentItem;
+import com.smartling.marketo.sdk.domain.landingpagetemplate.LandingPageTemplateContent;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,7 +32,25 @@ public class LandingPageTemplateIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void shouldGetLandingPageById() throws Exception {
+    public void shouldGetAllLandingPageTemplates() throws Exception {
+        List<LandingPageTemplate> landingPageTemplates = marketoLandingPageTemplateClient.getLandingPageTemplates(0, 200, null, null);
+
+        assertThat(landingPageTemplates).isNotNull();
+        assertThat(landingPageTemplates).isNotEmpty();
+        assertThat(landingPageTemplates).haveAtLeast(1, new EntityWithName("Blank Template"));
+    }
+
+    @Test
+    public void shouldGetAllLandingPagesTemplateFromFolder() throws Exception {
+        List<LandingPageTemplate> landingPageTemplates = marketoLandingPageTemplateClient.getLandingPageTemplates(0, 200, new FolderId(12, FolderType.FOLDER), null);
+
+        assertThat(landingPageTemplates).isNotNull();
+        assertThat(landingPageTemplates).isNotEmpty();
+        assertThat(landingPageTemplates).haveAtLeast(1, new EntityWithName("Blank Template"));
+    }
+
+    @Test
+    public void shouldGetLandingPageTemplateById() throws Exception {
         LandingPageTemplate landingPageTemplate = marketoLandingPageTemplateClient.getLandingPageTemplateById(TEST_LANDING_PAGE_TEMPLATE_ID);
 
         assertThat(landingPageTemplate).isNotNull();
@@ -43,7 +63,7 @@ public class LandingPageTemplateIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void shouldGetLandingPageByIdAndStatus() throws Exception {
+    public void shouldGetLandingPageTemplateByIdAndStatus() throws Exception {
         LandingPageTemplate landingPageTemplate = marketoLandingPageTemplateClient
                 .getLandingPageTemplateById(TEST_LANDING_PAGE_TEMPLATE_WITH_DRAFT_ID, Status.DRAFT);
 
@@ -54,7 +74,7 @@ public class LandingPageTemplateIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void shouldThrowMarketoApiExceptionWhenCouldNotFindLandingPageById() throws Exception {
+    public void shouldThrowMarketoApiExceptionWhenCouldNotFindLandingPageTemplateById() throws Exception {
 
         thrown.expect(MarketoApiException.class);
         thrown.expectMessage("LandingPageTemplate[id = 42] not found");
@@ -63,11 +83,11 @@ public class LandingPageTemplateIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void shouldReadLandingPageContent() throws Exception {
-        List<LandingPageTemplateContentItem> contentItems = marketoLandingPageTemplateClient.getLandingPageTemplateContent(TEST_LANDING_PAGE_TEMPLATE_ID);
+    public void shouldReadLandingPageTemplateContent() throws Exception {
+        List<LandingPageTemplateContent> contentItems = marketoLandingPageTemplateClient.getLandingPageTemplateContent(TEST_LANDING_PAGE_TEMPLATE_ID);
 
         assertThat(contentItems).hasSize(1);
-        LandingPageTemplateContentItem textContentItem = contentItems.get(0);
+        LandingPageTemplateContent textContentItem = contentItems.get(0);
         assertThat(textContentItem.getId()).isEqualTo(TEST_LANDING_PAGE_TEMPLATE_ID);
         assertThat(textContentItem.getContent()).containsIgnoringCase("Alice's Adventures in Wonderland");
         assertThat(textContentItem.getTemplateType()).isEqualTo(GUIDED);
