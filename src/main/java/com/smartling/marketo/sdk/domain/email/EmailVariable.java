@@ -2,20 +2,20 @@ package com.smartling.marketo.sdk.domain.email;
 
 public class EmailVariable
 {
-    private String id;
+    private String name;
     private String value;
     private boolean moduleScope;
     private String moduleId;
 
 
-    public String getId()
+    public String getName()
     {
-        return id;
+        return name;
     }
 
-    public void setId(String id)
+    public void setName(String name)
     {
-        this.id = id;
+        this.name = name;
     }
 
     public String getValue()

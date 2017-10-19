@@ -7,7 +7,6 @@ import com.smartling.marketo.sdk.domain.emailtemplate.EmailTemplateContent;
 import com.smartling.marketo.sdk.rest.command.emailtemplate.GetEmailTemplateById;
 import com.smartling.marketo.sdk.rest.command.emailtemplate.GetEmailTemplateContent;
 import com.smartling.marketo.sdk.rest.command.emailtemplate.GetEmailTemplates;
-import com.smartling.marketo.sdk.rest.transport.HttpCommandExecutor;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;

@@ -278,13 +278,12 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
         // Can not verify - no way to fetch sent sample
     }
 
-
     @Test
     public void shouldGetEmailVariables() throws Exception {
         List<EmailVariable> variables = marketoEmailClient.getEmailVariables(TEST_EMAIL_V2_ID);
 
         assertThat(variables).hasSize(94);
-        assertThat(variables.get(5).getId()).isEqualTo("twoArticlesLinkText");
+        assertThat(variables.get(5).getName()).isEqualTo("twoArticlesLinkText");
         assertThat(variables.get(5).getValue()).isEqualTo("READ MORE");
     }
 }
