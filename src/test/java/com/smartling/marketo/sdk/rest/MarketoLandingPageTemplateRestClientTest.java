@@ -35,7 +35,7 @@ public class MarketoLandingPageTemplateRestClientTest {
     private MarketoLandingPageTemplateRestClient testedInstance;
 
     @Test
-    public void shouldGetlandingPagetemplates() throws Exception {
+    public void shouldGetlandingPageTemplates() throws Exception {
         LandingPageTemplate landingPageTemplate = new LandingPageTemplate();
 
         given(executor.execute(isA(GetLandingPageTemplates.class))).willReturn(Collections.singletonList(landingPageTemplate));
