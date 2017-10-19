@@ -8,7 +8,6 @@ import com.smartling.marketo.sdk.domain.folder.FolderId;
 import java.util.List;
 
 public interface MarketoEmailTemplateClient {
-
     List<EmailTemplate> getEmailTemplates(int offset, int limit, FolderId folder, Status status) throws MarketoApiException;
 
     EmailTemplate getEmailTemplateById(int id, Status status) throws MarketoApiException;
