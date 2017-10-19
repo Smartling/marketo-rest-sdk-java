@@ -9,7 +9,6 @@ import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.rest.command.emailtemplate.GetEmailTemplateById;
 import com.smartling.marketo.sdk.rest.command.emailtemplate.GetEmailTemplateContent;
 import com.smartling.marketo.sdk.rest.command.emailtemplate.GetEmailTemplates;
-import com.smartling.marketo.sdk.rest.transport.HttpCommandExecutor;
 
 import java.util.Collections;
 import java.util.List;
