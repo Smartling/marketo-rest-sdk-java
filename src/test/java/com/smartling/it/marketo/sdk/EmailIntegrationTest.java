@@ -6,6 +6,7 @@ import com.smartling.marketo.sdk.domain.email.EmailContentItem;
 import com.smartling.marketo.sdk.domain.email.EmailDynamicContentItem;
 import com.smartling.marketo.sdk.domain.email.EmailSnippetContentItem;
 import com.smartling.marketo.sdk.domain.email.EmailTextContentItem;
+import com.smartling.marketo.sdk.domain.email.EmailVariable;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.domain.folder.FolderType;
 import com.smartling.marketo.sdk.MarketoApiException;
@@ -275,5 +276,15 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
         marketoEmailClient.sendSample(TEST_EMAIL_ID, "connectors-context+ignore-int-tests@smartling.com", true);
 
         // Can not verify - no way to fetch sent sample
+    }
+
+
+    @Test
+    public void shouldGetEmailVariables() throws Exception {
+        List<EmailVariable> variables = marketoEmailClient.getEmailVariables(TEST_EMAIL_V2_ID);
+
+        assertThat(variables).hasSize(94);
+        assertThat(variables.get(5).getId()).isEqualTo("twoArticlesLinkText");
+        assertThat(variables.get(5).getValue()).isEqualTo("READ MORE");
     }
 }

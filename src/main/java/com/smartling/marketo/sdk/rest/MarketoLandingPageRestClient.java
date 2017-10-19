@@ -99,7 +99,13 @@ public class MarketoLandingPageRestClient implements MarketoLandingPageClient {
     @Override
     public List<LandingPageVariable> getlandingPageVariables(int id) throws MarketoApiException
     {
-        List<LandingPageVariable> variables = httpCommandExecutor.execute(new GetLandingPageVariables(id, null));
+        return this.getlandingPageVariables(id, null);
+    }
+
+    @Override
+    public List<LandingPageVariable> getlandingPageVariables(int id, Status status) throws MarketoApiException
+    {
+        List<LandingPageVariable> variables = httpCommandExecutor.execute(new GetLandingPageVariables(id, status));
         return variables != null ? variables : Collections.emptyList();
     }
 
@@ -108,4 +114,6 @@ public class MarketoLandingPageRestClient implements MarketoLandingPageClient {
     {
         httpCommandExecutor.execute(new UpdateLandingPageVariable(pageId, variable));
     }
+
+
 }

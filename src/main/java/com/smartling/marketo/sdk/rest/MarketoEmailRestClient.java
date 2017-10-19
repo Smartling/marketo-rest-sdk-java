@@ -1,8 +1,10 @@
 package com.smartling.marketo.sdk.rest;
 
+import com.smartling.marketo.sdk.domain.Asset;
 import com.smartling.marketo.sdk.domain.email.Email;
 import com.smartling.marketo.sdk.domain.email.EmailContentItem;
 import com.smartling.marketo.sdk.domain.email.EmailTextContentItem;
+import com.smartling.marketo.sdk.domain.email.EmailVariable;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.MarketoEmailClient;
@@ -82,5 +84,12 @@ public class MarketoEmailRestClient implements MarketoEmailClient {
     @Override
     public void sendSample(int emailId, String emailAddress, boolean textOnly) throws MarketoApiException {
         httpCommandExecutor.execute(new SendSample(emailId, emailAddress, textOnly));
+    }
+
+    @Override
+    public List<EmailVariable> getEmailVariables(int id) throws MarketoApiException
+    {
+        List<EmailVariable> variables = httpCommandExecutor.execute(new GetEmailVariables(id));
+        return variables != null ? variables : Collections.emptyList();
     }
 }
