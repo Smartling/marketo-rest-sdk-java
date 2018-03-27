@@ -10,4 +10,10 @@ public class EmailDynamicContentItem extends EmailContentItem {
     public void setValue(String value) {
         this.value = value;
     }
+
+    @Override
+    public String toString()
+    {
+        return "EmailDynamicContentItem{" + "value='" + value + '\'' + "} " + super.toString();
+    }
 }

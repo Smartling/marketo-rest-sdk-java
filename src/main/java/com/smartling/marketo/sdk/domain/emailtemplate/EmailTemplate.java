@@ -23,5 +23,17 @@ public class EmailTemplate extends Asset {
         public void setValue(String value) {
             this.value = value;
         }
+
+        @Override
+        public String toString()
+        {
+            return "TextField{" + "value='" + value + '\'' + '}';
+        }
+    }
+
+    @Override
+    public String toString()
+    {
+        return "EmailTemplate{" + "version=" + version + "} " + super.toString();
     }
 }

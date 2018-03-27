@@ -13,6 +13,12 @@ public abstract class Asset extends BaseEntity{
         this.status = status;
     }
 
+    @Override
+    public String toString()
+    {
+        return "Asset{" + "status=" + status + "} " + super.toString();
+    }
+
     public enum Status {
         @JsonProperty("draft")
         DRAFT,

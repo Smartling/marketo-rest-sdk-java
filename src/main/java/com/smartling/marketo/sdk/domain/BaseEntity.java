@@ -59,4 +59,11 @@ public class BaseEntity {
     public void setUrl(String url) {
         this.url = url;
     }
+
+    @Override
+    public String toString()
+    {
+        return "BaseEntity{" + "id=" + id + ", name='" + name + '\'' + ", description='" + description + '\'' + ", updatedAt=" + updatedAt
+                + ", folder=" + folder + ", url='" + url + '\'' + '}';
+    }
 }

@@ -26,6 +26,12 @@ public class VisibilityRules implements HasToBeMappedToJson {
         this.rules = rules;
     }
 
+    @Override
+    public String toString()
+    {
+        return "VisibilityRules{" + "ruleType=" + ruleType + ", rules=" + rules + '}';
+    }
+
     public static class Rule {
         private String subjectField;
         private String operator;
@@ -63,13 +69,19 @@ public class VisibilityRules implements HasToBeMappedToJson {
         public void setValues(List<String> values) {
             this.values = values;
         }
+
+        @Override
+        public String toString()
+        {
+            return "Rule{" + "subjectField='" + subjectField + '\'' + ", operator='" + operator + '\'' + ", altLabel='" + altLabel + '\''
+                    + ", values=" + values + '}';
+        }
     }
 
     public enum RuleType {
         ALWAYSSHOW("alwaysShow"),
         SHOW("show"),
         HIDE("HIDE");
-
 
         private String key;
 

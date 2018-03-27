@@ -4,12 +4,19 @@ import java.util.Date;
 
 public class FolderDetails {
 
+    // Design Studio
     private static final String EMAIL_FOLDER_TYPE = "Email";
     private static final String FORM_FOLDER_TYPE = "Landing Page Form";
     private static final String LANDING_PAGE_FOLDER_TYPE = "Landing Page";
+
+    // Marketing Folder
+    private static final String MARKETING_FOLDER_TYPE = "Marketing Folder";
+
+    // Marketing Program
     private static final String PROGRAM_FOLDER_TYPE = "Email Batch Program";
     private static final String EVENT_FOLDER_TYPE = "Marketing Event";
-    private static final String MARKETING_FOLDER_TYPE = "Marketing Folder";
+    private static final String MARKETING_PROGRAM_TYPE = "Marketing Program";
+    private static final String NURTURE_PROGRAM_TYPE = "Nurture Program";
 
     private String name;
     private String description;
@@ -139,23 +146,31 @@ public class FolderDetails {
     }
 
     public boolean isFolderForEmails() {
-        return this.folderType.equals(EMAIL_FOLDER_TYPE) ||
-                this.folderType.equals(EVENT_FOLDER_TYPE) ||
-                this.folderType.equals(PROGRAM_FOLDER_TYPE) ||
-                (this.folderType.equals(MARKETING_FOLDER_TYPE) && this.parent.getType().equals(FolderType.PROGRAM));
+        return this.folderType.equals(EMAIL_FOLDER_TYPE) || isMarketingProgramFolder();
     }
 
     public boolean isFolderForForms() {
-        return this.folderType.equals(FORM_FOLDER_TYPE) ||
-                this.folderType.equals(EVENT_FOLDER_TYPE) ||
-                this.folderType.equals(PROGRAM_FOLDER_TYPE) ||
-                (this.folderType.equals(MARKETING_FOLDER_TYPE) && this.parent.getType().equals(FolderType.PROGRAM));
+        return this.folderType.equals(FORM_FOLDER_TYPE) || isMarketingProgramFolder();
     }
 
     public boolean isFolderForLandingPages() {
-        return this.folderType.equals(LANDING_PAGE_FOLDER_TYPE) ||
-                this.folderType.equals(EVENT_FOLDER_TYPE) ||
-                this.folderType.equals(PROGRAM_FOLDER_TYPE) ||
-                (this.folderType.equals(MARKETING_FOLDER_TYPE) && this.parent.getType().equals(FolderType.PROGRAM));
+        return this.folderType.equals(LANDING_PAGE_FOLDER_TYPE) || isMarketingProgramFolder();
+    }
+
+    private boolean isMarketingProgramFolder() {
+        return this.folderType.equals(EVENT_FOLDER_TYPE) ||
+               this.folderType.equals(PROGRAM_FOLDER_TYPE) ||
+               this.folderType.equals(NURTURE_PROGRAM_TYPE) ||
+               this.folderType.equals(MARKETING_PROGRAM_TYPE) ||
+               this.folderType.equals(MARKETING_FOLDER_TYPE);
+    }
+
+    @Override
+    public String toString()
+    {
+        return "FolderDetails{" + "name='" + name + '\'' + ", description='" + description + '\'' + ", createdAt=" + createdAt
+                + ", updatedAt=" + updatedAt + ", url='" + url + '\'' + ", folderId=" + folderId + ", folderType='" + folderType + '\''
+                + ", parent=" + parent + ", path='" + path + '\'' + ", isArchive=" + isArchive + ", isSystem=" + isSystem
+                + ", accessZoneId=" + accessZoneId + ", workspace='" + workspace + '\'' + ", id=" + id + '}';
     }
 }

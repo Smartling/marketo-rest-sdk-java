@@ -22,6 +22,12 @@ public class FolderContentItem {
         this.type = type;
     }
 
+    @Override
+    public String toString()
+    {
+        return "FolderContentItem{" + "id=" + id + ", type=" + type + '}';
+    }
+
     public enum Type {
         @JsonProperty("Email")
         EMAIL,
@@ -41,10 +47,14 @@ public class FolderContentItem {
         PROGRAM,
         @JsonProperty("Campaign")
         CAMPAIGN,
+        @JsonProperty("Smart Campaign")
+        SMART_CAMPAIGN,
         @JsonProperty("Folder")
         FOLDER,
         @JsonProperty("List")
         LIST,
+        @JsonProperty("Smart List")
+        SMART_LIST,
         @JsonProperty("Mobile Push Notification")
         MOBILE_PUSH_NOTIFICATION,
         @JsonProperty("Report")

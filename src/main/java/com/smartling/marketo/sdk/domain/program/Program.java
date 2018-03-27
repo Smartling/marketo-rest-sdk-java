@@ -42,4 +42,11 @@ public class Program extends BaseEntity {
     public void setTags(List<Tag> tags) {
         this.tags = tags;
     }
+
+    @Override
+    public String toString()
+    {
+        return "Program{" + "channel='" + channel + '\'' + ", type='" + type + '\'' + ", Status='" + Status + '\'' + ", tags=" + tags + "} "
+                + super.toString();
+    }
 }

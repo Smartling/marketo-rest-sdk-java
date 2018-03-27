@@ -19,4 +19,10 @@ public final class SnippetContentItem {
     public void setContent(String content) {
         this.content = content;
     }
+
+    @Override
+    public String toString()
+    {
+        return "SnippetContentItem{" + "type='" + type + '\'' + ", content='" + content + '\'' + '}';
+    }
 }

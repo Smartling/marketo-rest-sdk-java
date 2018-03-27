@@ -13,4 +13,9 @@ public class LandingPageTemplate extends Asset {
         this.templateType = templateType;
     }
 
+    @Override
+    public String toString()
+    {
+        return "LandingPageTemplate{" + "templateType=" + templateType + "} " + super.toString();
+    }
 }

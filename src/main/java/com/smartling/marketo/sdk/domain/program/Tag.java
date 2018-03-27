@@ -19,4 +19,10 @@ public class Tag {
     public void setTagValue(String tagValue) {
         this.tagValue = tagValue;
     }
+
+    @Override
+    public String toString()
+    {
+        return "Tag{" + "tagType='" + tagType + '\'' + ", tagValue='" + tagValue + '\'' + '}';
+    }
 }

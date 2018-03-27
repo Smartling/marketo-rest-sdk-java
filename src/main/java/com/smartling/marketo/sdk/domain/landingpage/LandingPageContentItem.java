@@ -36,4 +36,10 @@ public abstract class LandingPageContentItem {
     public void setIndex(int index) {
         this.index = index;
     }
+
+    @Override
+    public String toString()
+    {
+        return "LandingPageContentItem{" + "id='" + id + '\'' + ", type='" + type + '\'' + ", index=" + index + '}';
+    }
 }

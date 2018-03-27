@@ -17,6 +17,12 @@ public class FieldMetaData implements HasToBeMappedToJson {
         this.values = values;
     }
 
+    @Override
+    public String toString()
+    {
+        return "FieldMetaData{" + "values=" + values + '}';
+    }
+
     public static class Value {
         private String label;
         private String value;
@@ -35,6 +41,12 @@ public class FieldMetaData implements HasToBeMappedToJson {
 
         public void setValue(String value) {
             this.value = value;
+        }
+
+        @Override
+        public String toString()
+        {
+            return "Value{" + "label='" + label + '\'' + ", value='" + value + '\'' + '}';
         }
     }
 }

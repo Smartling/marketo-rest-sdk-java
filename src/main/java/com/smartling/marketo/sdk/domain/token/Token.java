@@ -41,6 +41,13 @@ public class Token {
         this.value = value;
     }
 
+    @Override
+    public String toString()
+    {
+        return "Token{" + "type=" + type + ", name='" + name + '\'' + ", computedUrl='" + computedUrl + '\'' + ", value='" + value + '\''
+                + '}';
+    }
+
     public enum Type {
         SCRIPT_BLOCK("script block"),
         RICH_TEXT("rich text"),

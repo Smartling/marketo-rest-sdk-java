@@ -52,6 +52,13 @@ public class Form extends Asset {
         this.waitingLabel = waitingLabel;
     }
 
+    @Override
+    public String toString()
+    {
+        return "Form{" + "Locale='" + Locale + '\'' + ", Language='" + Language + '\'' + ", knownVisitor=" + knownVisitor
+                + ", buttonLabel='" + buttonLabel + '\'' + ", waitingLabel='" + waitingLabel + '\'' + "} " + super.toString();
+    }
+
     public static class KnownVisitor implements HasToBeMappedToJson {
         private KnownVisitorType type;
         private String template;
@@ -70,6 +77,12 @@ public class Form extends Asset {
 
         public void setTemplate(String template) {
             this.template = template;
+        }
+
+        @Override
+        public String toString()
+        {
+            return "KnownVisitor{" + "type=" + type + ", template='" + template + '\'' + '}';
         }
     }
 

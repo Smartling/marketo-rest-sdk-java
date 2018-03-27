@@ -48,4 +48,11 @@ public class LandingPageTemplateContent {
     public void setEnableMunchkin(Boolean enableMunchkin) {
         this.enableMunchkin = enableMunchkin;
     }
+
+    @Override
+    public String toString()
+    {
+        return "LandingPageTemplateContent{" + "id=" + id + ", status=" + status + ", content='" + content + '\'' + ", templateType="
+                + templateType + ", enableMunchkin=" + enableMunchkin + '}';
+    }
 }
