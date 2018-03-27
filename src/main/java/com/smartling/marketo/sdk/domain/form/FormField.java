@@ -82,4 +82,12 @@ public class FormField {
     public void setFieldMetaData(FieldMetaData fieldMetaData) {
         this.fieldMetaData = fieldMetaData;
     }
+
+    @Override
+    public String toString()
+    {
+        return "FormField{" + "id='" + id + '\'' + ", label='" + label + '\'' + ", dataType='" + dataType + '\'' + ", instructions='"
+                + instructions + '\'' + ", defaultValue='" + defaultValue + '\'' + ", validationMessage='" + validationMessage + '\''
+                + ", visibilityRules=" + visibilityRules + ", hintText='" + hintText + '\'' + ", fieldMetaData=" + fieldMetaData + '}';
+    }
 }

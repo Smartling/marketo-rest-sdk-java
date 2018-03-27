@@ -47,4 +47,11 @@ public class EmailVariable
     {
         this.moduleId = moduleId;
     }
+
+    @Override
+    public String toString()
+    {
+        return "EmailVariable{" + "name='" + name + '\'' + ", value='" + value + '\'' + ", moduleScope=" + moduleScope + ", moduleId='"
+                + moduleId + '\'' + '}';
+    }
 }

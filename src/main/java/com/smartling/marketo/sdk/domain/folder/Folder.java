@@ -28,4 +28,10 @@ public class Folder {
     public void setFolderName(String folderName) {
         this.folderName = folderName;
     }
+
+    @Override
+    public String toString()
+    {
+        return "Folder{" + "value=" + value + ", type=" + type + ", folderName='" + folderName + '\'' + '}';
+    }
 }

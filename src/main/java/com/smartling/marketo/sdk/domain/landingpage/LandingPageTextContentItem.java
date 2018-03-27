@@ -13,4 +13,10 @@ public class LandingPageTextContentItem extends LandingPageContentItem {
     public void setContent(String content) {
         this.content = content;
     }
+
+    @Override
+    public String toString()
+    {
+        return "LandingPageTextContentItem{" + "content='" + content + '\'' + "} " + super.toString();
+    }
 }

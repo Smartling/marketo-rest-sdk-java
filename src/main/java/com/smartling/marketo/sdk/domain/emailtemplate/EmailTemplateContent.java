@@ -31,4 +31,10 @@ public class EmailTemplateContent {
     public void setContent(String content) {
         this.content = content;
     }
+
+    @Override
+    public String toString()
+    {
+        return "EmailTemplateContent{" + "id=" + id + ", status=" + status + ", content='" + content + '\'' + '}';
+    }
 }

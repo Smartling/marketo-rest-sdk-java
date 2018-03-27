@@ -10,4 +10,10 @@ public class EmailSnippetContentItem extends EmailContentItem {
     public void setValue(String value) {
         this.value = value;
     }
+
+    @Override
+    public String toString()
+    {
+        return "EmailSnippetContentItem{" + "value='" + value + '\'' + "} " + super.toString();
+    }
 }

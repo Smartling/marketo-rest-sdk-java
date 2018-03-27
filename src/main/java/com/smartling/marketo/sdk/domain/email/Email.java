@@ -51,4 +51,11 @@ public class Email extends Asset {
             this.value = value;
         }
     }
+
+    @Override
+    public String toString()
+    {
+        return "Email{" + "subject=" + subject + ", fromName=" + fromName + ", template=" + template + ", version=" + version + "} " + super
+                .toString();
+    }
 }

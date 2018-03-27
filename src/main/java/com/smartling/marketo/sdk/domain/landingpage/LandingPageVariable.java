@@ -35,4 +35,10 @@ public class LandingPageVariable
     {
         this.value = value;
     }
+
+    @Override
+    public String toString()
+    {
+        return "LandingPageVariable{" + "id='" + id + '\'' + ", type='" + type + '\'' + ", value='" + value + '\'' + '}';
+    }
 }

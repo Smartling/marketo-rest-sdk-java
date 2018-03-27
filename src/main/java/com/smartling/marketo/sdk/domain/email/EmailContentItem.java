@@ -28,4 +28,10 @@ public abstract class EmailContentItem {
     public void setContentType(String contentType) {
         this.contentType = contentType;
     }
+
+    @Override
+    public String toString()
+    {
+        return "EmailContentItem{" + "htmlId='" + htmlId + '\'' + ", contentType='" + contentType + '\'' + '}';
+    }
 }

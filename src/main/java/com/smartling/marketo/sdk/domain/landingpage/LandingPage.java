@@ -94,4 +94,13 @@ public class LandingPage extends Asset {
     public void setFormPrefill(boolean formPrefill) {
         this.formPrefill = formPrefill;
     }
+
+    @Override
+    public String toString()
+    {
+        return "LandingPage{" + "template=" + template + ", styleOverRide='" + styleOverRide + '\'' + ", mobileEnabled=" + mobileEnabled
+                + ", computedUrl='" + computedUrl + '\'' + ", title='" + title + '\'' + ", keywords='" + keywords + '\'' + ", robots='"
+                + robots + '\'' + ", facebookOgTags='" + facebookOgTags + '\'' + ", customHeadHTML='" + customHeadHTML + '\''
+                + ", formPrefill=" + formPrefill + "} " + super.toString();
+    }
 }

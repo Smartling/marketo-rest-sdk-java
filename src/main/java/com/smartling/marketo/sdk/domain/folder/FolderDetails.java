@@ -164,4 +164,13 @@ public class FolderDetails {
                this.folderType.equals(MARKETING_PROGRAM_TYPE) ||
                this.folderType.equals(MARKETING_FOLDER_TYPE);
     }
+
+    @Override
+    public String toString()
+    {
+        return "FolderDetails{" + "name='" + name + '\'' + ", description='" + description + '\'' + ", createdAt=" + createdAt
+                + ", updatedAt=" + updatedAt + ", url='" + url + '\'' + ", folderId=" + folderId + ", folderType='" + folderType + '\''
+                + ", parent=" + parent + ", path='" + path + '\'' + ", isArchive=" + isArchive + ", isSystem=" + isSystem
+                + ", accessZoneId=" + accessZoneId + ", workspace='" + workspace + '\'' + ", id=" + id + '}';
+    }
 }

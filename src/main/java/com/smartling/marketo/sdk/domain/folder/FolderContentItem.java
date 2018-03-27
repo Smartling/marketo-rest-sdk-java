@@ -22,6 +22,12 @@ public class FolderContentItem {
         this.type = type;
     }
 
+    @Override
+    public String toString()
+    {
+        return "FolderContentItem{" + "id=" + id + ", type=" + type + '}';
+    }
+
     public enum Type {
         @JsonProperty("Email")
         EMAIL,

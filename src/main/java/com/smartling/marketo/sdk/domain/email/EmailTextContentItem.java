@@ -36,4 +36,9 @@ public class EmailTextContentItem extends EmailContentItem {
         }
     }
 
+    @Override
+    public String toString()
+    {
+        return "EmailTextContentItem{" + "value=" + value + "} " + super.toString();
+    }
 }
