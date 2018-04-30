@@ -15,6 +15,10 @@ public class VisibilityRulesParameter implements HasToBeMappedToJson {
         this.rules = visibilityRules.getRules().stream().map(Rule::new).collect(Collectors.toList());
     }
 
+    public VisibilityRulesParameter()
+    {
+    }
+
     public RuleType getRuleType() {
         return ruleType;
     }
@@ -51,6 +55,10 @@ public class VisibilityRulesParameter implements HasToBeMappedToJson {
             this.operator = rule.getOperator();
             this.values = rule.getValues();
             this.pickListValues = rule.getPicklistFilterValues();
+        }
+
+        public Rule()
+        {
         }
 
         public String getSubjectField() {
