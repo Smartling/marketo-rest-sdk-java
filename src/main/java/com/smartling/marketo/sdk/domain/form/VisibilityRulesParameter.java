@@ -12,7 +12,10 @@ public class VisibilityRulesParameter implements HasToBeMappedToJson {
     public VisibilityRulesParameter(VisibilityRules visibilityRules)
     {
         this.ruleType = visibilityRules.getRuleType();
-        this.rules = visibilityRules.getRules().stream().map(Rule::new).collect(Collectors.toList());
+        if (visibilityRules.getRules() != null)
+        {
+            this.rules = visibilityRules.getRules().stream().map(Rule::new).collect(Collectors.toList());
+        }
     }
 
     public VisibilityRulesParameter()
