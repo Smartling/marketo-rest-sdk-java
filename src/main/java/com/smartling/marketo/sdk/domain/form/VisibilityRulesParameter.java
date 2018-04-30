@@ -3,10 +3,17 @@ package com.smartling.marketo.sdk.domain.form;
 import com.smartling.marketo.sdk.HasToBeMappedToJson;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class VisibilityRulesParameter implements HasToBeMappedToJson {
     private RuleType ruleType;
     private List<Rule> rules;
+
+    public VisibilityRulesParameter(VisibilityRules visibilityRules)
+    {
+        this.ruleType = visibilityRules.getRuleType();
+        this.rules = visibilityRules.getRules().stream().map(Rule::new).collect(Collectors.toList());
+    }
 
     public RuleType getRuleType() {
         return ruleType;
@@ -36,6 +43,15 @@ public class VisibilityRulesParameter implements HasToBeMappedToJson {
         private String altLabel;
         private List<String> values;
         private List<PickListDTO> pickListValues;
+
+        public Rule(VisibilityRules.Rule rule)
+        {
+            this.altLabel = rule.getAltLabel();
+            this.subjectField = rule.getSubjectField();
+            this.operator = rule.getOperator();
+            this.values = rule.getValues();
+            this.pickListValues = rule.getPicklistFilterValues();
+        }
 
         public String getSubjectField() {
             return subjectField;
