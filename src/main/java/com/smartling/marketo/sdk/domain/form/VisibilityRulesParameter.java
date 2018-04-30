@@ -4,7 +4,7 @@ import com.smartling.marketo.sdk.HasToBeMappedToJson;
 
 import java.util.List;
 
-public class VisibilityRules implements HasToBeMappedToJson {
+public class VisibilityRulesParameter implements HasToBeMappedToJson {
     private RuleType ruleType;
     private List<Rule> rules;
 
@@ -35,7 +35,7 @@ public class VisibilityRules implements HasToBeMappedToJson {
         private String operator;
         private String altLabel;
         private List<String> values;
-        private List<PickListDTO> picklistFilterValues;
+        private List<PickListDTO> pickListValues;
 
         public String getSubjectField() {
             return subjectField;
@@ -69,21 +69,21 @@ public class VisibilityRules implements HasToBeMappedToJson {
             this.values = values;
         }
 
-        public List<PickListDTO> getPicklistFilterValues()
+        public List<PickListDTO> getPickListValues()
         {
-            return picklistFilterValues;
+            return pickListValues;
         }
 
-        public void setPicklistFilterValues(List<PickListDTO> picklistFilterValues)
+        public void setPickListValues(List<PickListDTO> pickListValues)
         {
-            this.picklistFilterValues = picklistFilterValues;
+            this.pickListValues = pickListValues;
         }
 
         @Override
         public String toString()
         {
             return "Rule{" + "subjectField='" + subjectField + '\'' + ", operator='" + operator + '\'' + ", altLabel='" + altLabel + '\''
-                    + ", values=" + values + ", picklistFilterValues=" + picklistFilterValues + '}';
+                    + ", values=" + values + ", pickListValues=" + pickListValues + '}';
         }
     }
 }

@@ -7,6 +7,7 @@ import com.smartling.marketo.sdk.domain.form.FormField;
 import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.MarketoFormClient;
 import com.smartling.marketo.sdk.domain.form.VisibilityRules;
+import com.smartling.marketo.sdk.domain.form.VisibilityRulesParameter;
 import com.smartling.marketo.sdk.rest.command.form.CloneForm;
 import com.smartling.marketo.sdk.rest.command.form.GetFormsByName;
 import com.smartling.marketo.sdk.rest.command.form.GetForms;
@@ -88,7 +89,7 @@ public class MarketoFormRestClient implements MarketoFormClient {
     }
 
     @Override
-    public void updateFormFieldVisibilityRules(int formId, String formField, VisibilityRules visibilityRule) throws MarketoApiException {
+    public void updateFormFieldVisibilityRules(int formId, String formField, VisibilityRulesParameter visibilityRule) throws MarketoApiException {
         httpCommandExecutor.execute(new UpdateFormFieldVisibilityRules(formId, formField, visibilityRule));
     }
 }

@@ -6,6 +6,7 @@ import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.domain.form.Form;
 import com.smartling.marketo.sdk.domain.form.FormField;
 import com.smartling.marketo.sdk.domain.form.VisibilityRules;
+import com.smartling.marketo.sdk.domain.form.VisibilityRulesParameter;
 
 import java.util.List;
 
@@ -30,5 +31,5 @@ public interface MarketoFormClient {
 
     void updateSubmitButton(int formId, String label, String waitingLabel) throws MarketoApiException;
 
-    void updateFormFieldVisibilityRules(int formId, String formField, VisibilityRules visibilityRules) throws MarketoApiException;
+    void updateFormFieldVisibilityRules(int formId, String formField, VisibilityRulesParameter visibilityRules) throws MarketoApiException;
 }
