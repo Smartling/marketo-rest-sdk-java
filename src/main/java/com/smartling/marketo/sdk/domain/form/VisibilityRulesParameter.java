@@ -3,10 +3,24 @@ package com.smartling.marketo.sdk.domain.form;
 import com.smartling.marketo.sdk.HasToBeMappedToJson;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class VisibilityRules implements HasToBeMappedToJson {
+public class VisibilityRulesParameter implements HasToBeMappedToJson {
     private RuleType ruleType;
     private List<Rule> rules;
+
+    public VisibilityRulesParameter(VisibilityRules visibilityRules)
+    {
+        this.ruleType = visibilityRules.getRuleType();
+        if (visibilityRules.getRules() != null)
+        {
+            this.rules = visibilityRules.getRules().stream().map(Rule::new).collect(Collectors.toList());
+        }
+    }
+
+    public VisibilityRulesParameter()
+    {
+    }
 
     public RuleType getRuleType() {
         return ruleType;
@@ -35,7 +49,20 @@ public class VisibilityRules implements HasToBeMappedToJson {
         private String operator;
         private String altLabel;
         private List<String> values;
-        private List<PickListDTO> picklistFilterValues;
+        private List<PickListDTO> pickListValues;
+
+        public Rule(VisibilityRules.Rule rule)
+        {
+            this.altLabel = rule.getAltLabel();
+            this.subjectField = rule.getSubjectField();
+            this.operator = rule.getOperator();
+            this.values = rule.getValues();
+            this.pickListValues = rule.getPicklistFilterValues();
+        }
+
+        public Rule()
+        {
+        }
 
         public String getSubjectField() {
             return subjectField;
@@ -69,21 +96,21 @@ public class VisibilityRules implements HasToBeMappedToJson {
             this.values = values;
         }
 
-        public List<PickListDTO> getPicklistFilterValues()
+        public List<PickListDTO> getPickListValues()
         {
-            return picklistFilterValues;
+            return pickListValues;
         }
 
-        public void setPicklistFilterValues(List<PickListDTO> picklistFilterValues)
+        public void setPickListValues(List<PickListDTO> pickListValues)
         {
-            this.picklistFilterValues = picklistFilterValues;
+            this.pickListValues = pickListValues;
         }
 
         @Override
         public String toString()
         {
             return "Rule{" + "subjectField='" + subjectField + '\'' + ", operator='" + operator + '\'' + ", altLabel='" + altLabel + '\''
-                    + ", values=" + values + ", picklistFilterValues=" + picklistFilterValues + '}';
+                    + ", values=" + values + ", pickListValues=" + pickListValues + '}';
         }
     }
 }

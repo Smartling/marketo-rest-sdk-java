@@ -10,8 +10,10 @@ import com.smartling.marketo.sdk.domain.folder.FolderType;
 import com.smartling.marketo.sdk.domain.form.Form.KnownVisitor;
 import com.smartling.marketo.sdk.domain.form.FormField;
 import com.smartling.marketo.sdk.MarketoApiException;
+import com.smartling.marketo.sdk.domain.form.PickListDTO;
 import com.smartling.marketo.sdk.domain.form.VisibilityRules;
-import com.smartling.marketo.sdk.domain.form.VisibilityRules.RuleType;
+import com.smartling.marketo.sdk.domain.form.RuleType;
+import com.smartling.marketo.sdk.domain.form.VisibilityRulesParameter;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,7 +32,7 @@ public class FormIntegrationTest extends BaseIntegrationTest {
     private static final FolderId TEST_FOLDER_ID = new FolderId(123, FolderType.FOLDER);
     private static final int TEST_PROGRAM_FORM_ID = 1013;
     private static final FolderId TEST_PROGRAM_ID = new FolderId(1008, FolderType.PROGRAM);
-    private static final String TEST_FORM_FIELD = "Address";
+    private static final String TEST_FORM_FIELD = "MarketoSocialGender";
 
     @Rule
     public final ExpectedException thrown = ExpectedException.none();
@@ -247,23 +249,43 @@ public class FormIntegrationTest extends BaseIntegrationTest {
 
     @Test
     public void shouldUpdateFormFieldVisibilityRules() throws Exception {
-        VisibilityRules visibilityRule = new VisibilityRules();
-        visibilityRule.setRuleType(RuleType.SHOW);
+        VisibilityRulesParameter visibilityRules = new VisibilityRulesParameter();
+        visibilityRules.setRuleType(RuleType.SHOW);
 
-        List<VisibilityRules.Rule> rules = Collections.singletonList(rule("FirstName", "isNotEmpty", "Der address"));
-        visibilityRule.setRules(rules);
+        List<VisibilityRulesParameter.Rule> rules = Collections.singletonList(rule("FirstName", "isNotEmpty", "Gender", picklist()));
+        visibilityRules.setRules(rules);
 
-        marketoFormClient.updateFormFieldVisibilityRules(TEST_FORM_ID, TEST_FORM_FIELD, visibilityRule);
+        marketoFormClient.updateFormFieldVisibilityRules(TEST_FORM_ID, TEST_FORM_FIELD, visibilityRules);
 
         // Can not verify - no way to fetch not approved content
     }
 
-    private VisibilityRules.Rule rule(String subjectField, String operator, String altLabel) {
-        VisibilityRules.Rule rule = new VisibilityRules.Rule();
+    private List<PickListDTO> picklist()
+    {
+        List<PickListDTO> picklist = new ArrayList<>();
+        picklist.add(pickitem("Sélectionnez...", null));
+        picklist.add(pickitem("La Femme", "f"));
+        picklist.add(pickitem("La Homme", "m"));
+        picklist.add(pickitem("D'autres", "o"));
+        picklist.add(pickitem("Je ne sais pas", "dk"));
+        return picklist;
+    }
+
+    private PickListDTO pickitem(String label, String value)
+    {
+        PickListDTO pickitem = new PickListDTO();
+        pickitem.setLabel(label);
+        pickitem.setValue(value);
+        return pickitem;
+    }
+
+    private VisibilityRulesParameter.Rule rule(String subjectField, String operator, String altLabel, List<PickListDTO> picklist) {
+        VisibilityRulesParameter.Rule rule = new VisibilityRulesParameter.Rule();
         rule.setSubjectField(subjectField);
         rule.setOperator(operator);
         rule.setValues(Collections.emptyList());
         rule.setAltLabel(altLabel);
+        rule.setPickListValues(picklist);
         return rule;
     }
 }
