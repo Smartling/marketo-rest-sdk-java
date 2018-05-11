@@ -4,6 +4,7 @@ import com.smartling.marketo.sdk.domain.Asset;
 import com.smartling.marketo.sdk.domain.Asset.Status;
 import com.smartling.marketo.sdk.domain.email.Email;
 import com.smartling.marketo.sdk.domain.email.EmailContentItem;
+import com.smartling.marketo.sdk.domain.email.EmailFullContent;
 import com.smartling.marketo.sdk.domain.email.EmailTextContentItem;
 import com.smartling.marketo.sdk.domain.email.EmailVariable;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
@@ -34,4 +35,6 @@ public interface MarketoEmailClient {
     void sendSample(int emailId, String emailAddress, boolean textOnly) throws MarketoApiException;
 
     List<EmailVariable> getEmailVariables(int id) throws MarketoApiException;
+
+    EmailFullContent getEmailFullContent(int id, Status status) throws MarketoApiException;
 }

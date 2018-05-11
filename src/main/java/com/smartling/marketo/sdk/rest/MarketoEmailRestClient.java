@@ -1,8 +1,9 @@
 package com.smartling.marketo.sdk.rest;
 
-import com.smartling.marketo.sdk.domain.Asset;
+import com.smartling.marketo.sdk.domain.Asset.Status;
 import com.smartling.marketo.sdk.domain.email.Email;
 import com.smartling.marketo.sdk.domain.email.EmailContentItem;
+import com.smartling.marketo.sdk.domain.email.EmailFullContent;
 import com.smartling.marketo.sdk.domain.email.EmailTextContentItem;
 import com.smartling.marketo.sdk.domain.email.EmailVariable;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
@@ -27,7 +28,7 @@ public class MarketoEmailRestClient implements MarketoEmailClient {
     }
 
     @Override
-    public List<Email> listEmails(int offset, int limit, FolderId folder, Email.Status status) throws MarketoApiException {
+    public List<Email> listEmails(int offset, int limit, FolderId folder, Status status) throws MarketoApiException {
         final List<Email> emails = httpCommandExecutor.execute(new GetEmailsCommand(offset, limit, folder, status));
         return emails != null ? emails : Collections.emptyList();
     }
@@ -43,7 +44,7 @@ public class MarketoEmailRestClient implements MarketoEmailClient {
     }
 
     @Override
-    public List<Email> getEmailsByName(final String name, final FolderId folder, Email.Status status) throws MarketoApiException {
+    public List<Email> getEmailsByName(final String name, final FolderId folder, Status status) throws MarketoApiException {
         final List<Email> emails = httpCommandExecutor.execute(new GetEmailsByName(name, folder, status));
         return emails != null ? emails : Collections.emptyList();
     }
@@ -91,5 +92,16 @@ public class MarketoEmailRestClient implements MarketoEmailClient {
     {
         List<EmailVariable> variables = httpCommandExecutor.execute(new GetEmailVariables(id));
         return variables != null ? variables : Collections.emptyList();
+    }
+
+    @Override
+    public EmailFullContent getEmailFullContent(int id, Status status) throws MarketoApiException
+    {
+        List<EmailFullContent> fullContent = httpCommandExecutor.execute(new GetEmailFullContent(id, status));
+        if (fullContent != null && !fullContent.isEmpty()) {
+            return fullContent.get(0);
+        } else {
+            throw new MarketoApiException(String.format("No full content for Email[id = %d, status = %s] found", id, status));
+        }
     }
 }

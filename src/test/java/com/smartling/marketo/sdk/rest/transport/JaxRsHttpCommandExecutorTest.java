@@ -90,7 +90,7 @@ public class JaxRsHttpCommandExecutorTest extends BaseTransportTest {
     public void shouldReturnAllNeededDataInResponseForLoadEmailContentCommand() throws Exception {
         LoadEmailContent command = new LoadEmailContent(42);
 
-        givenThat(get(path("/rest/asset/v1/email/42/content")).willReturn(
+        givenThat(get(path("/rest/asset/v1/email/42/content.json")).willReturn(
                 aJsonResponse(json())));
 
         List<EmailContentItem> response = testedInstance.execute(command);
@@ -112,7 +112,7 @@ public class JaxRsHttpCommandExecutorTest extends BaseTransportTest {
     public void shouldHaveTextValueAsNullIfNoDataInJson() throws Exception {
         LoadEmailContent command = new LoadEmailContent(42);
 
-        givenThat(get(path("/rest/asset/v1/email/42/content")).willReturn(
+        givenThat(get(path("/rest/asset/v1/email/42/content.json")).willReturn(
                 aJsonResponse(jsonWithNoTextValue())));
 
         List<EmailContentItem> response = testedInstance.execute(command);
@@ -124,7 +124,7 @@ public class JaxRsHttpCommandExecutorTest extends BaseTransportTest {
     public void shouldHaveTextValueAsEmptyStringIfEmptyStringInJson() throws Exception {
         LoadEmailContent command = new LoadEmailContent(42);
 
-        givenThat(get(path("/rest/asset/v1/email/42/content")).willReturn(
+        givenThat(get(path("/rest/asset/v1/email/42/content.json")).willReturn(
                 aJsonResponse(jsonWithEmptyTextValue())));
 
         List<EmailContentItem> response = testedInstance.execute(command);
@@ -136,7 +136,7 @@ public class JaxRsHttpCommandExecutorTest extends BaseTransportTest {
     public void shouldReadSnippetItemsFromJson() throws Exception {
         LoadEmailContent command = new LoadEmailContent(42);
 
-        givenThat(get(path("/rest/asset/v1/email/42/content")).willReturn(
+        givenThat(get(path("/rest/asset/v1/email/42/content.json")).willReturn(
                 aJsonResponse(jsonWithSnippetItem())));
 
         List<EmailContentItem> response = testedInstance.execute(command);
