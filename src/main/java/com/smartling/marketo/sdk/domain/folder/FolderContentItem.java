@@ -35,6 +35,8 @@ public class FolderContentItem {
         EMAIL_TEMPLATE,
         @JsonProperty("Form")
         FORM,
+        @JsonProperty("Landing Page Form")
+        LANDING_PAGE_FORM,
         @JsonProperty("Landing Page")
         LANDING_PAGE,
         @JsonProperty("Landing Page Template")

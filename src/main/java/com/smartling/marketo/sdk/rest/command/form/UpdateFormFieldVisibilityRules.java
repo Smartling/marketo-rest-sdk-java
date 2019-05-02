@@ -1,6 +1,7 @@
 package com.smartling.marketo.sdk.rest.command.form;
 
 import com.smartling.marketo.sdk.domain.form.VisibilityRules;
+import com.smartling.marketo.sdk.domain.form.VisibilityRulesParameter;
 import com.smartling.marketo.sdk.rest.command.BaseMarketoCommand;
 
 import java.util.Collections;
@@ -9,9 +10,9 @@ import java.util.Map;
 public class UpdateFormFieldVisibilityRules extends BaseMarketoCommand<VisibilityRules> {
     private final int formId;
     private final String formField;
-    private final VisibilityRules visibilityRule;
+    private final VisibilityRulesParameter visibilityRule;
 
-    public UpdateFormFieldVisibilityRules(int formId, String formField, VisibilityRules visibilityRule) {
+    public UpdateFormFieldVisibilityRules(int formId, String formField, VisibilityRulesParameter visibilityRule) {
         super(VisibilityRules.class);
         this.formId = formId;
         this.formField = formField;
