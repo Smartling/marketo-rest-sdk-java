@@ -4,6 +4,7 @@ import com.smartling.marketo.sdk.domain.email.Email;
 import com.smartling.marketo.sdk.domain.Asset.Status;
 import com.smartling.marketo.sdk.domain.email.EmailContentItem;
 import com.smartling.marketo.sdk.domain.email.EmailDynamicContentItem;
+import com.smartling.marketo.sdk.domain.email.EmailFullContent;
 import com.smartling.marketo.sdk.domain.email.EmailSnippetContentItem;
 import com.smartling.marketo.sdk.domain.email.EmailTextContentItem;
 import com.smartling.marketo.sdk.domain.email.EmailVariable;
@@ -285,5 +286,12 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
         assertThat(variables).hasSize(94);
         assertThat(variables.get(5).getName()).isEqualTo("twoArticlesLinkText");
         assertThat(variables.get(5).getValue()).isEqualTo("READ MORE");
+    }
+
+    @Test
+    public void shouldGetEmailFullContent() throws Exception {
+        EmailFullContent fullContent = marketoEmailClient.getEmailFullContent(TEST_EMAIL_V2_ID, Status.DRAFT);
+
+        assertThat(fullContent.getContent()).isNotEmpty();
     }
 }

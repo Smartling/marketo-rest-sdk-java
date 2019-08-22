@@ -13,6 +13,6 @@ public class LoadEmailContent extends BaseGetCommand<EmailContentItem> {
 
     @Override
     public String getPath() {
-        return "/asset/v1/email/" + emailId + "/content";
+        return "/asset/v1/email/" + emailId + "/content.json";
     }
 }

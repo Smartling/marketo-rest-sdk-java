@@ -1,8 +1,10 @@
 package com.smartling.marketo.sdk.rest;
 
 import com.smartling.marketo.sdk.MarketoApiException;
+import com.smartling.marketo.sdk.domain.Asset.Status;
 import com.smartling.marketo.sdk.domain.email.Email;
 import com.smartling.marketo.sdk.domain.email.EmailContentItem;
+import com.smartling.marketo.sdk.domain.email.EmailFullContent;
 import com.smartling.marketo.sdk.domain.email.EmailTextContentItem;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.domain.folder.FolderType;
@@ -53,7 +55,7 @@ public class MarketoEmailRestClientTest {
         Email email = new Email();
         given(executor.execute(isA(GetEmailsCommand.class))).willReturn(Collections.singletonList(email));
 
-        List<Email> emails = testedInstance.listEmails(0, 10, new FolderId(1, FolderType.FOLDER), Email.Status.APPROVED);
+        List<Email> emails = testedInstance.listEmails(0, 10, new FolderId(1, FolderType.FOLDER), Status.APPROVED);
 
         assertThat(emails).contains(email);
     }
@@ -62,7 +64,7 @@ public class MarketoEmailRestClientTest {
     public void shouldReturnEmptyEmailListOnNullResult() throws Exception {
         given(executor.execute(any(Command.class))).willReturn(null);
 
-        List<Email> emails = testedInstance.listEmails(0, 10, new FolderId(1, FolderType.FOLDER), Email.Status.APPROVED);
+        List<Email> emails = testedInstance.listEmails(0, 10, new FolderId(1, FolderType.FOLDER), Status.APPROVED);
 
         assertThat(emails).isEmpty();
     }
@@ -71,7 +73,7 @@ public class MarketoEmailRestClientTest {
     public void shouldReturnEmptyEmailListByNameOnNullResult() throws Exception {
         given(executor.execute(any(Command.class))).willReturn(null);
 
-        List<Email> emails = testedInstance.getEmailsByName("name", new FolderId(1, FolderType.FOLDER), Email.Status.APPROVED);
+        List<Email> emails = testedInstance.getEmailsByName("name", new FolderId(1, FolderType.FOLDER), Status.APPROVED);
 
         assertThat(emails).isEmpty();
     }
@@ -80,7 +82,7 @@ public class MarketoEmailRestClientTest {
     public void shouldRethrowApiErrorsDifferentFromPaginationIssues() throws Exception {
         given(executor.execute(any(Command.class))).willThrow(new MarketoApiException("100", ""));
 
-        testedInstance.listEmails(0, 10, new FolderId(1, FolderType.FOLDER), Email.Status.APPROVED);
+        testedInstance.listEmails(0, 10, new FolderId(1, FolderType.FOLDER), Status.APPROVED);
     }
 
     @Test
@@ -111,7 +113,7 @@ public class MarketoEmailRestClientTest {
         Email expected = new Email();
         given(executor.execute(isA(GetEmailsByName.class))).willReturn(Collections.singletonList(expected));
 
-        List<Email> result = testedInstance.getEmailsByName("name", new FolderId(42, FolderType.FOLDER), Email.Status.APPROVED);
+        List<Email> result = testedInstance.getEmailsByName("name", new FolderId(42, FolderType.FOLDER), Status.APPROVED);
 
         assertThat(result.get(0)).isEqualTo(expected);
     }
@@ -172,5 +174,15 @@ public class MarketoEmailRestClientTest {
         testedInstance.sendSample(42, "foo@bar.baz", false);
 
         verify(executor).execute(isA(SendSample.class));
+    }
+    @Test
+
+    public void shouldGetEmailFullContent() throws Exception {
+        EmailFullContent fullContent = new EmailFullContent();
+        given(executor.execute(isA(GetEmailFullContent.class))).willReturn(Collections.singletonList(fullContent));
+
+        EmailFullContent result = testedInstance.getEmailFullContent(42, Status.DRAFT);
+
+        assertThat(result).isEqualTo(fullContent);
     }
 }
