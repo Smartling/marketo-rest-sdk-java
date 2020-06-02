@@ -37,4 +37,8 @@ public interface MarketoLandingPageClient {
     List<LandingPageVariable> getlandingPageVariables(int id, Status status) throws MarketoApiException;
 
     void updateLandingPageVariable(int pageId, LandingPageVariable variable) throws MarketoApiException;
+
+    void approveDraft(int id) throws MarketoApiException;
+
+    void unapprove(int id) throws MarketoApiException;
 }

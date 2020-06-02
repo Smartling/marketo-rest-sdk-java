@@ -10,6 +10,8 @@ import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.MarketoEmailClient;
 import com.smartling.marketo.sdk.rest.command.email.*;
+import com.smartling.marketo.sdk.rest.command.landingpage.ApproveLandingPageDraft;
+import com.smartling.marketo.sdk.rest.command.landingpage.UnapproveLandingPage;
 
 import java.util.Collections;
 import java.util.List;
@@ -103,5 +105,15 @@ public class MarketoEmailRestClient implements MarketoEmailClient {
         } else {
             throw new MarketoApiException(String.format("No full content for Email[id = %d, status = %s] found", id, status));
         }
+    }
+
+    @Override
+    public void approveDraft(int id) throws MarketoApiException {
+        httpCommandExecutor.execute(new ApproveEmailDraft(id));
+    }
+
+    @Override
+    public void unapprove(int id) throws MarketoApiException {
+        httpCommandExecutor.execute(new UnapproveEmail(id));
     }
 }

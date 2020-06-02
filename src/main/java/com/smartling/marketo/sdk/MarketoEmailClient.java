@@ -37,4 +37,8 @@ public interface MarketoEmailClient {
     List<EmailVariable> getEmailVariables(int id) throws MarketoApiException;
 
     EmailFullContent getEmailFullContent(int id, Status status) throws MarketoApiException;
+
+    void approveDraft(int id) throws MarketoApiException;
+
+    void unapprove(int id) throws MarketoApiException;
 }

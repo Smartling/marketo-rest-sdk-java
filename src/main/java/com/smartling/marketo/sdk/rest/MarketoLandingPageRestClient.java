@@ -8,16 +8,7 @@ import com.smartling.marketo.sdk.MarketoLandingPageClient;
 import com.smartling.marketo.sdk.domain.landingpage.LandingPageContentItem;
 import com.smartling.marketo.sdk.domain.landingpage.LandingPageTextContentItem;
 import com.smartling.marketo.sdk.domain.landingpage.LandingPageVariable;
-import com.smartling.marketo.sdk.rest.command.landingpage.CloneLandingPage;
-import com.smartling.marketo.sdk.rest.command.landingpage.DiscardLandingPageDraft;
-import com.smartling.marketo.sdk.rest.command.landingpage.GetLandingPageContent;
-import com.smartling.marketo.sdk.rest.command.landingpage.GetLandingPageVariables;
-import com.smartling.marketo.sdk.rest.command.landingpage.GetLandingPagesByName;
-import com.smartling.marketo.sdk.rest.command.landingpage.GetLandingPages;
-import com.smartling.marketo.sdk.rest.command.landingpage.GetLandingPageById;
-import com.smartling.marketo.sdk.rest.command.landingpage.UpdateLandingPageEditableSection;
-import com.smartling.marketo.sdk.rest.command.landingpage.UpdateLandingPageMetadata;
-import com.smartling.marketo.sdk.rest.command.landingpage.UpdateLandingPageVariable;
+import com.smartling.marketo.sdk.rest.command.landingpage.*;
 
 import java.util.Collections;
 import java.util.List;
@@ -115,5 +106,13 @@ public class MarketoLandingPageRestClient implements MarketoLandingPageClient {
         httpCommandExecutor.execute(new UpdateLandingPageVariable(pageId, variable));
     }
 
+    @Override
+    public void approveDraft(int id) throws MarketoApiException {
+        httpCommandExecutor.execute(new ApproveLandingPageDraft(id));
+    }
 
+    @Override
+    public void unapprove(int id) throws MarketoApiException {
+        httpCommandExecutor.execute(new UnapproveLandingPage(id));
+    }
 }
