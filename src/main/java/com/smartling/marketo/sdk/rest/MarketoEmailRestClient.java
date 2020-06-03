@@ -99,6 +99,11 @@ public class MarketoEmailRestClient implements MarketoEmailClient {
     }
 
     @Override
+    public void updateEmailVariable(int emailId, EmailVariable var) throws MarketoApiException {
+        httpCommandExecutor.execute(new UpdateEmailVariable(emailId, var));
+    }
+
+    @Override
     public EmailFullContent getEmailFullContent(int id, Status status) throws MarketoApiException
     {
         List<EmailFullContent> fullContent = httpCommandExecutor.execute(new GetEmailFullContent(id, status));

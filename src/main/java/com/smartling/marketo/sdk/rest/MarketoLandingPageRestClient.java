@@ -12,6 +12,7 @@ import com.smartling.marketo.sdk.rest.command.landingpage.*;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 public class MarketoLandingPageRestClient implements MarketoLandingPageClient {
 
@@ -85,6 +86,11 @@ public class MarketoLandingPageRestClient implements MarketoLandingPageClient {
     @Override
     public void updateLandingPageMetadata(int id, String title) throws MarketoApiException {
         httpCommandExecutor.execute(new UpdateLandingPageMetadata(id, title));
+    }
+
+    @Override
+    public void updateLandingPageMetadata(int id, Map<String, String> tagMap) throws MarketoApiException {
+        httpCommandExecutor.execute(new UpdateLandingPageMetadata(id, tagMap));
     }
 
     @Override
