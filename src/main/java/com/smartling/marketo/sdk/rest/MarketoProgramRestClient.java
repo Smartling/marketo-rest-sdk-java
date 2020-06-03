@@ -4,10 +4,7 @@ import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.MarketoProgramClient;
 import com.smartling.marketo.sdk.domain.program.Program;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
-import com.smartling.marketo.sdk.rest.command.program.CloneProgram;
-import com.smartling.marketo.sdk.rest.command.program.GetProgramById;
-import com.smartling.marketo.sdk.rest.command.program.GetPrograms;
-import com.smartling.marketo.sdk.rest.command.program.GetProgramsByName;
+import com.smartling.marketo.sdk.rest.command.program.*;
 
 import java.util.Collections;
 import java.util.List;
@@ -51,5 +48,11 @@ public class MarketoProgramRestClient implements MarketoProgramClient {
     @Override
     public Program cloneProgram(Program existingProgram, String newProgramName) throws MarketoApiException {
         return cloneProgram(existingProgram.getId(), newProgramName, new FolderId(existingProgram.getFolder()));
+    }
+
+    @Override
+    public Program createProgram(Program newProgram) throws MarketoApiException {
+        List<Program> programs = httpCommandExecutor.execute(new CreateProgram(newProgram));
+        return programs != null && !programs.isEmpty()? programs.get(0) : null;
     }
 }

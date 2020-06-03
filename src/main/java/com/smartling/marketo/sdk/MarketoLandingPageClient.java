@@ -41,4 +41,6 @@ public interface MarketoLandingPageClient {
     void approveDraft(int id) throws MarketoApiException;
 
     void unapprove(int id) throws MarketoApiException;
+
+    LandingPage createLandingPage(String name, FolderId folder, Integer template) throws MarketoApiException;
 }

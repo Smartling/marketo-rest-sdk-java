@@ -44,8 +44,8 @@ public class MarketoLandingPageRestClient implements MarketoLandingPageClient {
 
     @Override
     public List<LandingPage> getLandingPagesByName(String name, FolderId folder, Status status) throws MarketoApiException {
-        final List<LandingPage> emails = httpCommandExecutor.execute(new GetLandingPagesByName(name, folder, status));
-        return emails != null ? emails : Collections.emptyList();
+        final List<LandingPage> landingPages = httpCommandExecutor.execute(new GetLandingPagesByName(name, folder, status));
+        return landingPages != null ? landingPages : Collections.emptyList();
     }
 
     @Override
@@ -114,5 +114,11 @@ public class MarketoLandingPageRestClient implements MarketoLandingPageClient {
     @Override
     public void unapprove(int id) throws MarketoApiException {
         httpCommandExecutor.execute(new UnapproveLandingPage(id));
+    }
+
+    @Override
+    public LandingPage createLandingPage(String name, FolderId folder, Integer template) throws MarketoApiException {
+        List<LandingPage> landingPages = httpCommandExecutor.execute(new CreateLandingPage(name, folder, template));
+        return landingPages != null && !landingPages.isEmpty()? landingPages.get(0) : null;
     }
 }

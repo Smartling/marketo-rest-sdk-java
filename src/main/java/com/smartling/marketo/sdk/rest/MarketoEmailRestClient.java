@@ -6,10 +6,12 @@ import com.smartling.marketo.sdk.domain.email.EmailContentItem;
 import com.smartling.marketo.sdk.domain.email.EmailFullContent;
 import com.smartling.marketo.sdk.domain.email.EmailTextContentItem;
 import com.smartling.marketo.sdk.domain.email.EmailVariable;
+import com.smartling.marketo.sdk.domain.folder.FolderDetails;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.MarketoEmailClient;
 import com.smartling.marketo.sdk.rest.command.email.*;
+import com.smartling.marketo.sdk.rest.command.folder.CreateFolder;
 import com.smartling.marketo.sdk.rest.command.landingpage.ApproveLandingPageDraft;
 import com.smartling.marketo.sdk.rest.command.landingpage.UnapproveLandingPage;
 
@@ -115,5 +117,11 @@ public class MarketoEmailRestClient implements MarketoEmailClient {
     @Override
     public void unapprove(int id) throws MarketoApiException {
         httpCommandExecutor.execute(new UnapproveEmail(id));
+    }
+
+    @Override
+    public Email createEmail(String name, FolderId folder, Integer template) throws MarketoApiException {
+        List<Email> emails = httpCommandExecutor.execute(new CreateEmail(name, folder, template));
+        return emails != null && !emails.isEmpty()? emails.get(0) : null;
     }
 }

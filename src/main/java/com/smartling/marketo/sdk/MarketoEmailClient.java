@@ -41,4 +41,6 @@ public interface MarketoEmailClient {
     void approveDraft(int id) throws MarketoApiException;
 
     void unapprove(int id) throws MarketoApiException;
+
+    Email createEmail(String name, FolderId folder, Integer template) throws MarketoApiException;
 }
