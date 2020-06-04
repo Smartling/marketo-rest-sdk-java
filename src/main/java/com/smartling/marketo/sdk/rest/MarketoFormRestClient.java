@@ -6,17 +6,8 @@ import com.smartling.marketo.sdk.domain.form.Form;
 import com.smartling.marketo.sdk.domain.form.FormField;
 import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.MarketoFormClient;
-import com.smartling.marketo.sdk.domain.form.VisibilityRules;
 import com.smartling.marketo.sdk.domain.form.VisibilityRulesParameter;
-import com.smartling.marketo.sdk.rest.command.form.CloneForm;
-import com.smartling.marketo.sdk.rest.command.form.GetFormsByName;
-import com.smartling.marketo.sdk.rest.command.form.GetForms;
-import com.smartling.marketo.sdk.rest.command.form.GetFormById;
-import com.smartling.marketo.sdk.rest.command.form.GetFormFields;
-import com.smartling.marketo.sdk.rest.command.form.UpdateForm;
-import com.smartling.marketo.sdk.rest.command.form.UpdateFormField;
-import com.smartling.marketo.sdk.rest.command.form.UpdateFormFieldVisibilityRules;
-import com.smartling.marketo.sdk.rest.command.form.UpdateSubmitButton;
+import com.smartling.marketo.sdk.rest.command.form.*;
 
 import java.util.Collections;
 import java.util.List;
@@ -91,5 +82,10 @@ public class MarketoFormRestClient implements MarketoFormClient {
     @Override
     public void updateFormFieldVisibilityRules(int formId, String formField, VisibilityRulesParameter visibilityRule) throws MarketoApiException {
         httpCommandExecutor.execute(new UpdateFormFieldVisibilityRules(formId, formField, visibilityRule));
+    }
+
+    @Override
+    public void approveDraft(int id) throws MarketoApiException {
+        httpCommandExecutor.execute(new ApproveFormDraft(id));
     }
 }
