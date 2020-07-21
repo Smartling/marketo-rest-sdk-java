@@ -8,6 +8,7 @@ public class BaseEntity {
     private int id;
     private String name;
     private String description;
+    private Date createdAt;
     private Date updatedAt;
     private Folder folder = new Folder();
     private String url;
@@ -34,6 +35,16 @@ public class BaseEntity {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Date getCreatedAt()
+    {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt)
+    {
+        this.createdAt = createdAt;
     }
 
     public Date getUpdatedAt() {
@@ -63,7 +74,14 @@ public class BaseEntity {
     @Override
     public String toString()
     {
-        return "BaseEntity{" + "id=" + id + ", name='" + name + '\'' + ", description='" + description + '\'' + ", updatedAt=" + updatedAt
-                + ", folder=" + folder + ", url='" + url + '\'' + '}';
+        return "BaseEntity{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", folder=" + folder +
+                ", url='" + url + '\'' +
+                '}';
     }
 }

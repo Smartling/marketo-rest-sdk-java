@@ -85,10 +85,10 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
 
     @Test
     public void shouldLoadEmailById() throws Exception {
-        Email email = marketoEmailClient.loadEmailById(TEST_EMAIL_ID);
+        Email email = marketoEmailClient.loadEmailById(TEST_EMAIL_V2_ID);
 
         assertThat(email).isNotNull();
-        assertThat(email.getId()).isEqualTo(TEST_EMAIL_ID);
+        assertThat(email.getId()).isEqualTo(TEST_EMAIL_V2_ID);
         assertThat(email.getName()).isNotEmpty();
         assertThat(email.getSubject()).isNotEmpty();
         assertThat(email.getFromName()).isNotEmpty();
@@ -96,6 +96,7 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
         assertThat(email.getFolder()).isNotNull();
         assertThat(email.getVersion()).isPositive();
         assertThat(email.getTemplate()).isNotNull();
+        assertThat(email.getPreHeader()).isNotNull();
     }
 
     @Test
@@ -290,7 +291,7 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
 
     @Test
     public void shouldGetEmailFullContent() throws Exception {
-        EmailFullContent fullContent = marketoEmailClient.getEmailFullContent(TEST_EMAIL_V2_ID, Status.DRAFT);
+        EmailFullContent fullContent = marketoEmailClient.getEmailFullContent(TEST_EMAIL_V2_ID, Status.APPROVED);
 
         assertThat(fullContent.getContent()).isNotEmpty();
     }
