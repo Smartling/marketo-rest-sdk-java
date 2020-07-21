@@ -47,7 +47,8 @@ public class TokenIntegrationTest extends BaseIntegrationTest {
     @Test
     public void shouldThrowMarketoApiExceptionIfFolderNotFound() throws Exception {
         thrown.expect(MarketoApiException.class);
-        thrown.expectMessage("10390 Folder  not found");
+        thrown.expectMessage("Folder not found");
+        thrown.expectMessage("10390");
 
         marketoTokenClient.getTokens(new FolderId(10390, FolderType.FOLDER));
     }
