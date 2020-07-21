@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import static com.smartling.marketo.sdk.domain.Asset.Status.DRAFT;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public class EmailIntegrationTest extends BaseIntegrationTest {
@@ -201,7 +202,7 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
     @Test
     public void shouldCloneEmailViaShorthandMethod() throws Exception {
         String newEmailName = "integration-test-clone-" + UUID.randomUUID().toString();
-        Email existingEmail = marketoEmailClient.loadEmailById(TEST_EMAIL_ID);
+        Email existingEmail = marketoEmailClient.loadEmailById(TEST_EMAIL_V2_ID);
 
         Email clone = marketoEmailClient.cloneEmail(existingEmail, newEmailName);
 
@@ -260,16 +261,30 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void shouldUpdateEmailSubject() throws Exception {
+    public void shouldUpdateEmailFields() throws Exception {
 
         Email email = new Email();
-        email.setId(TEST_EMAIL_ID);
+        email.setId(TEST_EMAIL_V2_ID);
         email.setSubject("Subject from integration test");
         email.setFromName("From SDK committer");
 
         marketoEmailClient.updateEmail(email);
 
-        // Can not verify - no way to fetch not approved content
+        Email updatedEmail = marketoEmailClient.loadEmailById(TEST_EMAIL_V2_ID, DRAFT);
+        assertThat(updatedEmail.getSubject()).isEqualTo("Subject from integration test");
+        assertThat(updatedEmail.getFromName()).isEqualTo("From SDK committer");
+    }
+
+    @Test
+    public void shouldUpdateEmailMetadata() throws Exception {
+
+        Email email = new Email();
+        email.setId(TEST_EMAIL_V2_ID);
+        email.setPreHeader("preHeader from integration test");
+
+        Email updatedEmail = marketoEmailClient.updateEmailMetadata(email);
+
+        assertThat(updatedEmail.getPreHeader()).isEqualTo("preHeader from integration test");
     }
 
     @Test
