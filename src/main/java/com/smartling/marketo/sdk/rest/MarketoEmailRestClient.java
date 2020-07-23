@@ -34,13 +34,18 @@ public class MarketoEmailRestClient implements MarketoEmailClient {
     }
 
     @Override
-    public Email loadEmailById(int id) throws MarketoApiException {
-        List<Email> execute = httpCommandExecutor.execute(new LoadEmailById(id));
-        if (execute != null && !execute.isEmpty()) {
-            return execute.get(0);
+    public Email loadEmailById(int id, Status status) throws MarketoApiException {
+        List<Email> email = httpCommandExecutor.execute(new LoadEmailById(id, status));
+        if (email != null && !email.isEmpty()) {
+            return email.get(0);
         } else {
             throw new MarketoApiException(String.format("Email[id = %d] not found", id));
         }
+    }
+
+    @Override
+    public Email loadEmailById(int id) throws MarketoApiException {
+        return loadEmailById(id, Status.APPROVED);
     }
 
     @Override
@@ -69,6 +74,16 @@ public class MarketoEmailRestClient implements MarketoEmailClient {
     public void updateEmailContent(int id, List<EmailTextContentItem> contentItems) throws MarketoApiException {
         for (EmailTextContentItem contentItem : contentItems) {
             httpCommandExecutor.execute(new UpdateEmailEditableSection(id, contentItem));
+        }
+    }
+
+    @Override
+    public Email updateEmailMetadata(Email email) throws MarketoApiException {
+        List<Email> updated = httpCommandExecutor.execute(new UpdateEmailMetadata(email));
+        if (updated != null && !updated.isEmpty()) {
+            return updated.get(0);
+        } else {
+            throw new MarketoApiException(String.format("Couldn't fetch updated Email: id=%d", email.getId()));
         }
     }
 

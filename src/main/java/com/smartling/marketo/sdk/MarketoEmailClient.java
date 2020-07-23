@@ -1,6 +1,5 @@
 package com.smartling.marketo.sdk;
 
-import com.smartling.marketo.sdk.domain.Asset;
 import com.smartling.marketo.sdk.domain.Asset.Status;
 import com.smartling.marketo.sdk.domain.email.Email;
 import com.smartling.marketo.sdk.domain.email.EmailContentItem;
@@ -16,6 +15,8 @@ public interface MarketoEmailClient {
 
     List<Email> listEmails(int offset, int limit, FolderId folder, Status status) throws MarketoApiException;
 
+    Email loadEmailById(int id, Status status) throws MarketoApiException;
+
     Email loadEmailById(int id) throws MarketoApiException;
 
     List<Email> getEmailsByName(String name, FolderId folderId, Status status) throws MarketoApiException;
@@ -27,6 +28,8 @@ public interface MarketoEmailClient {
     Email cloneEmail(Email existingEmail, String newEmailName) throws MarketoApiException;
 
     void updateEmailContent(int id, List<EmailTextContentItem> contentItems) throws MarketoApiException;
+
+    Email updateEmailMetadata(Email email) throws MarketoApiException;
 
     void updateEmailContentItem(int id, EmailTextContentItem contentItem) throws MarketoApiException;
 
