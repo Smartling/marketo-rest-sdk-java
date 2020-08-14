@@ -45,7 +45,7 @@ public class MarketoEmailRestClient implements MarketoEmailClient {
 
     @Override
     public Email loadEmailById(int id) throws MarketoApiException {
-        return loadEmailById(id, Status.APPROVED);
+        return loadEmailById(id, null);
     }
 
     @Override
