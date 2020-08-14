@@ -24,6 +24,10 @@ public class LoadEmailById extends BaseGetCommand<Email> {
 
     @Override
     public Map<String, Object> getParameters() {
-        return Collections.singletonMap("status", status);
+        if (status != null) {
+            return Collections.singletonMap("status", status);
+        } else {
+            return Collections.emptyMap();
+        }
     }
 }
