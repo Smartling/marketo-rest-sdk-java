@@ -232,7 +232,7 @@ public class LandingPageIntegrationTest extends BaseIntegrationTest {
 
     @Test
     public void shouldGetLandingPageVariables() throws Exception {
-        List<LandingPageVariable> variables = marketoLandingPageClient.getlandingPageVariables(TEST_GUIDED_LANDING_PAGE_ID);
+        List<LandingPageVariable> variables = marketoLandingPageClient.getLandingPageVariables(TEST_GUIDED_LANDING_PAGE_ID);
 
         assertThat(variables).hasSize(11);
         assertThat(variables.get(1).getId()).isEqualTo("ShowWhiteLogo");
@@ -242,7 +242,7 @@ public class LandingPageIntegrationTest extends BaseIntegrationTest {
 
     @Test
     public void shouldGetDraftLandingPageVariables() throws Exception {
-        List<LandingPageVariable> variables = marketoLandingPageClient.getlandingPageVariables(TEST_GUIDED_LANDING_PAGE_ID, Status.DRAFT);
+        List<LandingPageVariable> variables = marketoLandingPageClient.getLandingPageVariables(TEST_GUIDED_LANDING_PAGE_ID, Status.DRAFT);
 
         assertThat(variables).hasSize(11);
         assertThat(variables.get(4).getId()).isEqualTo("headerBg");

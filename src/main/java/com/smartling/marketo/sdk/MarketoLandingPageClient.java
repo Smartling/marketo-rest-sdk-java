@@ -32,9 +32,9 @@ public interface MarketoLandingPageClient {
 
     void updateLandingPageMetadata(int id, String title) throws MarketoApiException;
 
-    List<LandingPageVariable> getlandingPageVariables(int id) throws MarketoApiException;
+    List<LandingPageVariable> getLandingPageVariables(int id) throws MarketoApiException;
 
-    List<LandingPageVariable> getlandingPageVariables(int id, Status status) throws MarketoApiException;
+    List<LandingPageVariable> getLandingPageVariables(int id, Status status) throws MarketoApiException;
 
     LandingPageVariable updateLandingPageVariable(int pageId, LandingPageVariable variable) throws MarketoApiException;
 }
