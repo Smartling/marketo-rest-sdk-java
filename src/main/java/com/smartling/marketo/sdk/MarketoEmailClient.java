@@ -39,5 +39,7 @@ public interface MarketoEmailClient {
 
     List<EmailVariable> getEmailVariables(int id) throws MarketoApiException;
 
+    EmailVariable updateEmailVariable(int emailId, EmailVariable emailVariable) throws MarketoApiException;
+
     EmailFullContent getEmailFullContent(int id, Status status) throws MarketoApiException;
 }

@@ -1,17 +1,17 @@
 package com.smartling.marketo.sdk.rest.command.landingpage;
 
 import com.smartling.marketo.sdk.domain.landingpage.LandingPageVariable;
-import com.smartling.marketo.sdk.rest.Command;
+import com.smartling.marketo.sdk.rest.command.BaseMarketoCommand;
 
-import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.Map;
 
-public class UpdateLandingPageVariable implements Command<Void> {
+public class UpdateLandingPageVariable extends BaseMarketoCommand<LandingPageVariable> {
     private final int landingPageId;
     private final LandingPageVariable variable;
 
     public UpdateLandingPageVariable(int landingPageId, LandingPageVariable variable) {
+        super(LandingPageVariable.class);
         this.landingPageId = landingPageId;
         this.variable = variable;
     }
@@ -24,11 +24,6 @@ public class UpdateLandingPageVariable implements Command<Void> {
     @Override
     public String getMethod() {
         return "POST";
-    }
-
-    @Override
-    public Type getResultType() {
-        return Void.TYPE;
     }
 
     @Override
