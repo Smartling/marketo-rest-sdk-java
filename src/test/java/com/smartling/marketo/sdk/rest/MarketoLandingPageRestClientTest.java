@@ -211,8 +211,12 @@ public class MarketoLandingPageRestClientTest {
     @Test
     public void shouldUpdateLandingPageVariables() throws Exception {
         LandingPageVariable variable = new LandingPageVariable();
-        testedInstance.updateLandingPageVariable(42, variable);
+        LandingPageVariable updated = new LandingPageVariable();
+        given(executor.execute(isA(UpdateLandingPageVariable.class))).willReturn(Collections.singletonList(updated));
 
+        LandingPageVariable response = testedInstance.updateLandingPageVariable(42, variable);
+
+        assertThat(response).isEqualTo(updated);
         verify(executor).execute(isA(UpdateLandingPageVariable.class));
     }
 }
