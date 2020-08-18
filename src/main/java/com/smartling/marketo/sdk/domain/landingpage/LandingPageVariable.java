@@ -3,7 +3,7 @@ package com.smartling.marketo.sdk.domain.landingpage;
 public class LandingPageVariable
 {
     private String id;
-    private String type;
+    private VariableType type;
     private String value;
 
     public String getId()
@@ -16,12 +16,12 @@ public class LandingPageVariable
         this.id = id;
     }
 
-    public String getType()
+    public VariableType getType()
     {
         return type;
     }
 
-    public void setType(String type)
+    public void setType(VariableType type)
     {
         this.type = type;
     }
