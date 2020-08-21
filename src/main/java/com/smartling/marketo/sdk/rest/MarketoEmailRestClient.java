@@ -103,15 +103,23 @@ public class MarketoEmailRestClient implements MarketoEmailClient {
     }
 
     @Override
-    public List<EmailVariable> getEmailVariables(int id) throws MarketoApiException
-    {
+    public List<EmailVariable> getEmailVariables(int id) throws MarketoApiException {
         List<EmailVariable> variables = httpCommandExecutor.execute(new GetEmailVariables(id));
         return variables != null ? variables : Collections.emptyList();
     }
 
     @Override
-    public EmailFullContent getEmailFullContent(int id, Status status) throws MarketoApiException
-    {
+    public EmailVariable updateEmailVariable(int emailId, EmailVariable emailVariable) throws MarketoApiException {
+        List<EmailVariable> updated = httpCommandExecutor.execute(new UpdateEmailVariable(emailId, emailVariable));
+        if (updated != null && !updated.isEmpty()) {
+            return updated.get(0);
+        } else {
+            throw new MarketoApiException(String.format("Couldn't fetch updated EmailVariable for emailId=%d: %s", emailId, emailVariable.toString()));
+        }
+    }
+
+    @Override
+    public EmailFullContent getEmailFullContent(int id, Status status) throws MarketoApiException {
         List<EmailFullContent> fullContent = httpCommandExecutor.execute(new GetEmailFullContent(id, status));
         if (fullContent != null && !fullContent.isEmpty()) {
             return fullContent.get(0);

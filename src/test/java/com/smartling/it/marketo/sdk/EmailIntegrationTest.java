@@ -305,6 +305,18 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    public void shouldUpdateEmailVariable() throws Exception {
+        EmailVariable variable = new EmailVariable();
+        variable.setName("twoArticlesLinkText");
+        variable.setValue(UUID.randomUUID().toString());
+
+        EmailVariable updated = marketoEmailClient.updateEmailVariable(TEST_EMAIL_V2_ID, variable);
+
+        assertThat(updated.getName()).isEqualTo("twoArticlesLinkText");
+        assertThat(updated.getValue()).isEqualTo(variable.getValue());
+    }
+
+    @Test
     public void shouldGetEmailFullContent() throws Exception {
         EmailFullContent fullContent = marketoEmailClient.getEmailFullContent(TEST_EMAIL_V2_ID, Status.APPROVED);
 

@@ -3,9 +3,9 @@ package com.smartling.it.marketo.sdk;
 import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.MarketoLandingPageClient;
 import com.smartling.marketo.sdk.domain.Asset.Status;
-import com.smartling.marketo.sdk.domain.landingpage.LandingPage;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.domain.folder.FolderType;
+import com.smartling.marketo.sdk.domain.landingpage.LandingPage;
 import com.smartling.marketo.sdk.domain.landingpage.LandingPageContentItem;
 import com.smartling.marketo.sdk.domain.landingpage.LandingPageTextContentItem;
 import com.smartling.marketo.sdk.domain.landingpage.LandingPageVariable;
@@ -19,6 +19,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import static com.smartling.marketo.sdk.domain.landingpage.VariableType.BOOLEAN;
+import static com.smartling.marketo.sdk.domain.landingpage.VariableType.STRING;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public class LandingPageIntegrationTest extends BaseIntegrationTest {
@@ -232,21 +234,21 @@ public class LandingPageIntegrationTest extends BaseIntegrationTest {
 
     @Test
     public void shouldGetLandingPageVariables() throws Exception {
-        List<LandingPageVariable> variables = marketoLandingPageClient.getlandingPageVariables(TEST_GUIDED_LANDING_PAGE_ID);
+        List<LandingPageVariable> variables = marketoLandingPageClient.getLandingPageVariables(TEST_GUIDED_LANDING_PAGE_ID);
 
         assertThat(variables).hasSize(11);
         assertThat(variables.get(1).getId()).isEqualTo("ShowWhiteLogo");
-        assertThat(variables.get(1).getType()).isEqualTo("boolean");
+        assertThat(variables.get(1).getType()).isEqualTo(BOOLEAN);
         assertThat(variables.get(1).getValue()).isEqualTo("false");
     }
 
     @Test
     public void shouldGetDraftLandingPageVariables() throws Exception {
-        List<LandingPageVariable> variables = marketoLandingPageClient.getlandingPageVariables(TEST_GUIDED_LANDING_PAGE_ID, Status.DRAFT);
+        List<LandingPageVariable> variables = marketoLandingPageClient.getLandingPageVariables(TEST_GUIDED_LANDING_PAGE_ID, Status.DRAFT);
 
         assertThat(variables).hasSize(11);
         assertThat(variables.get(4).getId()).isEqualTo("headerBg");
-        assertThat(variables.get(4).getType()).isEqualTo("string");
+        assertThat(variables.get(4).getType()).isEqualTo(STRING);
         assertThat(variables.get(4).getValue()).isEqualTo("draft content");
     }
 
@@ -254,7 +256,7 @@ public class LandingPageIntegrationTest extends BaseIntegrationTest {
     public void shouldUpdateLandingPageVariable() throws Exception {
         LandingPageVariable variable = new LandingPageVariable();
         variable.setId("MainBg");
-        variable.setType("String");
+        variable.setType(STRING);
         variable.setValue(UUID.randomUUID().toString());
 
         marketoLandingPageClient.updateLandingPageVariable(TEST_GUIDED_LANDING_PAGE_ID, variable);

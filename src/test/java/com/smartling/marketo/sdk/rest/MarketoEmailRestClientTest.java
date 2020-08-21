@@ -6,9 +6,20 @@ import com.smartling.marketo.sdk.domain.email.Email;
 import com.smartling.marketo.sdk.domain.email.EmailContentItem;
 import com.smartling.marketo.sdk.domain.email.EmailFullContent;
 import com.smartling.marketo.sdk.domain.email.EmailTextContentItem;
+import com.smartling.marketo.sdk.domain.email.EmailVariable;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.domain.folder.FolderType;
-import com.smartling.marketo.sdk.rest.command.email.*;
+import com.smartling.marketo.sdk.rest.command.email.CloneEmail;
+import com.smartling.marketo.sdk.rest.command.email.GetEmailFullContent;
+import com.smartling.marketo.sdk.rest.command.email.GetEmailVariables;
+import com.smartling.marketo.sdk.rest.command.email.GetEmailsByName;
+import com.smartling.marketo.sdk.rest.command.email.GetEmailsCommand;
+import com.smartling.marketo.sdk.rest.command.email.LoadEmailById;
+import com.smartling.marketo.sdk.rest.command.email.LoadEmailContent;
+import com.smartling.marketo.sdk.rest.command.email.SendSample;
+import com.smartling.marketo.sdk.rest.command.email.UpdateEmailContent;
+import com.smartling.marketo.sdk.rest.command.email.UpdateEmailEditableSection;
+import com.smartling.marketo.sdk.rest.command.email.UpdateEmailVariable;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -175,8 +186,30 @@ public class MarketoEmailRestClientTest {
 
         verify(executor).execute(isA(SendSample.class));
     }
-    @Test
 
+    @Test
+    public void shouldGetEmailVariables() throws Exception {
+        EmailVariable variable = new EmailVariable();
+        given(executor.execute(isA(GetEmailVariables.class))).willReturn(Collections.singletonList(variable));
+
+        List<EmailVariable> result = testedInstance.getEmailVariables(42);
+
+        assertThat(result).contains(variable).hasSize(1);
+    }
+
+    @Test
+    public void shouldUpdateEmailVariables() throws Exception {
+        EmailVariable variable = new EmailVariable();
+        EmailVariable updated = new EmailVariable();
+        given(executor.execute(isA(UpdateEmailVariable.class))).willReturn(Collections.singletonList(updated));
+
+        EmailVariable response = testedInstance.updateEmailVariable(42, variable);
+
+        assertThat(response).isEqualTo(updated);
+        verify(executor).execute(isA(UpdateEmailVariable.class));
+    }
+
+    @Test
     public void shouldGetEmailFullContent() throws Exception {
         EmailFullContent fullContent = new EmailFullContent();
         given(executor.execute(isA(GetEmailFullContent.class))).willReturn(Collections.singletonList(fullContent));

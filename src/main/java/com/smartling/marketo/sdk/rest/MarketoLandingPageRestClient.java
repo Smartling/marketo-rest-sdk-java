@@ -1,20 +1,20 @@
 package com.smartling.marketo.sdk.rest;
 
+import com.smartling.marketo.sdk.MarketoApiException;
+import com.smartling.marketo.sdk.MarketoLandingPageClient;
 import com.smartling.marketo.sdk.domain.Asset.Status;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.domain.landingpage.LandingPage;
-import com.smartling.marketo.sdk.MarketoApiException;
-import com.smartling.marketo.sdk.MarketoLandingPageClient;
 import com.smartling.marketo.sdk.domain.landingpage.LandingPageContentItem;
 import com.smartling.marketo.sdk.domain.landingpage.LandingPageTextContentItem;
 import com.smartling.marketo.sdk.domain.landingpage.LandingPageVariable;
 import com.smartling.marketo.sdk.rest.command.landingpage.CloneLandingPage;
 import com.smartling.marketo.sdk.rest.command.landingpage.DiscardLandingPageDraft;
+import com.smartling.marketo.sdk.rest.command.landingpage.GetLandingPageById;
 import com.smartling.marketo.sdk.rest.command.landingpage.GetLandingPageContent;
 import com.smartling.marketo.sdk.rest.command.landingpage.GetLandingPageVariables;
-import com.smartling.marketo.sdk.rest.command.landingpage.GetLandingPagesByName;
 import com.smartling.marketo.sdk.rest.command.landingpage.GetLandingPages;
-import com.smartling.marketo.sdk.rest.command.landingpage.GetLandingPageById;
+import com.smartling.marketo.sdk.rest.command.landingpage.GetLandingPagesByName;
 import com.smartling.marketo.sdk.rest.command.landingpage.UpdateLandingPageEditableSection;
 import com.smartling.marketo.sdk.rest.command.landingpage.UpdateLandingPageMetadata;
 import com.smartling.marketo.sdk.rest.command.landingpage.UpdateLandingPageVariable;
@@ -97,23 +97,24 @@ public class MarketoLandingPageRestClient implements MarketoLandingPageClient {
     }
 
     @Override
-    public List<LandingPageVariable> getlandingPageVariables(int id) throws MarketoApiException
-    {
-        return this.getlandingPageVariables(id, null);
+    public List<LandingPageVariable> getLandingPageVariables(int id) throws MarketoApiException {
+        return this.getLandingPageVariables(id, null);
     }
 
     @Override
-    public List<LandingPageVariable> getlandingPageVariables(int id, Status status) throws MarketoApiException
-    {
+    public List<LandingPageVariable> getLandingPageVariables(int id, Status status) throws MarketoApiException {
         List<LandingPageVariable> variables = httpCommandExecutor.execute(new GetLandingPageVariables(id, status));
         return variables != null ? variables : Collections.emptyList();
     }
 
     @Override
-    public void updateLandingPageVariable(int pageId, LandingPageVariable variable) throws MarketoApiException
-    {
-        httpCommandExecutor.execute(new UpdateLandingPageVariable(pageId, variable));
+    public LandingPageVariable updateLandingPageVariable(int pageId, LandingPageVariable variable) throws MarketoApiException {
+        List<LandingPageVariable> updated = httpCommandExecutor.execute(new UpdateLandingPageVariable(pageId, variable));
+        if (updated != null && !updated.isEmpty()) {
+            return updated.get(0);
+        } else {
+            throw new MarketoApiException(String.format("Couldn't fetch updated LandingPageVariable for landingPageId=%d: %s", pageId, variable.toString()));
+        }
+
     }
-
-
 }

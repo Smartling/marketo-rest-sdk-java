@@ -193,7 +193,7 @@ public class MarketoLandingPageRestClientTest {
         LandingPageVariable variable = new LandingPageVariable();
         given(executor.execute(isA(GetLandingPageVariables.class))).willReturn(Collections.singletonList(variable));
 
-        List<LandingPageVariable> result = testedInstance.getlandingPageVariables(42);
+        List<LandingPageVariable> result = testedInstance.getLandingPageVariables(42);
 
         assertThat(result).contains(variable).hasSize(1);
     }
@@ -203,7 +203,7 @@ public class MarketoLandingPageRestClientTest {
         LandingPageVariable variable = new LandingPageVariable();
         given(executor.execute(isA(GetLandingPageVariables.class))).willReturn(Collections.singletonList(variable));
 
-        List<LandingPageVariable> result = testedInstance.getlandingPageVariables(42, Status.DRAFT);
+        List<LandingPageVariable> result = testedInstance.getLandingPageVariables(42, Status.DRAFT);
 
         assertThat(result).contains(variable).hasSize(1);
     }
@@ -211,8 +211,12 @@ public class MarketoLandingPageRestClientTest {
     @Test
     public void shouldUpdateLandingPageVariables() throws Exception {
         LandingPageVariable variable = new LandingPageVariable();
-        testedInstance.updateLandingPageVariable(42, variable);
+        LandingPageVariable updated = new LandingPageVariable();
+        given(executor.execute(isA(UpdateLandingPageVariable.class))).willReturn(Collections.singletonList(updated));
 
+        LandingPageVariable response = testedInstance.updateLandingPageVariable(42, variable);
+
+        assertThat(response).isEqualTo(updated);
         verify(executor).execute(isA(UpdateLandingPageVariable.class));
     }
 }
