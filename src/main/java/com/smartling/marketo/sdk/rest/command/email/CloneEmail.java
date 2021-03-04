@@ -1,9 +1,9 @@
 package com.smartling.marketo.sdk.rest.command.email;
 
+import com.google.common.collect.ImmutableMap;
 import com.smartling.marketo.sdk.domain.email.Email;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.rest.command.BaseMarketoCommand;
-import jersey.repackaged.com.google.common.collect.ImmutableMap;
 
 import java.util.Map;
 
@@ -31,6 +31,6 @@ public class CloneEmail extends BaseMarketoCommand<Email> {
 
     @Override
     public Map<String, Object> getParameters() {
-        return ImmutableMap.<String, Object>of("name", newEmailName, "folder", folderId);
+        return ImmutableMap.of("name", newEmailName, "folder", folderId);
     }
 }

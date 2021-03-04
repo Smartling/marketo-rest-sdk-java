@@ -1,9 +1,9 @@
 package com.smartling.marketo.sdk.rest.command.snippet;
 
+import com.google.common.collect.ImmutableMap;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.domain.snippet.Snippet;
 import com.smartling.marketo.sdk.rest.command.BaseMarketoCommand;
-import jersey.repackaged.com.google.common.collect.ImmutableMap;
 
 import java.util.Map;
 
@@ -31,6 +31,6 @@ public class CloneSnippet extends BaseMarketoCommand<Snippet> {
 
     @Override
     public Map<String, Object> getParameters() {
-        return ImmutableMap.<String, Object>of("name", newName, "folder", folderId);
+        return ImmutableMap.of("name", newName, "folder", folderId);
     }
 }
