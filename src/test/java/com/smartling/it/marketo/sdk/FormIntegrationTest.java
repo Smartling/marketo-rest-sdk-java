@@ -116,7 +116,7 @@ public class FormIntegrationTest extends BaseIntegrationTest {
     public void shouldReadFormFields() throws Exception {
         List<FormField> formFields = marketoFormClient.getFormFields(TEST_FORM_ID, APPROVED);
 
-        assertThat(formFields).hasSize(21);
+        assertThat(formFields).hasSize(24);
         FormField formField = formFields.get(0);
         assertThat(formField.getId()).isEqualTo("FirstName");
         assertThat(formField.getLabel()).isEqualTo("Int test label");
