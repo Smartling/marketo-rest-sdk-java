@@ -22,8 +22,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static com.smartling.marketo.sdk.domain.Asset.Status.DRAFT;
-import static org.fest.assertions.api.Assertions.assertThat;
 
 public class EmailIntegrationTest extends BaseIntegrationTest {
     private static final int TEST_EMAIL_ID = 1109;

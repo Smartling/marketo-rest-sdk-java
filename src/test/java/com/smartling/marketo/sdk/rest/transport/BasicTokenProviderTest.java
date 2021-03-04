@@ -17,7 +17,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 
 import static com.smartling.marketo.sdk.rest.transport.BasicTokenProvider.APPROXIMATE_RESPONSE_TIME;
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BasicTokenProviderTest extends BaseTransportTest {

@@ -33,7 +33,7 @@ import java.util.Date;
 import java.util.List;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 
@@ -104,8 +104,12 @@ public class JaxRsHttpCommandExecutorTest extends BaseTransportTest {
         assertThat(response.get(0).getHtmlId()).isEqualTo("edit_content");
         assertThat(value.size()).isEqualTo(2);
 
-        assertThat(value.get(0)).isEqualsToByComparingFields(html);
-        assertThat(value.get(1)).isEqualsToByComparingFields(text);
+        assertThat(value.get(0))
+                .usingRecursiveComparison()
+                .isEqualTo(html);
+        assertThat(value.get(1))
+                .usingRecursiveComparison()
+                .isEqualTo(text);
     }
 
     @Test

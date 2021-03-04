@@ -1,18 +1,17 @@
 package com.smartling.it.marketo.sdk;
 
+import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.MarketoFormClient;
-import com.smartling.marketo.sdk.domain.Asset.Status;
+import com.smartling.marketo.sdk.domain.folder.FolderId;
+import com.smartling.marketo.sdk.domain.folder.FolderType;
 import com.smartling.marketo.sdk.domain.form.FieldMetaData;
 import com.smartling.marketo.sdk.domain.form.FieldMetaData.Value;
 import com.smartling.marketo.sdk.domain.form.Form;
-import com.smartling.marketo.sdk.domain.folder.FolderId;
-import com.smartling.marketo.sdk.domain.folder.FolderType;
 import com.smartling.marketo.sdk.domain.form.Form.KnownVisitor;
 import com.smartling.marketo.sdk.domain.form.FormField;
-import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.domain.form.PickListDTO;
-import com.smartling.marketo.sdk.domain.form.VisibilityRules;
 import com.smartling.marketo.sdk.domain.form.RuleType;
+import com.smartling.marketo.sdk.domain.form.VisibilityRules;
 import com.smartling.marketo.sdk.domain.form.VisibilityRulesParameter;
 import org.junit.Before;
 import org.junit.Rule;
@@ -24,7 +23,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static com.smartling.marketo.sdk.domain.Asset.Status.APPROVED;
+import static com.smartling.marketo.sdk.domain.Asset.Status.DRAFT;
+import static com.smartling.marketo.sdk.domain.form.RuleType.SHOW;
 
 public class FormIntegrationTest extends BaseIntegrationTest {
     private static final int TEST_FORM_ID = 1012;
@@ -46,7 +48,7 @@ public class FormIntegrationTest extends BaseIntegrationTest {
 
     @Test
     public void shouldGetFormsWithFilter() throws Exception {
-        List<Form> forms = marketoFormClient.getForms(0, 1, TEST_FOLDER_ID, Status.APPROVED);
+        List<Form> forms = marketoFormClient.getForms(0, 1, TEST_FOLDER_ID, APPROVED);
 
         assertThat(forms).hasSize(1);
         assertThat(forms.get(0).getId()).isPositive();
@@ -105,14 +107,14 @@ public class FormIntegrationTest extends BaseIntegrationTest {
 
     @Test
     public void shouldGetFormsByNameWithStatus() throws Exception {
-        List<Form> forms = marketoFormClient.getFormsByName(TEST_FORM_NAME, null, Status.APPROVED);
+        List<Form> forms = marketoFormClient.getFormsByName(TEST_FORM_NAME, null, APPROVED);
 
-        assertThat(forms).haveAtLeast(1, new AssetWithNameAndStatus(TEST_FORM_NAME, Status.APPROVED));
+        assertThat(forms).haveAtLeast(1, new AssetWithNameAndStatus(TEST_FORM_NAME, APPROVED));
     }
 
     @Test
     public void shouldReadFormFields() throws Exception {
-        List<FormField> formFields = marketoFormClient.getFormFields(TEST_FORM_ID, Status.APPROVED);
+        List<FormField> formFields = marketoFormClient.getFormFields(TEST_FORM_ID, APPROVED);
 
         assertThat(formFields).hasSize(21);
         FormField formField = formFields.get(0);
@@ -125,7 +127,7 @@ public class FormIntegrationTest extends BaseIntegrationTest {
         assertThat(formField.getVisibilityRules().getRuleType()).isEqualTo(RuleType.ALWAYSSHOW);
 
         VisibilityRules visibilityRules = formFields.get(3).getVisibilityRules();
-        assertThat(visibilityRules.getRuleType()).isEqualTo(RuleType.SHOW);
+        assertThat(visibilityRules.getRuleType()).isEqualTo(SHOW);
         assertThat(visibilityRules.getRules().get(0).getSubjectField()).isEqualTo("FirstName");
         assertThat(visibilityRules.getRules().get(0).getAltLabel()).isEqualTo("Address:");
 
@@ -250,7 +252,7 @@ public class FormIntegrationTest extends BaseIntegrationTest {
     @Test
     public void shouldUpdateFormFieldVisibilityRules() throws Exception {
         VisibilityRulesParameter visibilityRules = new VisibilityRulesParameter();
-        visibilityRules.setRuleType(RuleType.SHOW);
+        visibilityRules.setRuleType(SHOW);
 
         List<VisibilityRulesParameter.Rule> rules = Collections.singletonList(rule("FirstName", "isNotEmpty", "Gender", picklist()));
         visibilityRules.setRules(rules);

@@ -7,7 +7,6 @@ import com.google.common.base.Throwables;
 
 import java.net.URL;
 import java.util.List;
-import java.util.Objects;
 
 public final class TestUtils
 {

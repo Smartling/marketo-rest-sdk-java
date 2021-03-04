@@ -13,7 +13,7 @@ import org.junit.rules.ExpectedException;
 import java.util.List;
 import java.util.UUID;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ProgramIntegrationTest extends BaseIntegrationTest {
     private static final String TEST_PROGRAM_NAME = "Program For Integration Tests";
