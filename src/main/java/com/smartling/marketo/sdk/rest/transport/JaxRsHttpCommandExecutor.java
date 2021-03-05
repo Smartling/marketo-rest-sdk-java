@@ -4,12 +4,17 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableSet;
 import com.smartling.marketo.sdk.HasToBeMappedToJson;
-import com.smartling.marketo.sdk.rest.Command;
 import com.smartling.marketo.sdk.MarketoApiException;
+import com.smartling.marketo.sdk.rest.Command;
 import com.smartling.marketo.sdk.rest.HttpCommandExecutor;
 import com.smartling.marketo.sdk.rest.RequestLimitExceededException;
 import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.jackson.JacksonFeature;
+import org.glassfish.jersey.logging.LoggingFeature;
+import org.glassfish.jersey.media.multipart.FormDataMultiPart;
+import org.glassfish.jersey.media.multipart.MultiPart;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
+import org.glassfish.jersey.media.multipart.file.StreamDataBodyPart;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -19,12 +24,22 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
+import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URLEncoder;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Set;
+import java.util.logging.Logger;
+
+import static java.util.logging.Level.ALL;
+import static java.util.logging.Level.INFO;
+import static org.glassfish.jersey.logging.LoggingFeature.Verbosity.PAYLOAD_ANY;
 
 public class JaxRsHttpCommandExecutor implements HttpCommandExecutor {
     private final static ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -48,7 +63,11 @@ public class JaxRsHttpCommandExecutor implements HttpCommandExecutor {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         this.tokenProvider = tokenProvider;
-        this.client = ClientBuilder.newClient().register(JacksonFeature.class).register(ObjectMapperProvider.class);
+        this.client = ClientBuilder.newClient()
+                .register(JacksonFeature.class)
+                .register(ObjectMapperProvider.class)
+                .register(MultiPartFeature.class)
+                .register(new LoggingFeature(Logger.getLogger("PayloadLogger"), INFO, PAYLOAD_ANY, null));
     }
 
     public void setConnectionTimeout(int timeout) {
@@ -83,6 +102,10 @@ public class JaxRsHttpCommandExecutor implements HttpCommandExecutor {
         if ("POST".equalsIgnoreCase(command.getMethod())) {
             Form form = toForm(processParameters(command.getParameters(), false));
             Entity<?> entity = Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE.withCharset("UTF-8"));
+            marketoResponse = invocationBuilder.post(entity, typeToken);
+        } else if ("MULTIPART".equalsIgnoreCase(command.getMethod())) {
+            MultiPart multiPartEntity = toMultipart(processParameters(command.getParameters(), false));
+            Entity<?> entity = Entity.entity(multiPartEntity, multiPartEntity.getMediaType());
             marketoResponse = invocationBuilder.post(entity, typeToken);
         } else {
             marketoResponse = invocationBuilder.method(command.getMethod(), typeToken);
@@ -148,6 +171,30 @@ public class JaxRsHttpCommandExecutor implements HttpCommandExecutor {
         }
 
         return form;
+    }
+
+    private static MultiPart toMultipart(Map<String, Object> parameters) {
+        final FormDataMultiPart multiPartEntity = new FormDataMultiPart();
+
+        for (Entry<String, Object> param : parameters.entrySet()) {
+//            FormDataBodyPart bodyPart = new FormDataBodyPart();
+//            .field.setName(param.getKey());
+//            bodyPart.setValue(MediaType.TEXT_HTML_TYPE, param.getValue());
+//            bodyPart.setFormDataContentDisposition(new FormDataContentDisposition("form-data", param.getKey(), "filename.html", null, null, null, 0));
+
+//            multiPartEntity.field(param.getKey(), param.getValue(), MediaType.TEXT_HTML_TYPE);
+
+            StreamDataBodyPart bodyPart = new StreamDataBodyPart(
+                    param.getKey(),
+                    new ByteArrayInputStream(param.getValue().toString().getBytes()),
+                    "filename.html",
+                    MediaType.TEXT_HTML_TYPE
+            );
+
+            multiPartEntity.bodyPart(bodyPart);
+        }
+
+        return multiPartEntity;
     }
 
     private static <T> ParameterizedType createReturnType(final Command<T> command) {

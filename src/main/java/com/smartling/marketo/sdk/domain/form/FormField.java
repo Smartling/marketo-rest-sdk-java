@@ -1,8 +1,13 @@
 package com.smartling.marketo.sdk.domain.form;
 
+import java.util.List;
+
 public class FormField {
     private String id;
     private String label;
+    private int rowNumber;
+    private int columnNumber;
+    private int maxLength;
     private String dataType;
     private String instructions;
     private String defaultValue;
@@ -10,6 +15,8 @@ public class FormField {
     private VisibilityRules visibilityRules;
     private String hintText;
     private FieldMetaData fieldMetaData;
+    private String text;
+    private List<String> fields;
 
     public String getId() {
         return id;
@@ -25,6 +32,30 @@ public class FormField {
 
     public void setLabel(String label) {
         this.label = label;
+    }
+
+    public int getRowNumber() {
+        return rowNumber;
+    }
+
+    public void setRowNumber(int rowNumber) {
+        this.rowNumber = rowNumber;
+    }
+
+    public int getColumnNumber() {
+        return columnNumber;
+    }
+
+    public void setColumnNumber(int columnNumber) {
+        this.columnNumber = columnNumber;
+    }
+
+    public int getMaxLength() {
+        return maxLength;
+    }
+
+    public void setMaxLength(int maxLength) {
+        this.maxLength = maxLength;
     }
 
     public String getDataType() {
@@ -83,11 +114,39 @@ public class FormField {
         this.fieldMetaData = fieldMetaData;
     }
 
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public List<String> getFields() {
+        return fields;
+    }
+
+    public void setFields(List<String> fields) {
+        this.fields = fields;
+    }
+
     @Override
-    public String toString()
-    {
-        return "FormField{" + "id='" + id + '\'' + ", label='" + label + '\'' + ", dataType='" + dataType + '\'' + ", instructions='"
-                + instructions + '\'' + ", defaultValue='" + defaultValue + '\'' + ", validationMessage='" + validationMessage + '\''
-                + ", visibilityRules=" + visibilityRules + ", hintText='" + hintText + '\'' + ", fieldMetaData=" + fieldMetaData + '}';
+    public String toString() {
+        return "FormField{" +
+                "id='" + id + '\'' +
+                ", label='" + label + '\'' +
+                ", rowNumber=" + rowNumber +
+                ", columnNumber=" + columnNumber +
+                ", maxLength=" + maxLength +
+                ", dataType='" + dataType + '\'' +
+                ", instructions='" + instructions + '\'' +
+                ", defaultValue='" + defaultValue + '\'' +
+                ", validationMessage='" + validationMessage + '\'' +
+                ", visibilityRules=" + visibilityRules +
+                ", hintText='" + hintText + '\'' +
+                ", fieldMetaData=" + fieldMetaData +
+                ", text='" + text + '\'' +
+                ", fields=" + fields +
+                '}';
     }
 }
