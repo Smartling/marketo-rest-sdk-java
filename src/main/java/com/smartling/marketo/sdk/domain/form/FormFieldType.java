@@ -20,6 +20,7 @@ public enum FormFieldType {
     SINGLE_CHECKBOX("single_checkbox"),
     RANGE("range"),
     PROFILING("profiling"),
+    HIDDEN("hidden"),
     FIELDSET("fieldset");
 
     private final String code;
