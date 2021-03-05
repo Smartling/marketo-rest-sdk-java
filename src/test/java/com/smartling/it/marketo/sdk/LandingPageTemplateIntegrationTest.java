@@ -14,9 +14,9 @@ import org.junit.rules.ExpectedException;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static com.smartling.marketo.sdk.domain.landingpagetemplate.TemplateType.FREEFORM;
 import static com.smartling.marketo.sdk.domain.landingpagetemplate.TemplateType.GUIDED;
-import static org.fest.assertions.api.Assertions.assertThat;
 
 public class LandingPageTemplateIntegrationTest extends BaseIntegrationTest {
     private static final int TEST_LANDING_PAGE_TEMPLATE_ID = 1010;

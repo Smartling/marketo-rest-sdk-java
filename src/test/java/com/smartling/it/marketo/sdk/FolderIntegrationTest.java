@@ -13,7 +13,7 @@ import org.junit.rules.ExpectedException;
 import java.util.Date;
 import java.util.List;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class FolderIntegrationTest extends BaseIntegrationTest {
 

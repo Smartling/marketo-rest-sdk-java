@@ -13,7 +13,7 @@ import org.junit.Test;
 import java.util.List;
 import java.util.UUID;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class SnippetIntegrationTest extends BaseIntegrationTest {
 

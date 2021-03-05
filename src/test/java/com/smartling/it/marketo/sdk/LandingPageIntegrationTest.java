@@ -9,7 +9,7 @@ import com.smartling.marketo.sdk.domain.landingpage.LandingPage;
 import com.smartling.marketo.sdk.domain.landingpage.LandingPageContentItem;
 import com.smartling.marketo.sdk.domain.landingpage.LandingPageTextContentItem;
 import com.smartling.marketo.sdk.domain.landingpage.LandingPageVariable;
-import org.fest.assertions.core.Condition;
+import org.assertj.core.api.Condition;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -19,9 +19,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static com.smartling.marketo.sdk.domain.landingpage.VariableType.BOOLEAN;
 import static com.smartling.marketo.sdk.domain.landingpage.VariableType.STRING;
-import static org.fest.assertions.api.Assertions.assertThat;
 
 public class LandingPageIntegrationTest extends BaseIntegrationTest {
     private static final int TEST_LANDING_PAGE_ID = 1015;

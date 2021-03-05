@@ -6,11 +6,11 @@ import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.MarketoClientManager;
 import com.smartling.marketo.sdk.rest.MarketoRestClientManager;
 import com.smartling.marketo.sdk.rest.RetryPolicy;
-import org.fest.assertions.core.Condition;
+import org.assertj.core.api.Condition;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public abstract class BaseIntegrationTest {
 

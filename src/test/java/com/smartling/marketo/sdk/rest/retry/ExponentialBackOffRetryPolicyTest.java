@@ -10,7 +10,7 @@ import org.junit.rules.Stopwatch;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.sameInstance;
 
 public class ExponentialBackOffRetryPolicyTest {
