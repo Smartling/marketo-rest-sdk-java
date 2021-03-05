@@ -177,13 +177,6 @@ public class JaxRsHttpCommandExecutor implements HttpCommandExecutor {
         final FormDataMultiPart multiPartEntity = new FormDataMultiPart();
 
         for (Entry<String, Object> param : parameters.entrySet()) {
-//            FormDataBodyPart bodyPart = new FormDataBodyPart();
-//            .field.setName(param.getKey());
-//            bodyPart.setValue(MediaType.TEXT_HTML_TYPE, param.getValue());
-//            bodyPart.setFormDataContentDisposition(new FormDataContentDisposition("form-data", param.getKey(), "filename.html", null, null, null, 0));
-
-//            multiPartEntity.field(param.getKey(), param.getValue(), MediaType.TEXT_HTML_TYPE);
-
             StreamDataBodyPart bodyPart = new StreamDataBodyPart(
                     param.getKey(),
                     new ByteArrayInputStream(param.getValue().toString().getBytes()),
