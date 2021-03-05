@@ -22,10 +22,12 @@ import org.junit.rules.ExpectedException;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.smartling.marketo.sdk.domain.Asset.Status.APPROVED;
 import static com.smartling.marketo.sdk.domain.Asset.Status.DRAFT;
@@ -137,7 +139,7 @@ public class FormIntegrationTest extends BaseIntegrationTest {
         assertThat(visibilityRules.getRules().get(0).getSubjectField()).isEqualTo("FirstName");
         assertThat(visibilityRules.getRules().get(0).getAltLabel()).isEqualTo("Address:");
 
-        formField = formFields.get(18);
+        formField = formFields.get(21);
         assertThat(formField.getFieldMetaData()).isNotNull();
         assertThat(formField.getFieldMetaData().getValues()).isNotNull();
         List<Value> dropdownValues = formField.getFieldMetaData().getValues();
@@ -284,9 +286,13 @@ public class FormIntegrationTest extends BaseIntegrationTest {
         List<UpdateFieldPosition> fieldSetsPositions = fieldSetsPositions(formFields, simpleFieldsPositions);
         List<UpdateFieldPosition> rootFieldsPositions = rootFieldsPositions(simpleFieldsPositions, fieldSetsPositions);
 
+
+        List<UpdateFieldPosition> fieldPositions = Stream.concat(rootFieldsPositions.stream(), fieldSetsPositions.stream())
+                .sorted(Comparator.comparing(UpdateFieldPosition::getRowNumber))
+                .collect(Collectors.toList());
+
         UpdateFieldPositionsList updateFieldPositions = new UpdateFieldPositionsList();
-        updateFieldPositions.addAll(rootFieldsPositions);
-        updateFieldPositions.addAll(fieldSetsPositions);
+        updateFieldPositions.addAll(fieldPositions);
         return updateFieldPositions;
     }
 
@@ -319,8 +325,6 @@ public class FormIntegrationTest extends BaseIntegrationTest {
     public void shouldReplaceRichTextField() throws Exception {
         List<FormField> formFields = marketoFormClient.getFormFields(TEST_FORM_ID, APPROVED);
 
-        UpdateFieldPositionsList positions = createUpdateFieldPositions(formFields);
-
         FormField originalRichText = formFields.stream()
                 .filter(f -> f.getDataType().equals(HTMLTEXT.getCode()))
                 .filter(f -> f.getText().contains("<h1>The Rich Text Field</h1>"))
@@ -329,13 +333,11 @@ public class FormIntegrationTest extends BaseIntegrationTest {
 
         FormField newRichText = marketoFormClient.addFormRichTextField(TEST_FORM_ID, "new richText value");
 
-        replaceFieldInPositions(positions, originalRichText.getId(), newRichText.getId());
+        List<FormField> renewedFormFields = marketoFormClient.getFormFields(TEST_FORM_ID, DRAFT);
 
-        UpdateFieldPosition oldRichTextPosition = new UpdateFieldPosition();
-        oldRichTextPosition.setFieldName(originalRichText.getId());
-        oldRichTextPosition.setRowNumber(newRichText.getRowNumber());
-        oldRichTextPosition.setColumnNumber(newRichText.getColumnNumber());
-        positions.add(oldRichTextPosition);
+        UpdateFieldPositionsList positions = createUpdateFieldPositions(renewedFormFields);
+
+        swapFieldInPositions(positions, originalRichText.getId(), newRichText.getId());
 
         marketoFormClient.reArrangeFormFields(TEST_FORM_ID, positions);
 
@@ -344,16 +346,16 @@ public class FormIntegrationTest extends BaseIntegrationTest {
         marketoFormClient.discardFormDraft(TEST_FORM_ID);
     }
 
-    private void replaceFieldInPositions(List<UpdateFieldPosition> positions, String originalFieldId, String newFieldId) {
+    private void swapFieldInPositions(List<UpdateFieldPosition> positions, String originalFieldId, String newFieldId) {
         for (UpdateFieldPosition position : positions) {
             if (position.getFieldList() != null) {
-                replaceFieldInPositions(position.getFieldList(), originalFieldId, newFieldId);
+                swapFieldInPositions(position.getFieldList(), originalFieldId, newFieldId);
             } else if (position.getFieldName().equals(originalFieldId)) {
                 position.setFieldName(newFieldId);
-                return;
+            } else if (position.getFieldName().equals(newFieldId)) {
+                position.setFieldName(originalFieldId);
             }
         }
-
     }
 
     private List<PickListDTO> picklist()
