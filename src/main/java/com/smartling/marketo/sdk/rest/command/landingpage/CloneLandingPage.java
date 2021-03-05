@@ -1,9 +1,9 @@
 package com.smartling.marketo.sdk.rest.command.landingpage;
 
+import com.google.common.collect.ImmutableMap;
 import com.smartling.marketo.sdk.domain.landingpage.LandingPage;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.rest.command.BaseMarketoCommand;
-import jersey.repackaged.com.google.common.collect.ImmutableMap;
 
 import java.util.Map;
 

@@ -1,9 +1,9 @@
 package com.smartling.marketo.sdk.rest.command.form;
 
+import com.google.common.collect.ImmutableMap;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.domain.form.Form;
 import com.smartling.marketo.sdk.rest.command.BaseMarketoCommand;
-import jersey.repackaged.com.google.common.collect.ImmutableMap;
 
 import java.util.Map;
 
@@ -33,6 +33,6 @@ public class CloneForm extends BaseMarketoCommand<Form> {
 
     @Override
     public Map<String, Object> getParameters() {
-        return ImmutableMap.<String, Object>of("name", newFormName, "folder", folderId, "description", description);
+        return ImmutableMap.of("name", newFormName, "folder", folderId, "description", description);
     }
 }
