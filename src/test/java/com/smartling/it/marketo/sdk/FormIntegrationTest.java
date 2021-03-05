@@ -281,21 +281,6 @@ public class FormIntegrationTest extends BaseIntegrationTest {
         marketoFormClient.discardFormDraft(TEST_FORM_ID);
     }
 
-    private UpdateFieldPositionsList createUpdateFieldPositions(List<FormField> formFields) {
-        Map<String, UpdateFieldPosition> simpleFieldsPositions = simpleFieldsPositions(formFields);
-        List<UpdateFieldPosition> fieldSetsPositions = fieldSetsPositions(formFields, simpleFieldsPositions);
-        List<UpdateFieldPosition> rootFieldsPositions = rootFieldsPositions(simpleFieldsPositions, fieldSetsPositions);
-
-
-        List<UpdateFieldPosition> fieldPositions = Stream.concat(rootFieldsPositions.stream(), fieldSetsPositions.stream())
-                .sorted(Comparator.comparing(UpdateFieldPosition::getRowNumber))
-                .collect(Collectors.toList());
-
-        UpdateFieldPositionsList updateFieldPositions = new UpdateFieldPositionsList();
-        updateFieldPositions.addAll(fieldPositions);
-        return updateFieldPositions;
-    }
-
     @Test
     public void shouldAddAndDeleteRichtextField() throws Exception {
         String richTextValue = "new richText value " + UUID.randomUUID();
@@ -385,6 +370,21 @@ public class FormIntegrationTest extends BaseIntegrationTest {
         rule.setAltLabel(altLabel);
         rule.setPickListValues(picklist);
         return rule;
+    }
+
+    private UpdateFieldPositionsList createUpdateFieldPositions(List<FormField> formFields) {
+        Map<String, UpdateFieldPosition> simpleFieldsPositions = simpleFieldsPositions(formFields);
+        List<UpdateFieldPosition> fieldSetsPositions = fieldSetsPositions(formFields, simpleFieldsPositions);
+        List<UpdateFieldPosition> rootFieldsPositions = rootFieldsPositions(simpleFieldsPositions, fieldSetsPositions);
+
+
+        List<UpdateFieldPosition> fieldPositions = Stream.concat(rootFieldsPositions.stream(), fieldSetsPositions.stream())
+                .sorted(Comparator.comparing(UpdateFieldPosition::getRowNumber))
+                .collect(Collectors.toList());
+
+        UpdateFieldPositionsList updateFieldPositions = new UpdateFieldPositionsList();
+        updateFieldPositions.addAll(fieldPositions);
+        return updateFieldPositions;
     }
 
     private List<UpdateFieldPosition> rootFieldsPositions(Map<String, UpdateFieldPosition> simpleFieldsPositions, List<UpdateFieldPosition> fieldSetsPositions) {
