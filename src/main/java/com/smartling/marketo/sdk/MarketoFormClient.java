@@ -7,6 +7,7 @@ import com.smartling.marketo.sdk.domain.form.Form;
 import com.smartling.marketo.sdk.domain.form.FormField;
 import com.smartling.marketo.sdk.domain.form.VisibilityRules;
 import com.smartling.marketo.sdk.domain.form.VisibilityRulesParameter;
+import com.smartling.marketo.sdk.rest.command.form.UpdateFieldPositionsList;
 
 import java.util.List;
 
@@ -28,6 +29,14 @@ public interface MarketoFormClient {
     void updateFormFields(int formId, List<FormField> formFields) throws MarketoApiException;
 
     void updateFormField(int formId, FormField formField) throws MarketoApiException;
+
+    void discardFormDraft(int formId) throws MarketoApiException;
+
+    void deleteFormField(int formId, String fieldId) throws MarketoApiException;
+
+    FormField addFormRichTextField(int formId, String text) throws MarketoApiException;
+
+    void reArrangeFormFields(int formId, UpdateFieldPositionsList positions) throws MarketoApiException;
 
     void updateSubmitButton(int formId, String label, String waitingLabel) throws MarketoApiException;
 

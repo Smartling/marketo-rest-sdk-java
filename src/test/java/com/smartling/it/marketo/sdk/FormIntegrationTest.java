@@ -13,6 +13,8 @@ import com.smartling.marketo.sdk.domain.form.PickListDTO;
 import com.smartling.marketo.sdk.domain.form.RuleType;
 import com.smartling.marketo.sdk.domain.form.VisibilityRules;
 import com.smartling.marketo.sdk.domain.form.VisibilityRulesParameter;
+import com.smartling.marketo.sdk.rest.command.form.UpdateFieldPosition;
+import com.smartling.marketo.sdk.rest.command.form.UpdateFieldPositionsList;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -20,13 +22,19 @@ import org.junit.rules.ExpectedException;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static com.smartling.marketo.sdk.domain.Asset.Status.APPROVED;
 import static com.smartling.marketo.sdk.domain.Asset.Status.DRAFT;
+import static com.smartling.marketo.sdk.domain.form.FormFieldType.FIELDSET;
+import static com.smartling.marketo.sdk.domain.form.FormFieldType.HTMLTEXT;
 import static com.smartling.marketo.sdk.domain.form.RuleType.SHOW;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class FormIntegrationTest extends BaseIntegrationTest {
     private static final int TEST_FORM_ID = 1012;
@@ -131,11 +139,11 @@ public class FormIntegrationTest extends BaseIntegrationTest {
         assertThat(visibilityRules.getRules().get(0).getSubjectField()).isEqualTo("FirstName");
         assertThat(visibilityRules.getRules().get(0).getAltLabel()).isEqualTo("Address:");
 
-        formField = formFields.get(18);
+        formField = formFields.get(21);
         assertThat(formField.getFieldMetaData()).isNotNull();
         assertThat(formField.getFieldMetaData().getValues()).isNotNull();
         List<Value> dropdownValues = formField.getFieldMetaData().getValues();
-        assertThat(dropdownValues).hasSize(5);
+        assertThat(dropdownValues).hasSizeGreaterThanOrEqualTo(5);
         assertThat(dropdownValues.get(0).getLabel()).isEqualTo("Select...");
         assertThat(dropdownValues.get(2).getLabel()).isEqualTo("Male");
     }
@@ -262,6 +270,79 @@ public class FormIntegrationTest extends BaseIntegrationTest {
         // Can not verify - no way to fetch not approved content
     }
 
+    @Test
+    public void shouldReArrangeFormFields() throws Exception {
+        List<FormField> formFields = marketoFormClient.getFormFields(TEST_FORM_ID, DRAFT);
+
+        UpdateFieldPositionsList updateFieldPositions = createUpdateFieldPositions(formFields);
+
+        marketoFormClient.reArrangeFormFields(TEST_FORM_ID, updateFieldPositions);
+
+        marketoFormClient.discardFormDraft(TEST_FORM_ID);
+    }
+
+    @Test
+    public void shouldAddAndDeleteRichtextField() throws Exception {
+        String richTextValue = "new richText value " + UUID.randomUUID();
+
+        FormField newField = marketoFormClient.addFormRichTextField(TEST_FORM_ID, richTextValue);
+
+        assertThat(
+                marketoFormClient.getFormFields(TEST_FORM_ID, DRAFT)
+                        .stream()
+                        .filter(f -> f.getDataType().equals(HTMLTEXT.getCode()))
+                        .filter(f -> f.getText().equals(richTextValue))
+                        .findAny()
+        ).isNotEmpty();
+
+        marketoFormClient.deleteFormField(TEST_FORM_ID, newField.getId());
+
+        assertThat(
+                marketoFormClient.getFormFields(TEST_FORM_ID, DRAFT)
+                        .stream()
+                        .filter(f -> f.getDataType().equals(HTMLTEXT.getCode()))
+                        .filter(f -> f.getText().equals(richTextValue))
+                        .findAny()
+        ).isEmpty();
+    }
+
+    @Test
+    public void shouldReplaceRichTextField() throws Exception {
+        List<FormField> formFields = marketoFormClient.getFormFields(TEST_FORM_ID, APPROVED);
+
+        FormField originalRichText = formFields.stream()
+                .filter(f -> f.getDataType().equals(HTMLTEXT.getCode()))
+                .filter(f -> f.getText().contains("<h1>The Rich Text Field</h1>"))
+                .findFirst()
+                .orElseThrow(() -> new Exception("Not found expected richTextField"));
+
+        FormField newRichText = marketoFormClient.addFormRichTextField(TEST_FORM_ID, "new richText value");
+
+        List<FormField> renewedFormFields = marketoFormClient.getFormFields(TEST_FORM_ID, DRAFT);
+
+        UpdateFieldPositionsList positions = createUpdateFieldPositions(renewedFormFields);
+
+        swapFieldInPositions(positions, originalRichText.getId(), newRichText.getId());
+
+        marketoFormClient.reArrangeFormFields(TEST_FORM_ID, positions);
+
+        marketoFormClient.deleteFormField(TEST_FORM_ID, originalRichText.getId());
+
+        marketoFormClient.discardFormDraft(TEST_FORM_ID);
+    }
+
+    private void swapFieldInPositions(List<UpdateFieldPosition> positions, String originalFieldId, String newFieldId) {
+        for (UpdateFieldPosition position : positions) {
+            if (position.getFieldList() != null) {
+                swapFieldInPositions(position.getFieldList(), originalFieldId, newFieldId);
+            } else if (position.getFieldName().equals(originalFieldId)) {
+                position.setFieldName(newFieldId);
+            } else if (position.getFieldName().equals(newFieldId)) {
+                position.setFieldName(originalFieldId);
+            }
+        }
+    }
+
     private List<PickListDTO> picklist()
     {
         List<PickListDTO> picklist = new ArrayList<>();
@@ -289,5 +370,58 @@ public class FormIntegrationTest extends BaseIntegrationTest {
         rule.setAltLabel(altLabel);
         rule.setPickListValues(picklist);
         return rule;
+    }
+
+    private UpdateFieldPositionsList createUpdateFieldPositions(List<FormField> formFields) {
+        Map<String, UpdateFieldPosition> simpleFieldsPositions = simpleFieldsPositions(formFields);
+        List<UpdateFieldPosition> fieldSetsPositions = fieldSetsPositions(formFields, simpleFieldsPositions);
+        List<UpdateFieldPosition> rootFieldsPositions = rootFieldsPositions(simpleFieldsPositions, fieldSetsPositions);
+
+
+        List<UpdateFieldPosition> fieldPositions = Stream.concat(rootFieldsPositions.stream(), fieldSetsPositions.stream())
+                .sorted(Comparator.comparing(UpdateFieldPosition::getRowNumber))
+                .collect(Collectors.toList());
+
+        UpdateFieldPositionsList updateFieldPositions = new UpdateFieldPositionsList();
+        updateFieldPositions.addAll(fieldPositions);
+        return updateFieldPositions;
+    }
+
+    private List<UpdateFieldPosition> rootFieldsPositions(Map<String, UpdateFieldPosition> simpleFieldsPositions, List<UpdateFieldPosition> fieldSetsPositions) {
+        return simpleFieldsPositions.values().stream()
+                .filter(f -> fieldSetsPositions.stream()
+                        .noneMatch(fs -> fs.getFieldList().contains(f))
+                )
+                .collect(Collectors.toList());
+    }
+
+    private List<UpdateFieldPosition> fieldSetsPositions(List<FormField> formFields, Map<String, UpdateFieldPosition> fieldPositions) {
+        return formFields.stream()
+                .filter(fs -> fs.getDataType().equalsIgnoreCase(FIELDSET.getCode()))
+                .map(fs -> {
+                    UpdateFieldPosition fieldSetPosition = new UpdateFieldPosition();
+                    fieldSetPosition.setFieldName(fs.getId());
+                    fieldSetPosition.setColumnNumber(fs.getColumnNumber());
+                    fieldSetPosition.setRowNumber(fs.getRowNumber());
+                    fieldSetPosition.setFieldList(fs.getFields().stream()
+                            .map(fieldPositions::get)
+                            .collect(Collectors.toList())
+                    );
+                    return fieldSetPosition;
+                })
+                .collect(Collectors.toList());
+    }
+
+    private Map<String, UpdateFieldPosition> simpleFieldsPositions(List<FormField> formFields) {
+        return formFields.stream()
+                .filter(f -> !f.getDataType().equalsIgnoreCase(FIELDSET.getCode()))
+                .map(f -> {
+                    UpdateFieldPosition fieldPosition = new UpdateFieldPosition();
+                    fieldPosition.setFieldName(f.getId());
+                    fieldPosition.setColumnNumber(f.getColumnNumber());
+                    fieldPosition.setRowNumber(f.getRowNumber());
+                    return fieldPosition;
+                })
+                .collect(Collectors.toMap(UpdateFieldPosition::getFieldName, p -> p));
     }
 }

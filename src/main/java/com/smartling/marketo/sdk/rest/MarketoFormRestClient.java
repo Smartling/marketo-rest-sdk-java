@@ -1,18 +1,22 @@
 package com.smartling.marketo.sdk.rest;
 
+import com.smartling.marketo.sdk.MarketoApiException;
+import com.smartling.marketo.sdk.MarketoFormClient;
 import com.smartling.marketo.sdk.domain.Asset.Status;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.domain.form.Form;
 import com.smartling.marketo.sdk.domain.form.FormField;
-import com.smartling.marketo.sdk.MarketoApiException;
-import com.smartling.marketo.sdk.MarketoFormClient;
-import com.smartling.marketo.sdk.domain.form.VisibilityRules;
 import com.smartling.marketo.sdk.domain.form.VisibilityRulesParameter;
 import com.smartling.marketo.sdk.rest.command.form.CloneForm;
-import com.smartling.marketo.sdk.rest.command.form.GetFormsByName;
-import com.smartling.marketo.sdk.rest.command.form.GetForms;
+import com.smartling.marketo.sdk.rest.command.form.CreateFormRichTextField;
+import com.smartling.marketo.sdk.rest.command.form.DeleteFormField;
+import com.smartling.marketo.sdk.rest.command.form.DiscardFormDraft;
 import com.smartling.marketo.sdk.rest.command.form.GetFormById;
 import com.smartling.marketo.sdk.rest.command.form.GetFormFields;
+import com.smartling.marketo.sdk.rest.command.form.GetForms;
+import com.smartling.marketo.sdk.rest.command.form.GetFormsByName;
+import com.smartling.marketo.sdk.rest.command.form.ReArrangeFormFields;
+import com.smartling.marketo.sdk.rest.command.form.UpdateFieldPositionsList;
 import com.smartling.marketo.sdk.rest.command.form.UpdateForm;
 import com.smartling.marketo.sdk.rest.command.form.UpdateFormField;
 import com.smartling.marketo.sdk.rest.command.form.UpdateFormFieldVisibilityRules;
@@ -81,6 +85,29 @@ public class MarketoFormRestClient implements MarketoFormClient {
     @Override
     public void updateFormField(int formId, FormField formField) throws MarketoApiException {
         httpCommandExecutor.execute(new UpdateFormField(formId, formField));
+    }
+
+    @Override
+    public void discardFormDraft(int formId) throws MarketoApiException {
+        httpCommandExecutor.execute(new DiscardFormDraft(formId));
+    }
+
+    @Override
+    public void deleteFormField(int formId, String fieldId) throws MarketoApiException {
+        httpCommandExecutor.execute(new DeleteFormField(formId, fieldId));
+    }
+
+    @Override
+    public FormField addFormRichTextField(int formId, String text) throws MarketoApiException {
+        List<FormField> newField =  httpCommandExecutor.execute(new CreateFormRichTextField(formId, text));
+        return newField.stream()
+                .findAny()
+                .orElseThrow(() -> new MarketoApiException("Empty response when creating richText field"));
+    }
+
+    @Override
+    public void reArrangeFormFields(int formId, UpdateFieldPositionsList positions) throws MarketoApiException {
+        httpCommandExecutor.execute(new ReArrangeFormFields(formId, positions));
     }
 
     @Override
