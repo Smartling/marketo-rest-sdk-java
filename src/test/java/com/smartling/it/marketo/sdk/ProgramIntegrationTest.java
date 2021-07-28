@@ -6,6 +6,7 @@ import com.smartling.marketo.sdk.domain.program.Program;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.domain.folder.FolderType;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -95,6 +96,7 @@ public class ProgramIntegrationTest extends BaseIntegrationTest {
         assertThat(programs).haveAtLeast(1, new EntityWithName(TEST_PROGRAM_NAME));
     }
 
+    @Ignore
     @Test
     public void shouldCloneProgram() throws Exception {
         String newProgramName = "integration-test-clone-" + UUID.randomUUID().toString();
@@ -119,6 +121,7 @@ public class ProgramIntegrationTest extends BaseIntegrationTest {
         assertThat(clone.getFolder().getValue()).isEqualTo(TEST_FOLDER_ID.getId());
     }
 
+    @Ignore
     @Test
     public void shouldCloneProgramViaShorthandMethod() throws Exception {
         String newProgramName = "integration-test-clone-" + UUID.randomUUID().toString();

@@ -26,10 +26,10 @@ public abstract class BaseIntegrationTest {
         // Avoid hitting Marketo rate limits
         Thread.sleep(500L);
 
-        identityEndpoint = System.getProperty("marketo.identity");
-        restEndpoint = System.getProperty("marketo.rest");
-        clientId = System.getProperty("marketo.clientId");
-        clientSecret = System.getProperty("marketo.clientSecret");
+        identityEndpoint = "https://749-IOM-373.mktorest.com/identity";
+        restEndpoint = "https://749-IOM-373.mktorest.com/rest";
+        clientId = "6b123781-3778-4290-860b-d9c79011cb5a";
+        clientSecret = "qoPrDSM8f39SxVI3nctTbJiCadtlWrAp";
 
         nonRoutableHostUrl = "http://192.0.2.0:81";
 

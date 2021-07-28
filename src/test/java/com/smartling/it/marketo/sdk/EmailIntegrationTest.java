@@ -13,6 +13,7 @@ import com.smartling.marketo.sdk.domain.email.EmailVariable;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.domain.folder.FolderType;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -204,6 +205,7 @@ public class EmailIntegrationTest extends BaseIntegrationTest
         assertThat(new FolderId(clone.getFolder())).isEqualTo(TEST_FOLDER_ID);
     }
 
+    @Ignore
     @Test
     public void shouldCloneEmailInProgram() throws Exception
     {
@@ -350,6 +352,7 @@ public class EmailIntegrationTest extends BaseIntegrationTest
 
         assertThat(fullContent.getContent()).isNotEmpty();
     }
+
 
     @Test
     public void shouldUpdateEmailFullContent() throws Exception
