@@ -42,4 +42,6 @@ public interface MarketoEmailClient {
     EmailVariable updateEmailVariable(int emailId, EmailVariable emailVariable) throws MarketoApiException;
 
     EmailFullContent getEmailFullContent(int id, Status status) throws MarketoApiException;
+
+    void updateEmailFullContent(int id, String content) throws MarketoApiException;
 }

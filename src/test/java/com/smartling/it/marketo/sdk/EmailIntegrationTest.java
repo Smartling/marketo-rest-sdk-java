@@ -1,7 +1,9 @@
 package com.smartling.it.marketo.sdk;
 
-import com.smartling.marketo.sdk.domain.email.Email;
+import com.smartling.marketo.sdk.MarketoApiException;
+import com.smartling.marketo.sdk.MarketoEmailClient;
 import com.smartling.marketo.sdk.domain.Asset.Status;
+import com.smartling.marketo.sdk.domain.email.Email;
 import com.smartling.marketo.sdk.domain.email.EmailContentItem;
 import com.smartling.marketo.sdk.domain.email.EmailDynamicContentItem;
 import com.smartling.marketo.sdk.domain.email.EmailFullContent;
@@ -10,9 +12,8 @@ import com.smartling.marketo.sdk.domain.email.EmailTextContentItem;
 import com.smartling.marketo.sdk.domain.email.EmailVariable;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.domain.folder.FolderType;
-import com.smartling.marketo.sdk.MarketoApiException;
-import com.smartling.marketo.sdk.MarketoEmailClient;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -22,10 +23,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static com.smartling.marketo.sdk.domain.Asset.Status.DRAFT;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class EmailIntegrationTest extends BaseIntegrationTest {
+public class EmailIntegrationTest extends BaseIntegrationTest
+{
     private static final int TEST_EMAIL_ID = 1109;
     private static final int TEST_EMAIL_V2_ID = 2466;
     private static final int TEST_EMAIL_WITH_SNIPPET_ID = 2180;
@@ -40,12 +42,14 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
     private MarketoEmailClient marketoEmailClient;
 
     @Before
-    public void setUp() {
+    public void setUp()
+    {
         marketoEmailClient = marketoClientManager.getMarketoEmailClient();
     }
 
     @Test
-    public void shouldListEmails() throws Exception {
+    public void shouldListEmails() throws Exception
+    {
         List<Email> emails = marketoEmailClient.listEmails(0, 1);
 
         assertThat(emails).hasSize(1);
@@ -59,7 +63,8 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void shouldListEmailsWithFilter() throws Exception {
+    public void shouldListEmailsWithFilter() throws Exception
+    {
         List<Email> emails = marketoEmailClient.listEmails(0, 1, TEST_FOLDER_ID, Status.APPROVED);
 
         assertThat(emails).hasSize(1);
@@ -73,19 +78,22 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void shouldReturnEmptyListWhenEndReached() throws Exception {
+    public void shouldReturnEmptyListWhenEndReached() throws Exception
+    {
         List<Email> emails = marketoEmailClient.listEmails(10000, 1);
 
         assertThat(emails).isEmpty();
     }
 
     @Test(expected = MarketoApiException.class)
-    public void shouldThrowLogicException() throws Exception {
+    public void shouldThrowLogicException() throws Exception
+    {
         marketoEmailClient.listEmails(-5, 5);
     }
 
     @Test
-    public void shouldLoadEmailById() throws Exception {
+    public void shouldLoadEmailById() throws Exception
+    {
         Email email = marketoEmailClient.loadEmailById(TEST_EMAIL_V2_ID);
 
         assertThat(email).isNotNull();
@@ -101,7 +109,8 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void shouldThrowMarketoApiExceptionWhenCouldNotFindEmailById() throws Exception {
+    public void shouldThrowMarketoApiExceptionWhenCouldNotFindEmailById() throws Exception
+    {
 
         thrown.expect(MarketoApiException.class);
         thrown.expectMessage("Email[id = 42] not found");
@@ -110,33 +119,37 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void shouldGetEmailsByName() throws Exception {
+    public void shouldGetEmailsByName() throws Exception
+    {
         List<Email> emails = marketoEmailClient.getEmailsByName(TEST_EMAIL_NAME, null, null);
 
         assertThat(emails).haveAtLeast(1, new EntityWithName(TEST_EMAIL_NAME));
     }
 
     @Test
-    public void shouldGetEmailsByNameWithFolder() throws Exception {
+    public void shouldGetEmailsByNameWithFolder() throws Exception
+    {
         List<Email> emails = marketoEmailClient.getEmailsByName(TEST_EMAIL_NAME, TEST_FOLDER_ID, null);
 
         assertThat(emails).haveAtLeast(1, new EntityWithNameAndFolderId(TEST_EMAIL_NAME, TEST_FOLDER_ID));
     }
 
     @Test
-    public void shouldGetEmailsByNameWithStatus() throws Exception {
+    public void shouldGetEmailsByNameWithStatus() throws Exception
+    {
         List<Email> emails = marketoEmailClient.getEmailsByName(TEST_EMAIL_NAME, null, Status.APPROVED);
 
         assertThat(emails).haveAtLeast(1, new AssetWithNameAndStatus(TEST_EMAIL_NAME, Status.APPROVED));
     }
 
     @Test
-    public void shouldReadEmailContent() throws Exception {
+    public void shouldReadEmailContent() throws Exception
+    {
         List<EmailContentItem> contentItems = marketoEmailClient.loadEmailContent(TEST_EMAIL_ID);
 
         assertThat(contentItems).hasSize(2);
         assertThat(contentItems.get(0)).isInstanceOf(EmailTextContentItem.class);
-        EmailTextContentItem textContentItem = (EmailTextContentItem)contentItems.get(0);
+        EmailTextContentItem textContentItem = (EmailTextContentItem) contentItems.get(0);
         assertThat(textContentItem.getHtmlId()).isEqualTo("greeting");
         assertThat(textContentItem.getValue()).hasSize(2);
         assertThat(textContentItem.getValue().get(0).getType()).isEqualTo("HTML");
@@ -146,38 +159,42 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void shouldNotFailOnUnsupportedContentItems() throws Exception {
+    public void shouldNotFailOnUnsupportedContentItems() throws Exception
+    {
         List<EmailContentItem> contentItems = marketoEmailClient.loadEmailContent(TEST_EMAIL_V2_ID);
 
         assertThat(contentItems).hasSize(59);
     }
 
     @Test
-    public void shouldReadEmailContentWithSnippetItem() throws Exception {
+    public void shouldReadEmailContentWithSnippetItem() throws Exception
+    {
         List<EmailContentItem> contentItems = marketoEmailClient.loadEmailContent(TEST_EMAIL_WITH_SNIPPET_ID);
 
         assertThat(contentItems).hasSize(2);
         assertThat(contentItems.get(0)).isInstanceOf(EmailTextContentItem.class);
         assertThat(contentItems.get(1)).isInstanceOf(EmailSnippetContentItem.class);
-        EmailSnippetContentItem snippetContentItem = (EmailSnippetContentItem)contentItems.get(1);
+        EmailSnippetContentItem snippetContentItem = (EmailSnippetContentItem) contentItems.get(1);
         assertThat(snippetContentItem.getHtmlId()).isEqualTo("sign");
         assertThat(snippetContentItem.getValue()).isEqualTo("2");
     }
 
     @Test
-    public void shouldReadEmailContentWithDynamicContentItem() throws Exception {
+    public void shouldReadEmailContentWithDynamicContentItem() throws Exception
+    {
         List<EmailContentItem> contentItems = marketoEmailClient.loadEmailContent(TEST_EMAIL_WITH_DYNAMIC_CONTENT_ID);
 
         assertThat(contentItems).hasSize(2);
         assertThat(contentItems.get(0)).isInstanceOf(EmailTextContentItem.class);
         assertThat(contentItems.get(1)).isInstanceOf(EmailDynamicContentItem.class);
-        EmailDynamicContentItem dynamicContentItem = (EmailDynamicContentItem)contentItems.get(1);
+        EmailDynamicContentItem dynamicContentItem = (EmailDynamicContentItem) contentItems.get(1);
         assertThat(dynamicContentItem.getHtmlId()).isEqualTo("sign");
         assertThat(dynamicContentItem.getValue()).isEqualTo("RVMtc2lnbg==");
     }
 
     @Test
-    public void shouldCloneEmail() throws Exception {
+    public void shouldCloneEmail() throws Exception
+    {
         String newEmailName = "integration-test-clone-" + UUID.randomUUID().toString();
 
         Email clone = marketoEmailClient.cloneEmail(TEST_EMAIL_ID, newEmailName, TEST_FOLDER_ID);
@@ -188,8 +205,10 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
         assertThat(new FolderId(clone.getFolder())).isEqualTo(TEST_FOLDER_ID);
     }
 
+    @Ignore
     @Test
-    public void shouldCloneEmailInProgram() throws Exception {
+    public void shouldCloneEmailInProgram() throws Exception
+    {
         String newEmailName = "integration-test-clone-" + UUID.randomUUID().toString();
 
         Email clone = marketoEmailClient.cloneEmail(TEST_PROGRAM_EMAIL_ID, newEmailName, new FolderId(TEST_PROGRAM_ID, FolderType.PROGRAM));
@@ -199,8 +218,10 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
         assertThat(clone.getName()).isEqualTo(newEmailName);
         assertThat(clone.getFolder().getValue()).isEqualTo(TEST_PROGRAM_ID);
     }
+
     @Test
-    public void shouldCloneEmailViaShorthandMethod() throws Exception {
+    public void shouldCloneEmailViaShorthandMethod() throws Exception
+    {
         String newEmailName = "integration-test-clone-" + UUID.randomUUID().toString();
         Email existingEmail = marketoEmailClient.loadEmailById(TEST_EMAIL_V2_ID);
 
@@ -213,7 +234,8 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void shouldUpdateEmailContent() throws Exception {
+    public void shouldUpdateEmailContent() throws Exception
+    {
         EmailTextContentItem newItem = new EmailTextContentItem();
         newItem.setHtmlId("greeting");
         newItem.setContentType("Text");
@@ -229,7 +251,8 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void shouldUpdateNullableValueEmailContent() throws Exception {
+    public void shouldUpdateNullableValueEmailContent() throws Exception
+    {
         EmailTextContentItem newItem = new EmailTextContentItem();
         newItem.setHtmlId("greeting");
         newItem.setContentType("Text");
@@ -245,7 +268,8 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void shouldUpdateHtmlOnlyValueEmailContent() throws Exception {
+    public void shouldUpdateHtmlOnlyValueEmailContent() throws Exception
+    {
         EmailTextContentItem newItem = new EmailTextContentItem();
         newItem.setHtmlId("greeting");
         newItem.setContentType("Text");
@@ -261,7 +285,8 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void shouldUpdateEmailFields() throws Exception {
+    public void shouldUpdateEmailFields() throws Exception
+    {
 
         Email email = new Email();
         email.setId(TEST_EMAIL_V2_ID);
@@ -276,7 +301,8 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void shouldUpdateEmailMetadata() throws Exception {
+    public void shouldUpdateEmailMetadata() throws Exception
+    {
 
         Email email = new Email();
         email.setId(TEST_EMAIL_V2_ID);
@@ -288,7 +314,8 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void shouldSendSample() throws Exception {
+    public void shouldSendSample() throws Exception
+    {
 
         marketoEmailClient.sendSample(TEST_EMAIL_ID, "connectors-context+ignore-int-tests@smartling.com", true);
 
@@ -296,7 +323,8 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void shouldGetEmailVariables() throws Exception {
+    public void shouldGetEmailVariables() throws Exception
+    {
         List<EmailVariable> variables = marketoEmailClient.getEmailVariables(TEST_EMAIL_V2_ID);
 
         assertThat(variables).hasSize(94);
@@ -305,7 +333,8 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void shouldUpdateEmailVariable() throws Exception {
+    public void shouldUpdateEmailVariable() throws Exception
+    {
         EmailVariable variable = new EmailVariable();
         variable.setName("twoArticlesLinkText");
         variable.setValue(UUID.randomUUID().toString());
@@ -317,9 +346,57 @@ public class EmailIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void shouldGetEmailFullContent() throws Exception {
+    public void shouldGetEmailFullContent() throws Exception
+    {
         EmailFullContent fullContent = marketoEmailClient.getEmailFullContent(TEST_EMAIL_V2_ID, Status.APPROVED);
 
         assertThat(fullContent.getContent()).isNotEmpty();
+    }
+
+
+    @Test
+    public void shouldUpdateEmailFullContent() throws Exception
+    {
+        String content = "<!doctype html>\n" +
+                "<html>\n" +
+                "<head>\n" +
+                "<meta name=\"robots\" content=\"noindex, nofollow\">\n" +
+                "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/>\n" +
+                "</head>\n" +
+                "<body style=\"\\&quot;\\&quot;\">\n" +
+                "\\n\\n\n" +
+                "<meta name=\"\\&quot;robots\\&quot;\" content=\"\\&quot;noindex,\" nofollow\\\">\n" +
+                "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"> \\n \\n \\n\n" +
+                "<div id=\"\\&quot;body\\&quot;\" class=\"\\&quot;mktoText\\&quot;\" style=\"\\&quot;font-family:\" helvetica, arial, sans-serif; padding:10px;\\\" newattr=\"\\&quot;new\\&quot;\">\n" +
+                "\\n\n" +
+                "<div style=\"\\&quot;\\&quot;\">\n" +
+                "\\n Dear Friend 3, \\n\n" +
+                "</div> \\n\n" +
+                "<div>\n" +
+                " \\n\n" +
+                "<br> \\n\n" +
+                "</div> \\n\n" +
+                "<div>\n" +
+                "\\n We are pleased to inform you that you have been accepted at Hogwarts School of Witchcraft and Wizardry. Please find enclosed a list of all necessary books and equipment. Term begins on September 1. We await your owl by no later than July 31. \\n\n" +
+                "</div> \\n\n" +
+                "<div>\n" +
+                " \\n\n" +
+                "<br> \\n\n" +
+                "</div> \\n\n" +
+                "<div>\n" +
+                "\\n Yours sincerely, \\n\n" +
+                "</div> \\n\n" +
+                "<div>\n" +
+                "\\n Minerva McGonagall \\n\n" +
+                "</div> \\n\n" +
+                "<div>\n" +
+                "\\n Deputy Headmistress \\n\n" +
+                "</div>\\n\n" +
+                "</div> \\n\\n\n" +
+                "</body>\n" +
+                "</html>";
+
+
+        marketoEmailClient.updateEmailFullContent(4381, content);
     }
 }

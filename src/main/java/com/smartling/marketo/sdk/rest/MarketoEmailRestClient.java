@@ -127,4 +127,10 @@ public class MarketoEmailRestClient implements MarketoEmailClient {
             throw new MarketoApiException(String.format("No full content for Email[id = %d, status = %s] found", id, status));
         }
     }
+
+    @Override
+    public void updateEmailFullContent(int id, String content) throws MarketoApiException
+    {
+        httpCommandExecutor.execute(new UpdateEmailFullContent(id, content));
+    }
 }
