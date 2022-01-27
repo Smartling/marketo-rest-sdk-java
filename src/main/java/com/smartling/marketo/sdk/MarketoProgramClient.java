@@ -15,4 +15,6 @@ public interface MarketoProgramClient {
     Program cloneProgram(int sourceProgramId, String name, FolderId folder) throws MarketoApiException;
 
     Program cloneProgram(Program existingProgram, String newProgramName) throws MarketoApiException;
+
+    Program createProgram(Program newProgram) throws MarketoApiException;
 }
