@@ -6,7 +6,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use=JsonTypeInfo.Id.NAME, include=JsonTypeInfo.As.PROPERTY, property="type", visible=true, defaultImpl=LandingPageExternalContentItem.class)
 @JsonSubTypes({
         @JsonSubTypes.Type(name="RichText", value=LandingPageTextContentItem.class),
-        @JsonSubTypes.Type(name="HTML",     value=LandingPageTextContentItem.class)})
+        @JsonSubTypes.Type(name="HTML",     value=LandingPageTextContentItem.class),
+        @JsonSubTypes.Type(name="Form",     value=LandingPageFormContentItem.class)})
 
 public abstract class LandingPageContentItem {
     private String id;

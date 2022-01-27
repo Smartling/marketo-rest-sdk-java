@@ -41,4 +41,6 @@ public interface MarketoFormClient {
     void updateSubmitButton(int formId, String label, String waitingLabel) throws MarketoApiException;
 
     void updateFormFieldVisibilityRules(int formId, String formField, VisibilityRulesParameter visibilityRules) throws MarketoApiException;
+
+    void approveDraft(int id) throws MarketoApiException;
 }

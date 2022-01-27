@@ -44,4 +44,11 @@ public interface MarketoEmailClient {
     EmailFullContent getEmailFullContent(int id, Status status) throws MarketoApiException;
 
     void updateEmailFullContent(int id, String content) throws MarketoApiException;
+
+    void approveDraft(int id) throws MarketoApiException;
+
+    void unapprove(int id) throws MarketoApiException;
+
+    Email createEmail(String name, FolderId folder, Integer template) throws MarketoApiException;
+
 }
