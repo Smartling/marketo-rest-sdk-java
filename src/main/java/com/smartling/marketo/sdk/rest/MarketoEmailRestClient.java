@@ -129,8 +129,23 @@ public class MarketoEmailRestClient implements MarketoEmailClient {
     }
 
     @Override
-    public void updateEmailFullContent(int id, String content) throws MarketoApiException
-    {
+    public void updateEmailFullContent(int id, String content) throws MarketoApiException {
         httpCommandExecutor.execute(new UpdateEmailFullContent(id, content));
+    }
+
+    @Override
+    public void approveDraft(int id) throws MarketoApiException {
+        httpCommandExecutor.execute(new ApproveEmailDraft(id));
+    }
+
+    @Override
+    public void unapprove(int id) throws MarketoApiException {
+        httpCommandExecutor.execute(new UnapproveEmail(id));
+    }
+
+    @Override
+    public Email createEmail(String name, FolderId folder, Integer template) throws MarketoApiException {
+        List<Email> emails = httpCommandExecutor.execute(new CreateEmail(name, folder, template));
+        return emails != null && !emails.isEmpty()? emails.get(0) : null;
     }
 }

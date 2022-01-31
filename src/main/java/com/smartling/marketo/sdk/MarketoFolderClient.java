@@ -16,4 +16,6 @@ public interface MarketoFolderClient {
     List<FolderContentItem> getFolderContents(FolderId folder, Integer  offset, Integer maxReturn) throws MarketoApiException;
 
     List<FolderDetails> getFolderByName(String name, FolderType type, FolderId root) throws MarketoApiException;
+
+    FolderDetails createFolder(String name, FolderId parent, String description) throws MarketoApiException;
 }

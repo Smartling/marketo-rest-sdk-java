@@ -8,6 +8,7 @@ import com.smartling.marketo.sdk.domain.landingpage.LandingPageTextContentItem;
 import com.smartling.marketo.sdk.domain.landingpage.LandingPageVariable;
 
 import java.util.List;
+import java.util.Map;
 
 public interface MarketoLandingPageClient {
     List<LandingPage> getLandingPages(int offset, int limit, FolderId folder, Status status) throws MarketoApiException;
@@ -34,7 +35,16 @@ public interface MarketoLandingPageClient {
 
     List<LandingPageVariable> getLandingPageVariables(int id) throws MarketoApiException;
 
+    void updateLandingPageMetadata(int id, Map<String, String> tagMap) throws MarketoApiException;
+
     List<LandingPageVariable> getLandingPageVariables(int id, Status status) throws MarketoApiException;
 
     LandingPageVariable updateLandingPageVariable(int pageId, LandingPageVariable variable) throws MarketoApiException;
+
+    void approveDraft(int id) throws MarketoApiException;
+
+    void unapprove(int id) throws MarketoApiException;
+
+    LandingPage createLandingPage(String name, FolderId folder, Integer template) throws MarketoApiException;
+
 }
