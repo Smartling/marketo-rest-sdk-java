@@ -12,6 +12,7 @@ import com.smartling.marketo.sdk.MarketoProgramClient;
 import com.smartling.marketo.sdk.MarketoSnippetClient;
 import com.smartling.marketo.sdk.MarketoTokenClient;
 import com.smartling.marketo.sdk.rest.transport.*;
+import com.smartling.marketo.sdk.rest.transport.logging.JsonClientLoggingFilter;
 
 public class MarketoRestClientManager implements MarketoClientManager {
     private static final TokenProvider tokenProvider = new CacheableTokenProvider(new BasicTokenProvider());
@@ -79,17 +80,23 @@ public class MarketoRestClientManager implements MarketoClientManager {
         private int connectionTimeout;
         private int socketReadTimeout;
         private RetryPolicy retryPolicy = RetryPolicy.NONE;
+        private JsonClientLoggingFilter loggingFilter;
 
         private Builder(String identityUrl, String restUrl) {
             this.identityUrl = identityUrl;
             this.restUrl = restUrl;
         }
 
+        public Builder withLoggingFilter(JsonClientLoggingFilter loggingFilter) {
+            this.loggingFilter = loggingFilter;
+            return this;
+        }
+
         public MarketoRestClientManager withCredentials(String clientId, String clientSecret) {
             Preconditions.checkNotNull(clientId, "Client ID is empty");
             Preconditions.checkNotNull(clientSecret, "Client secret is empty");
 
-            JaxRsHttpCommandExecutor executor = new JaxRsHttpCommandExecutor(identityUrl, restUrl, clientId, clientSecret, tokenProvider);
+            JaxRsHttpCommandExecutor executor = new JaxRsHttpCommandExecutor(identityUrl, restUrl, clientId, clientSecret, tokenProvider, loggingFilter);
             executor.setConnectionTimeout(connectionTimeout);
             executor.setSocketReadTimeout(socketReadTimeout);
             return new MarketoRestClientManager(new RetryingHttpCommandExecutor(executor, retryPolicy));

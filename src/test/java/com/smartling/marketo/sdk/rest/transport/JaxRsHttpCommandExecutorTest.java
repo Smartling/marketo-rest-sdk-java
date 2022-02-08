@@ -70,7 +70,7 @@ public class JaxRsHttpCommandExecutorTest extends BaseTransportTest {
         when(tokenProvider.authenticate(getClientConnectionData(any(Client.class), CLIENT_ID)))
                 .thenReturn(new Token(now().plusHours(1), "token"));
 
-        testedInstance = new JaxRsHttpCommandExecutor(IDENTITY_URL, REST_URL, CLIENT_ID, CLIENT_SECRET, tokenProvider);
+        testedInstance = new JaxRsHttpCommandExecutor(IDENTITY_URL, REST_URL, CLIENT_ID, CLIENT_SECRET, tokenProvider, null);
     }
 
     @Test
