@@ -98,7 +98,7 @@ public class JsonClientLoggingFilter implements ClientRequestFilter, ClientRespo
         responseArguments.add(new LoggingArgument("url", requestContext.getUri().toString()));
         responseArguments.add(new LoggingArgument("direction", "response"));
         responseArguments.add(new LoggingArgument("status", responseContext.getStatus()));
-        responseArguments.add(new LoggingArgument("elapsedTime", System.nanoTime() - requestStartTime));
+        responseArguments.add(new LoggingArgument("elapsedTime", System.currentTimeMillis() - requestStartTime));
 
         MultivaluedMap<String, String> headers = responseContext.getHeaders();
         for (String headerName : headers.keySet()) {
@@ -114,7 +114,7 @@ public class JsonClientLoggingFilter implements ClientRequestFilter, ClientRespo
             ReaderWriter.writeTo(responseContext.getEntityStream(), out);
             responseContext.setEntityStream(new ByteArrayInputStream(out.toByteArray()));
             message.format("\n%s\n", out);
-            responseArguments.add(new LoggingArgument("bodyLength", responseContext.getLength()));
+            responseArguments.add(new LoggingArgument("bodyLength", out.toByteArray().length));
         }
 
         logger.log(message.toString(), responseArguments);
