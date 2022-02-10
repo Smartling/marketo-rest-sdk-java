@@ -8,6 +8,7 @@ import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.rest.Command;
 import com.smartling.marketo.sdk.rest.HttpCommandExecutor;
 import com.smartling.marketo.sdk.rest.RequestLimitExceededException;
+import com.smartling.marketo.sdk.rest.transport.logging.JsonClientLoggingFilter;
 import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.logging.LoggingFeature;
@@ -57,17 +58,24 @@ public class JaxRsHttpCommandExecutor implements HttpCommandExecutor {
     private final TokenProvider tokenProvider;
     private final Client client;
 
-    public JaxRsHttpCommandExecutor(String identityUrl, String restUrl, String clientId, String clientSecret, TokenProvider tokenProvider) {
+    public JaxRsHttpCommandExecutor(String identityUrl, String restUrl, String clientId, String clientSecret, TokenProvider tokenProvider, JsonClientLoggingFilter loggingFilter) {
         this.identityUrl = identityUrl;
         this.restUrl = restUrl;
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         this.tokenProvider = tokenProvider;
-        this.client = ClientBuilder.newClient()
+        Client client = ClientBuilder.newClient()
                 .register(JacksonFeature.class)
                 .register(ObjectMapperProvider.class)
-                .register(MultiPartFeature.class)
-                .register(new LoggingFeature(Logger.getLogger("PayloadLogger"), INFO, PAYLOAD_ANY, null));
+                .register(MultiPartFeature.class);
+
+        if (loggingFilter == null) {
+            client = client.register(new LoggingFeature(Logger.getLogger("PayloadLogger"), INFO, PAYLOAD_ANY, null));
+        } else {
+            client = client.register(loggingFilter);
+        }
+
+        this.client = client;
     }
 
     public void setConnectionTimeout(int timeout) {
