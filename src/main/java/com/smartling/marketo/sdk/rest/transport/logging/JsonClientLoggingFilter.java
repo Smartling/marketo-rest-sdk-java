@@ -10,9 +10,6 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.PipedOutputStream;
-import java.io.PipedInputStream;
-import java.io.InputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;
@@ -32,17 +29,14 @@ public class JsonClientLoggingFilter implements ClientRequestFilter, ClientRespo
     @Override
     public void filter(ClientRequestContext clientRequestContext) throws IOException {
         if (logger.enabled() && clientRequestContext.hasEntity() && !isAuthRequest(clientRequestContext)) {
-            PipedOutputStream requestBodyOutputStream = new PipedOutputStream();
-            PipedInputStream requestBodyLoggingStream = new PipedInputStream();
-            requestBodyOutputStream.connect(requestBodyLoggingStream);
-
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
             MultiOutputStream outputStream = new MultiOutputStream(
                     clientRequestContext.getEntityStream(),
-                    requestBodyOutputStream
+                    buffer
             );
 
             clientRequestContext.setEntityStream(outputStream);
-            clientRequestContext.setProperty(REQUEST_BODY_PROPERTY, requestBodyLoggingStream);
+            clientRequestContext.setProperty(REQUEST_BODY_PROPERTY, buffer);
         }
         clientRequestContext.setProperty(REQUEST_START_TIME, System.currentTimeMillis());
     }
@@ -86,11 +80,9 @@ public class JsonClientLoggingFilter implements ClientRequestFilter, ClientRespo
         logger.log(message.toString(), requestArguments);
     }
 
-    private String getRequestBody(ClientRequestContext clientRequestContext) throws IOException {
-        InputStream requestBody = (InputStream) clientRequestContext.getProperty(REQUEST_BODY_PROPERTY);
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ReaderWriter.writeTo(requestBody, out);
-        return out.toString();
+    private String getRequestBody(ClientRequestContext clientRequestContext) {
+        ByteArrayOutputStream requestBody = (ByteArrayOutputStream) clientRequestContext.getProperty(REQUEST_BODY_PROPERTY);
+        return requestBody.toString();
     }
 
     private void logResponse(ClientRequestContext requestContext, ClientResponseContext responseContext) throws IOException {

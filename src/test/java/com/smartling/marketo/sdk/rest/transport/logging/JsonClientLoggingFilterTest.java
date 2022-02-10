@@ -13,10 +13,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 
-import java.io.ByteArrayInputStream;
-import java.io.OutputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
+import java.io.*;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
@@ -110,7 +107,8 @@ public class JsonClientLoggingFilterTest {
 
     @Test
     public void filterRequestAndResponse() throws Exception{
-        ByteArrayInputStream requestBody = new ByteArrayInputStream("request-body".getBytes());
+        ByteArrayOutputStream requestBody = new ByteArrayOutputStream();
+        requestBody.write("request-body".getBytes());
         ByteArrayInputStream responseBody = new ByteArrayInputStream("response-body".getBytes());
 
         MultivaluedMap<String, Object> requestHeaders = new MultivaluedHashMap<>();
