@@ -79,6 +79,7 @@ public class JsonClientLoggingFilterTest {
         when(logger.enabled()).thenReturn(true);
         when(requestContext.hasEntity()).thenReturn(true);
         when(requestContext.getUri()).thenReturn(URI.create("http://some.com/emails"));
+        when(requestContext.getEntityStream()).thenReturn(mock(OutputStream.class));
 
         target.filter(requestContext);
 

@@ -36,7 +36,12 @@ public class JsonClientLoggingFilter implements ClientRequestFilter, ClientRespo
             PipedInputStream requestBodyLoggingStream = new PipedInputStream();
             requestBodyOutputStream.connect(requestBodyLoggingStream);
 
-            clientRequestContext.setEntityStream(requestBodyOutputStream);
+            MultiOutputStream outputStream = new MultiOutputStream(
+                    clientRequestContext.getEntityStream(),
+                    requestBodyOutputStream
+            );
+
+            clientRequestContext.setEntityStream(outputStream);
             clientRequestContext.setProperty(REQUEST_BODY_PROPERTY, requestBodyLoggingStream);
         }
         clientRequestContext.setProperty(REQUEST_START_TIME, System.currentTimeMillis());
