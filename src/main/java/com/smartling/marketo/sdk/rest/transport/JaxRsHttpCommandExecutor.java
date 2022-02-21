@@ -7,6 +7,7 @@ import com.smartling.marketo.sdk.HasToBeMappedToJson;
 import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.rest.Command;
 import com.smartling.marketo.sdk.rest.HttpCommandExecutor;
+import com.smartling.marketo.sdk.rest.MarketoApiNotFoundException;
 import com.smartling.marketo.sdk.rest.RequestLimitExceededException;
 import com.smartling.marketo.sdk.rest.transport.logging.JsonClientLoggingFilter;
 import org.glassfish.jersey.client.ClientProperties;
@@ -50,6 +51,7 @@ public class JaxRsHttpCommandExecutor implements HttpCommandExecutor {
             "607",  // Daily quota
             "615"   // Concurrent request limit
     );
+    private static final Set<String> NOT_FOUND_CODES = ImmutableSet.of("404");
 
     private final String identityUrl;
     private final String restUrl;
@@ -123,21 +125,30 @@ public class JaxRsHttpCommandExecutor implements HttpCommandExecutor {
     }
 
     private static MarketoApiException newApiException(Command<?> command, List<MarketoResponse.Error> errors) {
-        Optional<MarketoResponse.Error> requestLimitError = errors.stream()
-                .filter(e -> API_LIMIT_ERROR_CODES.contains(e.getCode()))
-                .findFirst();
-
+        Optional<MarketoResponse.Error> requestLimitError = getError(API_LIMIT_ERROR_CODES, errors);
         if (requestLimitError.isPresent()) {
             MarketoResponse.Error error = requestLimitError.get();
-            return new RequestLimitExceededException(error.getCode(),
-                    String.format("%s (%s:%s, parameters=%s)", error.getMessage(), command.getMethod(), command.getPath(),
-                            command.getParameters()));
+            return new RequestLimitExceededException(error.getCode(), description(command, error));
         } else {
-            MarketoResponse.Error firstError = errors.get(0);
-            return new MarketoApiException(firstError.getCode(),
-                    String.format("%s (%s:%s, parameters=%s)", firstError.getMessage(), command.getMethod(), command.getPath(),
-                            command.getParameters()));
+            Optional<MarketoResponse.Error> notFoundError = getError(NOT_FOUND_CODES, errors);
+            if (notFoundError.isPresent()) {
+                MarketoResponse.Error error = notFoundError.get();
+                return new MarketoApiNotFoundException(error.getCode(), description(command, error));
+            } else {
+                MarketoResponse.Error firstError = errors.get(0);
+                return new MarketoApiException(firstError.getCode(), description(command, firstError));
+            }
         }
+    }
+
+    private static Optional<MarketoResponse.Error> getError(Set<String> errorCodes, List<MarketoResponse.Error> errors) {
+        return errors.stream()
+                .filter(e -> errorCodes.contains(e.getCode()))
+                .findFirst();
+    }
+
+    private static String description(Command<?> command, MarketoResponse.Error error) {
+        return String.format("%s (%s:%s, parameters=%s)", error.getMessage(), command.getMethod(), command.getPath(), command.getParameters());
     }
 
     private Map<String, Object> processParameters(Map<String, Object> parameters, boolean needUrlEncode) throws MarketoApiException {
