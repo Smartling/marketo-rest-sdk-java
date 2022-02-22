@@ -33,7 +33,7 @@ public class MarketoEmailTemplateRestClient implements MarketoEmailTemplateClien
         if (execute != null && !execute.isEmpty()) {
             return execute.get(0);
         } else {
-            throw new MarketoApiNotFoundException(String.format("EmailTemplate[id = %d] not found", id));
+            throw new ObjectNotFoundException(String.format("EmailTemplate[id = %d] not found", id));
         }
     }
 

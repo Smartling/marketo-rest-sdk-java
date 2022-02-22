@@ -124,7 +124,7 @@ public class MarketoEmailRestClient implements MarketoEmailClient {
         if (fullContent != null && !fullContent.isEmpty()) {
             return fullContent.get(0);
         } else {
-            throw new MarketoApiNotFoundException(String.format("No full content for Email[id = %d, status = %s] found", id, status));
+            throw new ObjectNotFoundException(String.format("No full content for Email[id = %d, status = %s] found", id, status));
         }
     }
 

@@ -7,7 +7,7 @@ import com.smartling.marketo.sdk.HasToBeMappedToJson;
 import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.rest.Command;
 import com.smartling.marketo.sdk.rest.HttpCommandExecutor;
-import com.smartling.marketo.sdk.rest.MarketoApiNotFoundException;
+import com.smartling.marketo.sdk.rest.ObjectNotFoundException;
 import com.smartling.marketo.sdk.rest.RequestLimitExceededException;
 import com.smartling.marketo.sdk.rest.transport.logging.JsonClientLoggingFilter;
 import org.glassfish.jersey.client.ClientProperties;
@@ -39,7 +39,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import static java.util.logging.Level.ALL;
 import static java.util.logging.Level.INFO;
 import static org.glassfish.jersey.logging.LoggingFeature.Verbosity.PAYLOAD_ANY;
 
@@ -133,7 +132,7 @@ public class JaxRsHttpCommandExecutor implements HttpCommandExecutor {
             Optional<MarketoResponse.Error> notFoundError = getError(NOT_FOUND_CODES, errors);
             if (notFoundError.isPresent()) {
                 MarketoResponse.Error error = notFoundError.get();
-                return new MarketoApiNotFoundException(error.getCode(), description(command, error));
+                return new ObjectNotFoundException(error.getCode(), description(command, error));
             } else {
                 MarketoResponse.Error firstError = errors.get(0);
                 return new MarketoApiException(firstError.getCode(), description(command, firstError));
