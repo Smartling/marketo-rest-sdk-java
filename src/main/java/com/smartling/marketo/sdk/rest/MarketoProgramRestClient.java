@@ -33,7 +33,7 @@ public class MarketoProgramRestClient implements MarketoProgramClient {
         if (execute != null && !execute.isEmpty()) {
             return execute.get(0);
         } else {
-            throw new MarketoApiException(String.format("Program[id = %d] not found", id));
+            throw new MarketoApiNotFoundException(String.format("Program[id = %d] not found", id));
         }
     }
 

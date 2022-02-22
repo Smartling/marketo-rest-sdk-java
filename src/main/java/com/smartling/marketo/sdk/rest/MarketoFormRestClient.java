@@ -45,7 +45,7 @@ public class MarketoFormRestClient implements MarketoFormClient {
         if (execute != null && !execute.isEmpty()) {
             return execute.get(0);
         } else {
-            throw new MarketoApiException(String.format("Form[id = %d] not found", id));
+            throw new MarketoApiNotFoundException(String.format("Form[id = %d] not found", id));
         }
     }
 

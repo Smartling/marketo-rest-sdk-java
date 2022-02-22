@@ -33,7 +33,7 @@ public class MarketoLandingPageTemplateRestClient implements MarketoLandingPageT
         if (execute != null && !execute.isEmpty()) {
             return execute.get(0);
         } else {
-            throw new MarketoApiException(String.format("LandingPageTemplate[id = %d] not found", id));
+            throw new MarketoApiNotFoundException(String.format("LandingPageTemplate[id = %d] not found", id));
         }
     }
 
