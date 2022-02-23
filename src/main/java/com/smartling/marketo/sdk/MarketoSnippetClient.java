@@ -17,4 +17,6 @@ public interface MarketoSnippetClient {
     Snippet cloneSnippet(int sourceId, String newName, FolderId folderId) throws MarketoApiException;
 
     void updateSnippetContent(int snippetId, SnippetContentItem contentItem) throws MarketoApiException;
+
+    void approveDraft(int id) throws MarketoApiException;
 }

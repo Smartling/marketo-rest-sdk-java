@@ -1,11 +1,12 @@
 package com.smartling.marketo.sdk.rest;
 
-import com.smartling.marketo.sdk.domain.Asset;
-import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.MarketoSnippetClient;
+import com.smartling.marketo.sdk.domain.Asset;
+import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.domain.snippet.Snippet;
 import com.smartling.marketo.sdk.domain.snippet.SnippetContentItem;
+import com.smartling.marketo.sdk.rest.command.snippet.ApproveSnippetDraft;
 import com.smartling.marketo.sdk.rest.command.snippet.CloneSnippet;
 import com.smartling.marketo.sdk.rest.command.snippet.GetSnippets;
 import com.smartling.marketo.sdk.rest.command.snippet.LoadSnippetById;
@@ -48,5 +49,10 @@ public class MarketoSnippetRestClient implements MarketoSnippetClient {
     @Override
     public void updateSnippetContent(int snippetId, SnippetContentItem contentItem) throws MarketoApiException {
         httpCommandExecutor.execute(new UpdateSnippetContent(snippetId, contentItem));
+    }
+
+    @Override
+    public void approveDraft(int id) throws MarketoApiException {
+        httpCommandExecutor.execute(new ApproveSnippetDraft(id));
     }
 }
