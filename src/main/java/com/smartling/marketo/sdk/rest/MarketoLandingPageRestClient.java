@@ -46,7 +46,7 @@ public class MarketoLandingPageRestClient implements MarketoLandingPageClient {
         if (execute != null && !execute.isEmpty()) {
             return execute.get(0);
         } else {
-            throw new MarketoApiException(String.format("LandingPage[id = %d] not found", id));
+            throw new ObjectNotFoundException(String.format("LandingPage[id = %d] not found", id));
         }
     }
 
