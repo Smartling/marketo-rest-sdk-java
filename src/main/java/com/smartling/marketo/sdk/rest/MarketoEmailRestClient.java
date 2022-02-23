@@ -39,7 +39,7 @@ public class MarketoEmailRestClient implements MarketoEmailClient {
         if (email != null && !email.isEmpty()) {
             return email.get(0);
         } else {
-            throw new MarketoApiException(String.format("Email[id = %d] not found", id));
+            throw new ObjectNotFoundException(String.format("Email[id = %d] not found", id));
         }
     }
 
