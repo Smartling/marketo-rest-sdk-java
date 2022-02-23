@@ -50,7 +50,7 @@ public class JaxRsHttpCommandExecutor implements HttpCommandExecutor {
             "607",  // Daily quota
             "615"   // Concurrent request limit
     );
-    private static final Set<String> NOT_FOUND_CODES = ImmutableSet.of("702");
+    private static final Set<String> NOT_FOUND_CODES = ImmutableSet.of("702", "710");
 
     private final String identityUrl;
     private final String restUrl;
