@@ -9,6 +9,7 @@ import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.domain.folder.FolderType;
 import com.smartling.marketo.sdk.rest.Command;
 import com.smartling.marketo.sdk.MarketoApiException;
+import com.smartling.marketo.sdk.rest.ObjectNotFoundException;
 import com.smartling.marketo.sdk.rest.RequestLimitExceededException;
 import com.smartling.marketo.sdk.rest.command.email.LoadEmailContent;
 import net.minidev.json.JSONObject;
@@ -239,6 +240,18 @@ public class JaxRsHttpCommandExecutorTest extends BaseTransportTest {
 
         thrown.expect(RequestLimitExceededException.class);
         thrown.expect(exceptionWithCode("615"));
+        thrown.expectMessage("Error!");
+
+        testedInstance.execute(command);
+    }
+
+    @Test
+    public void shouldHandleNotFoundErrors() throws Exception {
+        givenThat(get(urlStartingWith("/rest")).willReturn(
+                aJsonResponse("{\"success\": false, \"errors\":[{\"code\": \"702\",\"message\": \"Error!\"}]}")));
+
+        thrown.expect(ObjectNotFoundException.class);
+        thrown.expect(exceptionWithCode("702"));
         thrown.expectMessage("Error!");
 
         testedInstance.execute(command);
