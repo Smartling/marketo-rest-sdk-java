@@ -3,6 +3,8 @@ package com.smartling.it.marketo.sdk;
 import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.MarketoEmailClient;
 import com.smartling.marketo.sdk.domain.Asset.Status;
+import com.smartling.marketo.sdk.domain.email.DynamicContent;
+import com.smartling.marketo.sdk.domain.email.DynamicContentItem;
 import com.smartling.marketo.sdk.domain.email.Email;
 import com.smartling.marketo.sdk.domain.email.EmailContentItem;
 import com.smartling.marketo.sdk.domain.email.EmailDynamicContentItem;
@@ -22,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.Optional;
 
 import static com.smartling.marketo.sdk.domain.Asset.Status.DRAFT;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,6 +33,7 @@ public class EmailIntegrationTest extends BaseIntegrationTest
 {
     private static final int TEST_EMAIL_ID = 1109;
     private static final int TEST_EMAIL_V2_ID = 2466;
+    private static final String TEST_EMAIL_V2_DYNAMIC_CONTENT_ID = "RVMtdGl0bGU1";
     private static final int TEST_EMAIL_WITH_SNIPPET_ID = 2180;
     private static final int TEST_EMAIL_WITH_DYNAMIC_CONTENT_ID = 2193;
     private static final String TEST_EMAIL_NAME = "Email For Integration Tests";
@@ -45,6 +49,38 @@ public class EmailIntegrationTest extends BaseIntegrationTest
     public void setUp()
     {
         marketoEmailClient = marketoClientManager.getMarketoEmailClient();
+    }
+
+    @Test
+    public void shouldListEmailDynamicContent() throws Exception
+    {
+        List<EmailContentItem> emailWithDynamicContent = marketoEmailClient.loadEmailContent(TEST_EMAIL_V2_ID);
+
+        Optional<EmailContentItem> emailDynamicContentItemOptional = emailWithDynamicContent
+                .stream()
+                .filter(it -> it instanceof EmailDynamicContentItem)
+                .findFirst();
+        assertThat(emailDynamicContentItemOptional.isPresent()).isTrue();
+
+        EmailDynamicContentItem emailDynamicContentItem = (EmailDynamicContentItem) emailDynamicContentItemOptional.get();
+        assertThat(emailDynamicContentItem.getValue()).isEqualTo(TEST_EMAIL_V2_DYNAMIC_CONTENT_ID);
+
+        DynamicContent dynamicContent = marketoEmailClient.loadDynamicContentById(TEST_EMAIL_V2_ID, TEST_EMAIL_V2_DYNAMIC_CONTENT_ID);
+        assertThat(dynamicContent).isNotNull();
+        assertThat(dynamicContent.getContent()).hasSize(6);
+    }
+
+    @Test
+    public void shouldUpdateEmailDynamicContent() throws Exception
+    {
+        DynamicContent dynamicContent = marketoEmailClient.loadDynamicContentById(TEST_EMAIL_V2_ID, TEST_EMAIL_V2_DYNAMIC_CONTENT_ID);
+        assertThat(dynamicContent).isNotNull();
+        assertThat(dynamicContent.getContent()).hasSize(6);
+
+        DynamicContentItem segment = dynamicContent.getContent().get(0);
+        segment.setContent("test");
+
+        marketoEmailClient.updateDynamicContent(TEST_EMAIL_V2_ID, TEST_EMAIL_V2_DYNAMIC_CONTENT_ID, Arrays.asList(segment));
     }
 
     @Test
@@ -328,8 +364,8 @@ public class EmailIntegrationTest extends BaseIntegrationTest
         List<EmailVariable> variables = marketoEmailClient.getEmailVariables(TEST_EMAIL_V2_ID);
 
         assertThat(variables).hasSize(94);
-        assertThat(variables.get(5).getName()).isEqualTo("twoArticlesLinkText");
-        assertThat(variables.get(5).getValue()).isEqualTo("READ MORE");
+        assertThat(variables.get(32).getName()).isEqualTo("twoArticlesLinkText2");
+        assertThat(variables.get(32).getValue()).isEqualTo("READ MORE");
     }
 
     @Test

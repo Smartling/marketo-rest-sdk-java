@@ -1,6 +1,8 @@
 package com.smartling.marketo.sdk;
 
 import com.smartling.marketo.sdk.domain.Asset.Status;
+import com.smartling.marketo.sdk.domain.landingpage.DynamicContent;
+import com.smartling.marketo.sdk.domain.landingpage.DynamicContentItem;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.domain.landingpage.LandingPage;
 import com.smartling.marketo.sdk.domain.landingpage.LandingPageContentItem;
@@ -47,4 +49,7 @@ public interface MarketoLandingPageClient {
 
     LandingPage createLandingPage(String name, FolderId folder, Integer template) throws MarketoApiException;
 
+    DynamicContent loadDynamicContentById(int landingPageId, String dynamicContentId) throws MarketoApiException;
+
+    void updateDynamicContent(int landingPageId, String dynamicContentId, List<DynamicContentItem> dynamicContentItems)  throws MarketoApiException;
 }
