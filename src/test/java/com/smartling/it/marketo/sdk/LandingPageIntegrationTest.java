@@ -3,28 +3,25 @@ package com.smartling.it.marketo.sdk;
 import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.MarketoLandingPageClient;
 import com.smartling.marketo.sdk.domain.Asset.Status;
+import com.smartling.marketo.sdk.domain.landingpage.DynamicContent;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.domain.folder.FolderType;
-import com.smartling.marketo.sdk.domain.landingpage.LandingPage;
-import com.smartling.marketo.sdk.domain.landingpage.LandingPageContentItem;
-import com.smartling.marketo.sdk.domain.landingpage.LandingPageTextContentItem;
-import com.smartling.marketo.sdk.domain.landingpage.LandingPageVariable;
+import com.smartling.marketo.sdk.domain.landingpage.*;
 import org.assertj.core.api.Condition;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static com.smartling.marketo.sdk.domain.landingpage.VariableType.BOOLEAN;
 import static com.smartling.marketo.sdk.domain.landingpage.VariableType.STRING;
 
 public class LandingPageIntegrationTest extends BaseIntegrationTest {
-    private static final int TEST_LANDING_PAGE_ID = 1015;
+    private static final int TEST_LANDING_PAGE_ID = 5620;
+    private static final int TEST_LANDING_PAGE_WITH_DYNAMIC_CONTENT_ID = 5631;
     private static final int TEST_GUIDED_LANDING_PAGE_ID = 3749;
     private static final int TEST_PROGRAM_LANDING_PAGE_ID = 1347;
     private static final int EMPTY_TEST_LANDING_PAGE_ID = 1049;
@@ -34,8 +31,9 @@ public class LandingPageIntegrationTest extends BaseIntegrationTest {
     private static final FolderId TEST_FOLDER_ID = new FolderId(124, FolderType.FOLDER);
     private static final int TEST_PROGRAM_ID = 1008;
     private static final int TEST_TEMPLATE_ID = 1;
-    private static final String TEST_CONTENT_ITEM_ID = "1506";
+    private static final String TEST_CONTENT_ITEM_ID = "28839";
     private static final String TEST_CONTENT_ITEM_TYPE = "RichText";
+    private static final String TEST_LANDING_PAGE_DYNAMIC_CONTENT_ID = "RVMtMjk2MA==";
 
     @Rule
     public final ExpectedException thrown = ExpectedException.none();
@@ -44,6 +42,38 @@ public class LandingPageIntegrationTest extends BaseIntegrationTest {
     @Before
     public void setUp() {
         marketoLandingPageClient = marketoClientManager.getMarketoLandingPageClient();
+    }
+
+    @Test
+    public void shouldListLandingPageDynamicContent() throws Exception
+    {
+        List<LandingPageContentItem> landingPageWithDynamicContent = marketoLandingPageClient.getLandingPageContent(TEST_LANDING_PAGE_WITH_DYNAMIC_CONTENT_ID);
+
+        Optional<LandingPageContentItem> landingPageDynamicContentItemOptional = landingPageWithDynamicContent
+                .stream()
+                .filter(it -> it instanceof LandingPageDynamicContentItem)
+                .findFirst();
+        assertThat(landingPageDynamicContentItemOptional.isPresent()).isTrue();
+
+        LandingPageDynamicContentItem landingPageDynamicContentItem = (LandingPageDynamicContentItem) landingPageDynamicContentItemOptional.get();
+        assertThat(landingPageDynamicContentItem.getContent().getContent()).isEqualTo(TEST_LANDING_PAGE_DYNAMIC_CONTENT_ID);
+
+        DynamicContent dynamicContent = marketoLandingPageClient.loadDynamicContentById(TEST_LANDING_PAGE_WITH_DYNAMIC_CONTENT_ID, TEST_LANDING_PAGE_DYNAMIC_CONTENT_ID);
+        assertThat(dynamicContent).isNotNull();
+        assertThat(dynamicContent.getSegments()).hasSize(3);
+    }
+
+    @Test
+    public void shouldUpdateLandingPageDynamicContent() throws Exception
+    {
+        DynamicContent dynamicContent = marketoLandingPageClient.loadDynamicContentById(TEST_LANDING_PAGE_WITH_DYNAMIC_CONTENT_ID, TEST_LANDING_PAGE_DYNAMIC_CONTENT_ID);
+        assertThat(dynamicContent).isNotNull();
+        assertThat(dynamicContent.getSegments()).hasSize(3);
+
+        DynamicContentItem segment = dynamicContent.getSegments().get(0);
+        segment.setContent("test");
+
+        marketoLandingPageClient.updateDynamicContent(TEST_LANDING_PAGE_WITH_DYNAMIC_CONTENT_ID, TEST_LANDING_PAGE_DYNAMIC_CONTENT_ID, Arrays.asList(segment));
     }
 
     @Test

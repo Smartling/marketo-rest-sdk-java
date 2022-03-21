@@ -1,6 +1,8 @@
 package com.smartling.marketo.sdk;
 
 import com.smartling.marketo.sdk.domain.Asset.Status;
+import com.smartling.marketo.sdk.domain.email.DynamicContent;
+import com.smartling.marketo.sdk.domain.email.DynamicContentItem;
 import com.smartling.marketo.sdk.domain.email.Email;
 import com.smartling.marketo.sdk.domain.email.EmailContentItem;
 import com.smartling.marketo.sdk.domain.email.EmailFullContent;
@@ -51,4 +53,7 @@ public interface MarketoEmailClient {
 
     Email createEmail(String name, FolderId folder, Integer template) throws MarketoApiException;
 
+    DynamicContent loadDynamicContentById(int emailId, String dynamicContentId) throws MarketoApiException;
+
+    void updateDynamicContent(int emailId, String dynamicContentId, List<DynamicContentItem> dynamicContentItems)  throws MarketoApiException;
 }

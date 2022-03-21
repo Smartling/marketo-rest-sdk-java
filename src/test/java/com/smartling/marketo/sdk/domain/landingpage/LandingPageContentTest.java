@@ -6,7 +6,6 @@ import org.junit.Test;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.extractProperty;
 
 public class LandingPageContentTest
 {
@@ -23,14 +22,13 @@ public class LandingPageContentTest
 
     @Test
     public void dynamicContent() {
-        List<LandingPageTextContentItem> items = TestUtils.fromJsonListByClassLoader(
-                "json/dynamic_content.json", LandingPageTextContentItem.class
+        List<LandingPageContentItem> items = TestUtils.fromJsonListByClassLoader(
+                "json/dynamic_content.json", LandingPageContentItem.class
         );
 
-        final String nullContent = null;
-        assertThat(extractProperty("content", String.class).from(items)).containsExactly(
-                nullContent, nullContent, "plain content"
-        );
+        assertThat(items).hasSize(3);
+        assertThat(items.get(0)).isInstanceOf(LandingPageDynamicContentItem.class);
+        assertThat(items.get(1)).isInstanceOf(LandingPageDynamicContentItem.class);
+        assertThat(items.get(2)).isInstanceOf(LandingPageTextContentItem.class);
     }
-
 }

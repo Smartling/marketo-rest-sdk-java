@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Throwables;
+import com.smartling.marketo.sdk.rest.transport.ObjectMapperProvider;
 
 import java.net.URL;
 import java.util.List;
@@ -33,9 +34,8 @@ public final class TestUtils
     }
 
     private static ObjectMapper mapper() {
-        ObjectMapper result = new ObjectMapper();
-        result.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        return result;
+        ObjectMapperProvider provider = new ObjectMapperProvider();
+        return provider.getContext(null);
     }
 
 }

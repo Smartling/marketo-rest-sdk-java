@@ -3,6 +3,8 @@ package com.smartling.marketo.sdk.rest;
 import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.MarketoLandingPageClient;
 import com.smartling.marketo.sdk.domain.Asset.Status;
+import com.smartling.marketo.sdk.domain.landingpage.DynamicContent;
+import com.smartling.marketo.sdk.domain.landingpage.DynamicContentItem;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.domain.landingpage.LandingPage;
 import com.smartling.marketo.sdk.domain.landingpage.LandingPageContentItem;
@@ -21,6 +23,8 @@ import com.smartling.marketo.sdk.rest.command.landingpage.UnapproveLandingPage;
 import com.smartling.marketo.sdk.rest.command.landingpage.UpdateLandingPageEditableSection;
 import com.smartling.marketo.sdk.rest.command.landingpage.UpdateLandingPageMetadata;
 import com.smartling.marketo.sdk.rest.command.landingpage.UpdateLandingPageVariable;
+import com.smartling.marketo.sdk.rest.command.landingpage.UpdateLandingPageDynamicContent;
+import com.smartling.marketo.sdk.rest.command.landingpage.GetLandingPageDynamicContent;
 
 import java.util.Collections;
 import java.util.List;
@@ -139,5 +143,18 @@ public class MarketoLandingPageRestClient implements MarketoLandingPageClient {
     public LandingPage createLandingPage(String name, FolderId folder, Integer template) throws MarketoApiException {
         List<LandingPage> landingPages = httpCommandExecutor.execute(new CreateLandingPage(name, folder, template));
         return landingPages != null && !landingPages.isEmpty()? landingPages.get(0) : null;
+    }
+
+    @Override
+    public DynamicContent loadDynamicContentById(int landingPageId, String dynamicContentId) throws MarketoApiException {
+        List<DynamicContent> dynamicContents = httpCommandExecutor.execute(new GetLandingPageDynamicContent(landingPageId, dynamicContentId));
+        return dynamicContents != null && !dynamicContents.isEmpty() ? dynamicContents.get(0) : null;
+    }
+
+    @Override
+    public void updateDynamicContent(int landingPageId, String dynamicContentId, List<DynamicContentItem> dynamicContentItems) throws MarketoApiException {
+        for (DynamicContentItem dynamicContentItem: dynamicContentItems) {
+            httpCommandExecutor.execute(new UpdateLandingPageDynamicContent(landingPageId, dynamicContentId, dynamicContentItem));
+        }
     }
 }

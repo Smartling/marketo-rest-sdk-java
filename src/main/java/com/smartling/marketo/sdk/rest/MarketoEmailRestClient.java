@@ -1,6 +1,8 @@
 package com.smartling.marketo.sdk.rest;
 
 import com.smartling.marketo.sdk.domain.Asset.Status;
+import com.smartling.marketo.sdk.domain.email.DynamicContent;
+import com.smartling.marketo.sdk.domain.email.DynamicContentItem;
 import com.smartling.marketo.sdk.domain.email.Email;
 import com.smartling.marketo.sdk.domain.email.EmailContentItem;
 import com.smartling.marketo.sdk.domain.email.EmailFullContent;
@@ -147,5 +149,18 @@ public class MarketoEmailRestClient implements MarketoEmailClient {
     public Email createEmail(String name, FolderId folder, Integer template) throws MarketoApiException {
         List<Email> emails = httpCommandExecutor.execute(new CreateEmail(name, folder, template));
         return emails != null && !emails.isEmpty()? emails.get(0) : null;
+    }
+
+    @Override
+    public DynamicContent loadDynamicContentById(int emailId, String dynamicContentId) throws MarketoApiException {
+        List<DynamicContent> dynamicContents = httpCommandExecutor.execute(new GetEmailDynamicContent(emailId, dynamicContentId));
+        return dynamicContents != null && !dynamicContents.isEmpty() ? dynamicContents.get(0) : null;
+    }
+
+    @Override
+    public void updateDynamicContent(int emailId, String dynamicContentId, List<DynamicContentItem> dynamicContentItems)  throws MarketoApiException {
+        for (DynamicContentItem dynamicContentItem: dynamicContentItems) {
+            httpCommandExecutor.execute(new UpdateEmailDynamicContent(emailId, dynamicContentId, dynamicContentItem));
+        }
     }
 }
