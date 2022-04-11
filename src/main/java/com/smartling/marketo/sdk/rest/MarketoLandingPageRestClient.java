@@ -13,6 +13,7 @@ import com.smartling.marketo.sdk.domain.landingpage.LandingPageVariable;
 import com.smartling.marketo.sdk.rest.command.landingpage.ApproveLandingPageDraft;
 import com.smartling.marketo.sdk.rest.command.landingpage.CloneLandingPage;
 import com.smartling.marketo.sdk.rest.command.landingpage.CreateLandingPage;
+import com.smartling.marketo.sdk.rest.command.landingpage.DeleteLandingPage;
 import com.smartling.marketo.sdk.rest.command.landingpage.DiscardLandingPageDraft;
 import com.smartling.marketo.sdk.rest.command.landingpage.GetLandingPageById;
 import com.smartling.marketo.sdk.rest.command.landingpage.GetLandingPageContent;
@@ -156,5 +157,10 @@ public class MarketoLandingPageRestClient implements MarketoLandingPageClient {
         for (DynamicContentItem dynamicContentItem: dynamicContentItems) {
             httpCommandExecutor.execute(new UpdateLandingPageDynamicContent(landingPageId, dynamicContentId, dynamicContentItem));
         }
+    }
+
+    @Override
+    public void delete(int id) throws MarketoApiException {
+        httpCommandExecutor.execute(new DeleteLandingPage(id));
     }
 }

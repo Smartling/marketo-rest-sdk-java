@@ -163,4 +163,9 @@ public class MarketoEmailRestClient implements MarketoEmailClient {
             httpCommandExecutor.execute(new UpdateEmailDynamicContent(emailId, dynamicContentId, dynamicContentItem));
         }
     }
+
+    @Override
+    public void delete(int emailId) throws MarketoApiException {
+        httpCommandExecutor.execute(new DeleteEmail(emailId));
+    }
 }

@@ -52,4 +52,6 @@ public interface MarketoLandingPageClient {
     DynamicContent loadDynamicContentById(int landingPageId, String dynamicContentId) throws MarketoApiException;
 
     void updateDynamicContent(int landingPageId, String dynamicContentId, List<DynamicContentItem> dynamicContentItems)  throws MarketoApiException;
+
+    void delete(int id) throws MarketoApiException;
 }

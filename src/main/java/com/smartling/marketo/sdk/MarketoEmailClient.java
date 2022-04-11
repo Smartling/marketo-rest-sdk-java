@@ -56,4 +56,6 @@ public interface MarketoEmailClient {
     DynamicContent loadDynamicContentById(int emailId, String dynamicContentId) throws MarketoApiException;
 
     void updateDynamicContent(int emailId, String dynamicContentId, List<DynamicContentItem> dynamicContentItems)  throws MarketoApiException;
+
+    void delete(int emailId) throws MarketoApiException;
 }
