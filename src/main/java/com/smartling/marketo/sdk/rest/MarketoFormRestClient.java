@@ -9,6 +9,7 @@ import com.smartling.marketo.sdk.domain.form.FormField;
 import com.smartling.marketo.sdk.domain.form.VisibilityRulesParameter;
 import com.smartling.marketo.sdk.rest.command.form.ApproveFormDraft;
 import com.smartling.marketo.sdk.rest.command.form.CloneForm;
+import com.smartling.marketo.sdk.rest.command.form.CreateFormField;
 import com.smartling.marketo.sdk.rest.command.form.CreateFormRichTextField;
 import com.smartling.marketo.sdk.rest.command.form.DeleteFormField;
 import com.smartling.marketo.sdk.rest.command.form.DiscardFormDraft;
@@ -96,6 +97,14 @@ public class MarketoFormRestClient implements MarketoFormClient {
     @Override
     public void deleteFormField(int formId, String fieldId) throws MarketoApiException {
         httpCommandExecutor.execute(new DeleteFormField(formId, fieldId));
+    }
+
+    @Override
+    public FormField addFormField(int formId, FormField formField) throws MarketoApiException {
+        List<FormField> newField = httpCommandExecutor.execute(new CreateFormField(formId, formField));
+        return newField.stream()
+                .findAny()
+                .orElseThrow(() -> new MarketoApiException("Empty response when creating field"));
     }
 
     @Override
