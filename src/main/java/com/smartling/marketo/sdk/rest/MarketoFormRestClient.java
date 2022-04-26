@@ -10,6 +10,7 @@ import com.smartling.marketo.sdk.domain.form.VisibilityRulesParameter;
 import com.smartling.marketo.sdk.rest.command.form.ApproveFormDraft;
 import com.smartling.marketo.sdk.rest.command.form.CloneForm;
 import com.smartling.marketo.sdk.rest.command.form.CreateFormField;
+import com.smartling.marketo.sdk.rest.command.form.CreateFormFieldSet;
 import com.smartling.marketo.sdk.rest.command.form.CreateFormRichTextField;
 import com.smartling.marketo.sdk.rest.command.form.DeleteFormField;
 import com.smartling.marketo.sdk.rest.command.form.DiscardFormDraft;
@@ -105,6 +106,14 @@ public class MarketoFormRestClient implements MarketoFormClient {
         return newField.stream()
                 .findAny()
                 .orElseThrow(() -> new MarketoApiException("Empty response when creating field"));
+    }
+
+    @Override
+    public FormField addFormFieldSet(int formId, String label) throws MarketoApiException {
+        List<FormField> newField = httpCommandExecutor.execute(new CreateFormFieldSet(formId, label));
+        return newField.stream()
+                .findAny()
+                .orElseThrow(() -> new MarketoApiException("Empty response when creating field set"));
     }
 
     @Override

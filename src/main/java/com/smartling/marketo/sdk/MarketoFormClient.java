@@ -36,6 +36,8 @@ public interface MarketoFormClient {
 
     FormField addFormField(int formId, FormField formField) throws MarketoApiException;
 
+    FormField addFormFieldSet(int formId, String label) throws MarketoApiException;
+
     FormField addFormRichTextField(int formId, String text) throws MarketoApiException;
 
     void reArrangeFormFields(int formId, UpdateFieldPositionsList positions) throws MarketoApiException;
