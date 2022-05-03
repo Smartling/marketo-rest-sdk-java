@@ -24,7 +24,10 @@ public class LandingPageFormContentItem extends LandingPageContentItem {
     @Override
     public String toString()
     {
-        return "LandingPageFormContentItem{content=" + content.toString() + ", followUpType='" + followUpType + '\'' + "} " + super.toString();
+        return "LandingPageFormContentItem{" +
+                    "content=" + content != null ? content.toString() : "" + ", " +
+                    "followUpType='" + followUpType + '\'' +
+                "} " + super.toString();
     }
 
     public static class Content {
