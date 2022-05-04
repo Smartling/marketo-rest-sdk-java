@@ -1,0 +1,91 @@
+[
+  {
+    "id": "1501",
+    "type": "RichText",
+    "index": 1,
+    "formattingOptions": {
+      "zIndex": 15,
+      "width": "300px",
+      "left": "418px",
+      "top": "8px"
+    }
+  },
+  {
+    "id": "1502",
+    "type": "Image",
+    "index": 2,
+    "content": {
+      "content": "2107",
+      "contentType": "File",
+      "contentUrl": "https://app-ab08.marketo.com/rs/749-IOM-373/images/Screen%20Shot%202015-09-04%20at%2012.03.04%20PM.png"
+    },
+    "formattingOptions": {
+      "height": "45px",
+      "width": "221px",
+      "zIndex": 15,
+      "left": "26px",
+      "top": "16px",
+      "imageOpenNewWindow": true
+    }
+  },
+  {
+    "id": "1503",
+    "type": "RichText",
+    "index": 3,
+    "content": "",
+    "formattingOptions": {
+      "width": "300px",
+      "zIndex": 15,
+      "left": "12px",
+      "top": "104px"
+    }
+  },
+  {
+    "id": "1504",
+    "type": "HTML",
+    "index": 4,
+    "content": "hvahlah <b>djkhdakjhkedf</b>",
+    "formattingOptions": {
+      "minWidth": "50px",
+      "zIndex": 15,
+      "minHeight": "50px",
+      "left": "597px",
+      "top": "215px",
+      "width": "135px"
+    }
+  },
+  {
+    "id": "1505",
+    "type": "Rectangle",
+    "index": 5,
+    "content": "",
+    "formattingOptions": {
+      "height": "209px",
+      "width": "159px",
+      "zIndex": 10,
+      "backgroundColor": "#CEE8B7",
+      "borderStyle": "solid",
+      "borderWidth": "1px",
+      "borderColor": "forestgreen",
+      "left": "579px",
+      "top": "157px"
+    }
+  },
+  {
+    "id": "1506",
+    "type": "RichText",
+    "index": 6,
+    "content": "<div><span style=\"font-size: 90px; color: #ff0000;\">Rich Text content for Integration Tests<br /></span></div>",
+    "formattingOptions": {
+      "width": "764px",
+      "zIndex": 15,
+      "left": "7px",
+      "top": "401px"
+    }
+  },
+  {
+    "id": "formV1",
+    "type": "Form",
+    "content": ""
+  }
+]

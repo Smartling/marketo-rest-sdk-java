@@ -15,7 +15,10 @@ public class LandingPageDynamicContentItem extends LandingPageContentItem {
     @Override
     public String toString()
     {
-        return "LandingPageDynamicContentItem{" + "content='" + content.toString() + '\'' + "} " + super.toString();
+        return "LandingPageDynamicContentItem{" +
+                    "content='" + content != null ? content.toString() : "" + '\'' +
+                "} " +
+                super.toString();
     }
 
     public static class Content {
