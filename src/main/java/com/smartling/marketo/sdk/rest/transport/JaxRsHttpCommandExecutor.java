@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableSet;
 import com.smartling.marketo.sdk.HasToBeMappedToJson;
 import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.rest.Command;
+import com.smartling.marketo.sdk.rest.FolderTypeNotSupportedException;
 import com.smartling.marketo.sdk.rest.HttpCommandExecutor;
 import com.smartling.marketo.sdk.rest.ObjectNotFoundException;
 import com.smartling.marketo.sdk.rest.RequestLimitExceededException;
@@ -51,6 +52,10 @@ public class JaxRsHttpCommandExecutor implements HttpCommandExecutor {
             "615"   // Concurrent request limit
     );
     private static final Set<String> NOT_FOUND_CODES = ImmutableSet.of("702", "710");
+
+    private static final Set<String> FOLDER_TYPE_NOT_SUPPORTED_CODES = ImmutableSet.of(
+            "711"   // Invalid folder type for email
+    );
 
     private final String identityUrl;
     private final String restUrl;
@@ -128,16 +133,22 @@ public class JaxRsHttpCommandExecutor implements HttpCommandExecutor {
         if (requestLimitError.isPresent()) {
             MarketoResponse.Error error = requestLimitError.get();
             return new RequestLimitExceededException(error.getCode(), description(command, error));
-        } else {
-            Optional<MarketoResponse.Error> notFoundError = getError(NOT_FOUND_CODES, errors);
-            if (notFoundError.isPresent()) {
-                MarketoResponse.Error error = notFoundError.get();
-                return new ObjectNotFoundException(error.getCode(), description(command, error));
-            } else {
-                MarketoResponse.Error firstError = errors.get(0);
-                return new MarketoApiException(firstError.getCode(), description(command, firstError));
-            }
         }
+
+        Optional<MarketoResponse.Error> notFoundError = getError(NOT_FOUND_CODES, errors);
+        if (notFoundError.isPresent()) {
+            MarketoResponse.Error error = notFoundError.get();
+            return new ObjectNotFoundException(error.getCode(), description(command, error));
+        }
+
+        Optional<MarketoResponse.Error> folderTypeNotSupportedError = getError(FOLDER_TYPE_NOT_SUPPORTED_CODES, errors);
+        if (folderTypeNotSupportedError.isPresent()) {
+            MarketoResponse.Error error = folderTypeNotSupportedError.get();
+            return new FolderTypeNotSupportedException(error.getCode(), description(command, error));
+        }
+
+        MarketoResponse.Error firstError = errors.get(0);
+        return new MarketoApiException(firstError.getCode(), description(command, firstError));
     }
 
     private static Optional<MarketoResponse.Error> getError(Set<String> errorCodes, List<MarketoResponse.Error> errors) {

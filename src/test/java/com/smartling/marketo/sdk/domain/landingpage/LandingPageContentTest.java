@@ -21,6 +21,17 @@ public class LandingPageContentTest
     }
 
     @Test
+    public void emptyFormContent() {
+        List<LandingPageContentItem> items = TestUtils.fromJsonListByClassLoader(
+                "json/empty_form_content.json", LandingPageContentItem.class
+        );
+
+        assertThat(items).hasSize(7);
+        assertThat(items.get(6)).isInstanceOf(LandingPageFormContentItem.class);
+        assertThat(((LandingPageFormContentItem) items.get(6)).getContent()).isNull();
+    }
+
+    @Test
     public void dynamicContent() {
         List<LandingPageContentItem> items = TestUtils.fromJsonListByClassLoader(
                 "json/dynamic_content.json", LandingPageContentItem.class
