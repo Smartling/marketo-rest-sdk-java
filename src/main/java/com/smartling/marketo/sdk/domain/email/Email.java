@@ -45,6 +45,22 @@ public class Email extends Asset {
         fromName.setType(type);
     }
 
+    public TextField getSubjectField() {
+        return subject;
+    }
+
+    public TextField getFromNameField() {
+        return fromName;
+    }
+
+    public void setSubjectField(TextField subject) {
+        this.subject = subject;
+    }
+
+    public void setFromNameField(TextField fromName) {
+        this.fromName = fromName;
+    }
+
     public Integer getTemplate() {
         return template;
     }
