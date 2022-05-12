@@ -93,7 +93,7 @@ public class Email extends Asset {
 
     public static class TextField {
 
-        private String type;
+        private String type = "Text";
         private String value;
 
         public String getType() {

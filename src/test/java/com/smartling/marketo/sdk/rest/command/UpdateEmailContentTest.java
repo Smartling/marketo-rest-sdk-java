@@ -19,7 +19,6 @@ public class UpdateEmailContentTest {
         email.setId(1109);
         email.setSubjectType("DynamicContent");
         email.setSubject("SC1mcm9tTmFtZQ==");
-        email.setFromNameType("Text");
         email.setFromName("From SDK commiter");
         return email;
     }
