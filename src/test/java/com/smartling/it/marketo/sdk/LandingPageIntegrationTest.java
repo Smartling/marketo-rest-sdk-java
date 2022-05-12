@@ -3,21 +3,30 @@ package com.smartling.it.marketo.sdk;
 import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.MarketoLandingPageClient;
 import com.smartling.marketo.sdk.domain.Asset.Status;
-import com.smartling.marketo.sdk.domain.landingpage.DynamicContent;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.domain.folder.FolderType;
-import com.smartling.marketo.sdk.domain.landingpage.*;
+import com.smartling.marketo.sdk.domain.landingpage.DynamicContent;
+import com.smartling.marketo.sdk.domain.landingpage.DynamicContentItem;
+import com.smartling.marketo.sdk.domain.landingpage.LandingPage;
+import com.smartling.marketo.sdk.domain.landingpage.LandingPageContentItem;
+import com.smartling.marketo.sdk.domain.landingpage.LandingPageDynamicContentItem;
+import com.smartling.marketo.sdk.domain.landingpage.LandingPageTextContentItem;
+import com.smartling.marketo.sdk.domain.landingpage.LandingPageVariable;
 import org.assertj.core.api.Condition;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static com.smartling.marketo.sdk.domain.landingpage.VariableType.BOOLEAN;
 import static com.smartling.marketo.sdk.domain.landingpage.VariableType.STRING;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class LandingPageIntegrationTest extends BaseIntegrationTest {
     private static final int TEST_LANDING_PAGE_ID = 5620;
@@ -165,6 +174,18 @@ public class LandingPageIntegrationTest extends BaseIntegrationTest {
                 .getLandingPagesByName(LANDING_PAGE_FOR_INTEGRATION_TESTS, null, Status.APPROVED);
 
         assertThat(landingPages).haveAtLeast(1, new AssetWithNameAndStatus(LANDING_PAGE_FOR_INTEGRATION_TESTS, Status.APPROVED));
+    }
+
+    @Test
+    public void shouldGetLandingPagesByNameWithPagination() throws Exception
+    {
+        List<LandingPage> landingPages = marketoLandingPageClient
+                .getLandingPagesByName(LANDING_PAGE_FOR_INTEGRATION_TESTS, null, null);
+        assertThat(landingPages.size() > 1).isTrue();
+
+        List<LandingPage> paginatedLandingPages = marketoLandingPageClient
+                .getLandingPagesByName(0, 1, LANDING_PAGE_FOR_INTEGRATION_TESTS, null, null);
+        assertThat(paginatedLandingPages.size()).isEqualTo(1);
     }
 
     @Test

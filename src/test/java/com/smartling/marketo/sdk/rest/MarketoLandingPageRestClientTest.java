@@ -138,6 +138,16 @@ public class MarketoLandingPageRestClientTest {
     }
 
     @Test
+    public void shouldGetPaginatedLandingPagesByName() throws Exception {
+        LandingPage expected = new LandingPage();
+        given(executor.execute(isA(GetLandingPagesByName.class))).willReturn(Collections.singletonList(expected));
+
+        List<LandingPage> result = testedInstance.getLandingPagesByName(0, 10, "name", new FolderId(42, FolderType.FOLDER), Status.APPROVED);
+
+        assertThat(result.get(0)).isEqualTo(expected);
+    }
+
+    @Test
     public void shouldGetLandingPageContent() throws Exception {
         LandingPageContentItem contentItem = new LandingPageTextContentItem();
         given(executor.execute(isA(GetLandingPageContent.class))).willReturn(Collections.singletonList(contentItem));

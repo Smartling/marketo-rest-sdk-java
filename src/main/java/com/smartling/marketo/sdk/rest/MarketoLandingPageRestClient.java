@@ -40,7 +40,7 @@ public class MarketoLandingPageRestClient implements MarketoLandingPageClient {
     }
 
     @Override
-    public List<LandingPage> getLandingPages(int offset, int limit, FolderId folder, Status status) throws MarketoApiException {
+    public List<LandingPage> getLandingPages(Integer offset, Integer limit, FolderId folder, Status status) throws MarketoApiException {
         final List<LandingPage> landingPages = httpCommandExecutor.execute(new GetLandingPages(offset, limit, folder, status));
         return landingPages != null ? landingPages : Collections.emptyList();
     }
@@ -62,7 +62,12 @@ public class MarketoLandingPageRestClient implements MarketoLandingPageClient {
 
     @Override
     public List<LandingPage> getLandingPagesByName(String name, FolderId folder, Status status) throws MarketoApiException {
-        final List<LandingPage> landingPages = httpCommandExecutor.execute(new GetLandingPagesByName(name, folder, status));
+        return getLandingPagesByName(null, null, name, folder, status);
+    }
+
+    @Override
+    public List<LandingPage> getLandingPagesByName(Integer offset, Integer limit, String name, FolderId folder, Status status) throws MarketoApiException {
+        final List<LandingPage> landingPages = httpCommandExecutor.execute(new GetLandingPagesByName(offset, limit, name, folder, status));
         return landingPages != null ? landingPages : Collections.emptyList();
     }
 
