@@ -21,12 +21,28 @@ public class Email extends Asset {
         this.subject.setValue(subject);
     }
 
+    public String getSubjectType() {
+        return subject.getType();
+    }
+
+    public void setSubjectType(String type) {
+        subject.setType(type);
+    }
+
     public String getFromName() {
         return fromName.getValue();
     }
 
     public void setFromName(String value) {
         fromName.setValue(value);
+    }
+
+    public String getFromNameType() {
+        return fromName.getType();
+    }
+
+    public void setFromNameType(String type) {
+        fromName.setType(type);
     }
 
     public Integer getTemplate() {
@@ -76,7 +92,17 @@ public class Email extends Asset {
     }
 
     public static class TextField {
+
+        private String type;
         private String value;
+
+        public String getType() {
+            return type;
+        }
+
+        public void setType(String type) {
+            this.type = type;
+        }
 
         public String getValue() {
             return value;
