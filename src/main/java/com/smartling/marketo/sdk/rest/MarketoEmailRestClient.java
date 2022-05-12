@@ -25,12 +25,12 @@ public class MarketoEmailRestClient implements MarketoEmailClient {
     }
 
     @Override
-    public List<Email> listEmails(int offset, int limit) throws MarketoApiException {
+    public List<Email> listEmails(Integer offset, Integer limit) throws MarketoApiException {
         return listEmails(offset, limit, null, null);
     }
 
     @Override
-    public List<Email> listEmails(int offset, int limit, FolderId folder, Status status) throws MarketoApiException {
+    public List<Email> listEmails(Integer offset, Integer limit, FolderId folder, Status status) throws MarketoApiException {
         final List<Email> emails = httpCommandExecutor.execute(new GetEmailsCommand(offset, limit, folder, status));
         return emails != null ? emails : Collections.emptyList();
     }
@@ -51,8 +51,13 @@ public class MarketoEmailRestClient implements MarketoEmailClient {
     }
 
     @Override
-    public List<Email> getEmailsByName(final String name, final FolderId folder, Status status) throws MarketoApiException {
-        final List<Email> emails = httpCommandExecutor.execute(new GetEmailsByName(name, folder, status));
+    public List<Email> getEmailsByName(String name, FolderId folder, Status status) throws MarketoApiException {
+        return getEmailsByName(null, null, name, folder, status);
+    }
+
+    @Override
+    public List<Email> getEmailsByName(Integer offset, Integer limit, String name, FolderId folder, Status status) throws MarketoApiException {
+        final List<Email> emails = httpCommandExecutor.execute(new GetEmailsByName(offset, limit, name, folder, status));
         return emails != null ? emails : Collections.emptyList();
     }
 

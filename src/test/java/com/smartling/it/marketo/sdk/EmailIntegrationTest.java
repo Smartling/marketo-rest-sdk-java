@@ -179,6 +179,16 @@ public class EmailIntegrationTest extends BaseIntegrationTest
     }
 
     @Test
+    public void shouldGetEmailsByNameWithPagination() throws Exception
+    {
+        List<Email> emails = marketoEmailClient.getEmailsByName(TEST_EMAIL_NAME, null, null);
+        assertThat(emails.size() > 1).isTrue();
+
+        List<Email> paginatedEmails = marketoEmailClient.getEmailsByName(0, 1, TEST_EMAIL_NAME, null, null);
+        assertThat(paginatedEmails.size()).isEqualTo(1);
+    }
+
+    @Test
     public void shouldReadEmailContent() throws Exception
     {
         List<EmailContentItem> contentItems = marketoEmailClient.loadEmailContent(TEST_EMAIL_ID);

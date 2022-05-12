@@ -13,15 +13,17 @@ import com.smartling.marketo.sdk.domain.folder.FolderId;
 import java.util.List;
 
 public interface MarketoEmailClient {
-    List<Email> listEmails(int offset, int limit) throws MarketoApiException;
+    List<Email> listEmails(Integer offset, Integer limit) throws MarketoApiException;
 
-    List<Email> listEmails(int offset, int limit, FolderId folder, Status status) throws MarketoApiException;
+    List<Email> listEmails(Integer offset, Integer limit, FolderId folder, Status status) throws MarketoApiException;
 
     Email loadEmailById(int id, Status status) throws MarketoApiException;
 
     Email loadEmailById(int id) throws MarketoApiException;
 
     List<Email> getEmailsByName(String name, FolderId folderId, Status status) throws MarketoApiException;
+
+    List<Email> getEmailsByName(Integer offset, Integer limit, String name, FolderId folderId, Status status) throws MarketoApiException;
 
     List<EmailContentItem> loadEmailContent(int emailId) throws MarketoApiException;
 
