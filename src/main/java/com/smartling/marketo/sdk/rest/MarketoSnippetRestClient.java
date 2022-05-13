@@ -24,7 +24,7 @@ public class MarketoSnippetRestClient implements MarketoSnippetClient {
     }
 
     @Override
-    public List<Snippet> listSnippets(int offset, int limit, Asset.Status status) throws MarketoApiException {
+    public List<Snippet> listSnippets(Integer offset, Integer limit, Asset.Status status) throws MarketoApiException {
         List<Snippet> snippets = httpCommandExecutor.execute(new GetSnippets(offset, limit, status));
         return snippets != null ? snippets : Collections.emptyList();
     }

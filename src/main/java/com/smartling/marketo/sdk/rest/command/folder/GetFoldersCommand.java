@@ -6,7 +6,7 @@ import com.smartling.marketo.sdk.rest.command.BasePagedGetCommand;
 
 public class GetFoldersCommand extends BasePagedGetCommand<FolderDetails> {
 
-    public GetFoldersCommand(FolderId root, int offset, int maxDepth, int limit, String workspace) {
+    public GetFoldersCommand(FolderId root, Integer offset, int maxDepth, Integer limit, String workspace) {
         super(FolderDetails.class, offset, limit);
 
         super.getParameters().put("root", root);

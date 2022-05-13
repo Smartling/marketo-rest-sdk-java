@@ -115,6 +115,16 @@ public class MarketoProgramRestClientTest {
     }
 
     @Test
+    public void shouldGetPaginatedProgramsByName() throws Exception {
+        Program expected = new Program();
+        given(executor.execute(isA(GetProgramsByName.class))).willReturn(Collections.singletonList(expected));
+
+        List<Program> result = testedInstance.getProgramsByName(0, 10, "name");
+
+        assertThat(result.get(0)).isEqualTo(expected);
+    }
+
+    @Test
     public void shouldCloneProgram() throws Exception {
         Program clone = new Program();
         given(executor.execute(isA(CloneProgram.class))).willReturn(Collections.singletonList(clone));

@@ -22,7 +22,7 @@ public class MarketoEmailTemplateRestClient implements MarketoEmailTemplateClien
     }
 
     @Override
-    public List<EmailTemplate> getEmailTemplates(int offset, int limit, FolderId folder, Status status) throws MarketoApiException {
+    public List<EmailTemplate> getEmailTemplates(Integer offset, Integer limit, FolderId folder, Status status) throws MarketoApiException {
         final List<EmailTemplate> emailTemplates = httpCommandExecutor.execute(new GetEmailTemplates(offset, limit, folder, status));
         return emailTemplates != null ? emailTemplates : Collections.emptyList();
     }

@@ -22,7 +22,7 @@ public class MarketoLandingPageTemplateRestClient implements MarketoLandingPageT
     }
 
     @Override
-    public List<LandingPageTemplate> getLandingPageTemplates(int offset, int limit, FolderId folder, Status status) throws MarketoApiException {
+    public List<LandingPageTemplate> getLandingPageTemplates(Integer offset, Integer limit, FolderId folder, Status status) throws MarketoApiException {
         final List<LandingPageTemplate> landingPageTemplates = httpCommandExecutor.execute(new GetLandingPageTemplates(offset, limit, folder, status));
         return landingPageTemplates != null ? landingPageTemplates : Collections.emptyList();
     }

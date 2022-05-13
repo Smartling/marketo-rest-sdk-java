@@ -8,7 +8,7 @@ import com.smartling.marketo.sdk.domain.landingpagetemplate.LandingPageTemplateC
 import java.util.List;
 
 public interface MarketoLandingPageTemplateClient {
-    List<LandingPageTemplate> getLandingPageTemplates(int offset, int limit, FolderId folder, Status status) throws MarketoApiException;
+    List<LandingPageTemplate> getLandingPageTemplates(Integer offset, Integer limit, FolderId folder, Status status) throws MarketoApiException;
 
     LandingPageTemplate getLandingPageTemplateById(int id, Status status) throws MarketoApiException;
 
