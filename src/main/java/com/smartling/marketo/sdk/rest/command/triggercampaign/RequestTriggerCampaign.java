@@ -27,7 +27,7 @@ public class RequestTriggerCampaign extends BaseMarketoCommand<TriggerCampaignRe
 
     @Override
     public String getPath() {
-        return "/rest/v1/campaigns/{id}" + campaignId + "/trigger.json";
+        return "/rest/v1/campaigns/" + campaignId + "/trigger.json";
     }
 
     @Override
