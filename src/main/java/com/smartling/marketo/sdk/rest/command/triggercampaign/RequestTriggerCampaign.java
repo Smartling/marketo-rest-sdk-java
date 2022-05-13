@@ -11,9 +11,15 @@ import java.util.Map;
 public class RequestTriggerCampaign extends BaseMarketoCommand<TriggerCampaignResult> {
 
     private final int campaignId;
-    private final List<LeadId> leadIds;
+    private final LeadId[] leadIds;
 
     public RequestTriggerCampaign(int campaignId, List<LeadId> leadIds) {
+        super(TriggerCampaignResult.class);
+        this.campaignId = campaignId;
+        this.leadIds = (LeadId[]) leadIds.toArray();
+    }
+
+    public RequestTriggerCampaign(int campaignId, LeadId[] leadIds) {
         super(TriggerCampaignResult.class);
         this.campaignId = campaignId;
         this.leadIds = leadIds;
@@ -32,7 +38,7 @@ public class RequestTriggerCampaign extends BaseMarketoCommand<TriggerCampaignRe
     @Override
     public Map<String, Object> getParameters() {
         ImmutableMap.Builder<String, Object> builder = ImmutableMap.<String, Object>builder()
-                .put("leads", this.leadIds.toArray())
+                .put("leads", this.leadIds)
                 .put("tokens", new Object[]{});
 
         return builder.build();
