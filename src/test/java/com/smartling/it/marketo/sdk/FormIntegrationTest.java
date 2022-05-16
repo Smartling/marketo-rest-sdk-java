@@ -121,6 +121,15 @@ public class FormIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    public void shouldGetFormsByNameWithPagination() throws Exception {
+        List<Form> forms = marketoFormClient.getFormsByName(TEST_FORM_NAME, null, null);
+        assertThat(forms.size() > 1).isTrue();
+
+        List<Form> paginatedForms = marketoFormClient.getFormsByName(0, 1, TEST_FORM_NAME, null, null);
+        assertThat(paginatedForms.size()).isEqualTo(1);
+    }
+
+    @Test
     public void shouldReadFormFields() throws Exception {
         List<FormField> formFields = marketoFormClient.getFormFields(TEST_FORM_ID, APPROVED);
 

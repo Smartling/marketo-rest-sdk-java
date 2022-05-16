@@ -36,7 +36,7 @@ public class MarketoFormRestClient implements MarketoFormClient {
     }
 
     @Override
-    public List<Form> getForms(int offset, int limit, FolderId folder, Status status) throws MarketoApiException {
+    public List<Form> getForms(Integer offset, Integer limit, FolderId folder, Status status) throws MarketoApiException {
         List<Form> forms = httpCommandExecutor.execute(new GetForms(offset, limit, folder, status));
         return forms != null ? forms : Collections.emptyList();
     }
@@ -53,7 +53,12 @@ public class MarketoFormRestClient implements MarketoFormClient {
 
     @Override
     public List<Form> getFormsByName(String name, FolderId folder, Status status) throws MarketoApiException {
-        List<Form> forms = httpCommandExecutor.execute(new GetFormsByName(name, folder, status));
+        return getFormsByName(null, null, name, folder, status);
+    }
+
+    @Override
+    public List<Form> getFormsByName(Integer offset, Integer limit, String name, FolderId folder, Status status) throws MarketoApiException {
+        List<Form> forms = httpCommandExecutor.execute(new GetFormsByName(offset, limit, name, folder, status));
         return forms != null ? forms : Collections.emptyList();
     }
 

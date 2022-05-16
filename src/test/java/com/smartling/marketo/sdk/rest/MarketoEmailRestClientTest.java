@@ -130,6 +130,16 @@ public class MarketoEmailRestClientTest {
     }
 
     @Test
+    public void shouldGetPaginatedEmailsByName() throws Exception {
+        Email expected = new Email();
+        given(executor.execute(isA(GetEmailsByName.class))).willReturn(Collections.singletonList(expected));
+
+        List<Email> result = testedInstance.getEmailsByName(0, 10, "name", new FolderId(42, FolderType.FOLDER), Status.APPROVED);
+
+        assertThat(result.get(0)).isEqualTo(expected);
+    }
+
+    @Test
     public void shouldLoadEmailContent() throws Exception {
         EmailContentItem contentItem = new EmailTextContentItem();
         given(executor.execute(isA(LoadEmailContent.class))).willReturn(Collections.singletonList(contentItem));

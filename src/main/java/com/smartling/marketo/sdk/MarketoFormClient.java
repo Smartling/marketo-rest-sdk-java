@@ -5,18 +5,19 @@ import com.smartling.marketo.sdk.domain.email.Email;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.domain.form.Form;
 import com.smartling.marketo.sdk.domain.form.FormField;
-import com.smartling.marketo.sdk.domain.form.VisibilityRules;
 import com.smartling.marketo.sdk.domain.form.VisibilityRulesParameter;
 import com.smartling.marketo.sdk.rest.command.form.UpdateFieldPositionsList;
 
 import java.util.List;
 
 public interface MarketoFormClient {
-    List<Form> getForms(int offset, int limit, FolderId folder, Email.Status status) throws MarketoApiException;
+    List<Form> getForms(Integer offset, Integer limit, FolderId folder, Email.Status status) throws MarketoApiException;
 
     Form getFormById(int id) throws MarketoApiException;
 
     List<Form> getFormsByName(String name, FolderId folder, Form.Status status) throws MarketoApiException;
+
+    List<Form> getFormsByName(Integer offset, Integer limit, String name, FolderId folder, Form.Status status) throws MarketoApiException;
 
     List<FormField> getFormFields(int formId, Asset.Status status) throws MarketoApiException;
 
