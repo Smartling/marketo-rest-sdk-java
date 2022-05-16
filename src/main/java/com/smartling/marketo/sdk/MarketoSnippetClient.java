@@ -8,7 +8,7 @@ import com.smartling.marketo.sdk.domain.snippet.SnippetContentItem;
 import java.util.List;
 
 public interface MarketoSnippetClient {
-    List<Snippet> listSnippets(int offset, int limit, Asset.Status status) throws MarketoApiException;
+    List<Snippet> listSnippets(Integer offset, Integer limit, Asset.Status status) throws MarketoApiException;
 
     Snippet loadSnippetById(int id) throws MarketoApiException;
 

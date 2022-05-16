@@ -31,7 +31,7 @@ public class MarketoFolderRestClient implements MarketoFolderClient {
     }
 
     @Override
-    public List<FolderDetails> getFolders(FolderId root, int offset, int maxDepth, int limit, String workspace) throws MarketoApiException {
+    public List<FolderDetails> getFolders(FolderId root, Integer offset, int maxDepth, Integer limit, String workspace) throws MarketoApiException {
         List<FolderDetails> folders = httpCommandExecutor.execute(new GetFoldersCommand(root, offset, maxDepth, limit, workspace));
 
         return folders != null ? folders : Collections.emptyList();

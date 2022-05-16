@@ -5,7 +5,7 @@ import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.rest.command.BasePagedGetCommand;
 
 public class GetEmailsCommand extends BasePagedGetCommand<Email> {
-    public GetEmailsCommand(int offset, int limit, FolderId folder, Email.Status status) {
+    public GetEmailsCommand(Integer offset, Integer limit, FolderId folder, Email.Status status) {
         super(Email.class, offset, limit);
 
         super.getParameters().put("folder", folder);

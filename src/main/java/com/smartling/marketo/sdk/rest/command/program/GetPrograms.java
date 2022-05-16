@@ -6,7 +6,7 @@ import com.smartling.marketo.sdk.domain.program.Program;
 import com.smartling.marketo.sdk.rest.command.BasePagedGetCommand;
 
 public class GetPrograms extends BasePagedGetCommand<Program> {
-    public GetPrograms(int offset, int limit, FolderId folder) {
+    public GetPrograms(Integer offset, Integer limit, FolderId folder) {
         super(Program.class, offset, limit);
 
         if (folder != null) {

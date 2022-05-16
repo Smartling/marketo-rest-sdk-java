@@ -22,7 +22,7 @@ public class MarketoProgramRestClient implements MarketoProgramClient {
     }
 
     @Override
-    public List<Program> getPrograms(int offset, int limit, FolderId folder) throws MarketoApiException {
+    public List<Program> getPrograms(Integer offset, Integer limit, FolderId folder) throws MarketoApiException {
         List<Program> programs = httpCommandExecutor.execute(new GetPrograms(offset, limit, folder));
         return (programs != null) ? programs : Collections.emptyList();
     }
@@ -39,7 +39,12 @@ public class MarketoProgramRestClient implements MarketoProgramClient {
 
     @Override
     public List<Program> getProgramsByName(String name) throws MarketoApiException {
-        List<Program> programs = httpCommandExecutor.execute(new GetProgramsByName(name));
+        return getProgramsByName(null, null, name);
+    }
+
+    @Override
+    public List<Program> getProgramsByName(Integer offset, Integer limit, String name) throws MarketoApiException {
+        List<Program> programs = httpCommandExecutor.execute(new GetProgramsByName(offset, limit, name));
         return programs != null ? programs : Collections.emptyList();
     }
 

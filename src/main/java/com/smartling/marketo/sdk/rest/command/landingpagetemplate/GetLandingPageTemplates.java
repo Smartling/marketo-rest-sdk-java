@@ -5,7 +5,7 @@ import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.rest.command.BasePagedGetCommand;
 
 public class GetLandingPageTemplates extends BasePagedGetCommand<LandingPageTemplate> {
-    public GetLandingPageTemplates(int offset, int limit, FolderId folder, LandingPageTemplate.Status status) {
+    public GetLandingPageTemplates(Integer offset, Integer limit, FolderId folder, LandingPageTemplate.Status status) {
         super(LandingPageTemplate.class, offset, limit);
 
         super.getParameters().put("folder", folder);

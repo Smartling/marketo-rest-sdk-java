@@ -5,7 +5,7 @@ import com.smartling.marketo.sdk.domain.emailtemplate.EmailTemplate;
 import com.smartling.marketo.sdk.rest.command.BasePagedGetCommand;
 
 public class GetEmailTemplates extends BasePagedGetCommand<EmailTemplate> {
-    public GetEmailTemplates(int offset, int limit, FolderId folder, EmailTemplate.Status status) {
+    public GetEmailTemplates(Integer offset, Integer limit, FolderId folder, EmailTemplate.Status status) {
         super(EmailTemplate.class, offset, limit);
 
         super.getParameters().put("folder", folder);

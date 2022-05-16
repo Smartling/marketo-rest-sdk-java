@@ -96,6 +96,16 @@ public class ProgramIntegrationTest extends BaseIntegrationTest {
         assertThat(programs).haveAtLeast(1, new EntityWithName(TEST_PROGRAM_NAME));
     }
 
+    @Test
+    public void shouldGetProgramsByNameWithPagination() throws Exception {
+        String programName = "DefProg";
+        List<Program> programs = marketoProgramClient.getProgramsByName(programName);
+        assertThat(programs.size() > 1).isTrue();
+
+        List<Program> paginatedPrograms = marketoProgramClient.getProgramsByName(0, 1, programName);
+        assertThat(paginatedPrograms.size()).isEqualTo(1);
+    }
+
     @Ignore
     @Test
     public void shouldCloneProgram() throws Exception {
