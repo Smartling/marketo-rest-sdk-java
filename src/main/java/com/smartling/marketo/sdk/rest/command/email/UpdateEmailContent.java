@@ -36,16 +36,20 @@ public class UpdateEmailContent implements Command<Void> {
 
     @Override
     public Map<String, Object> getParameters() {
-        ImmutableMap.Builder<String, Object> builder = ImmutableMap.<String, Object>builder()
-                .put("subject", getWrappedValue(email.getSubject()))
-                .put("fromName", getWrappedValue(email.getFromName()));
+        ImmutableMap.Builder<String, Object> builder = ImmutableMap.builder();
+        if (email.getSubjectField() != null) {
+            builder.put("subject", getWrappedValue(email.getSubjectField()));
+        }
+        if (email.getFromNameField() != null) {
+            builder.put("fromName", getWrappedValue(email.getFromNameField()));
+        }
         return builder.build();
     }
 
-    private String getWrappedValue(String value) {
+    private String getWrappedValue(Email.TextField textField) {
         ObjectNode objectNode = objectMapper.createObjectNode();
-        objectNode.put("type", "Text");
-        objectNode.put("value", value);
+        objectNode.put("type", textField.getType());
+        objectNode.put("value", textField.getValue());
         return objectNode.toString();
     }
 }

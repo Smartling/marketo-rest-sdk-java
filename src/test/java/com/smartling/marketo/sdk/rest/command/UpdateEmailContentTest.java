@@ -12,12 +12,13 @@ import static org.assertj.core.api.Assertions.entry;
 
 public class UpdateEmailContentTest {
 
-    private UpdateEmailContent updateEmailContent = new UpdateEmailContent(prepareDummy());
+    private final UpdateEmailContent updateEmailContent = new UpdateEmailContent(prepareDummy());
 
     private Email prepareDummy() {
         Email email = new Email();
         email.setId(1109);
-        email.setSubject("New Subject");
+        email.setSubjectType("DynamicContent");
+        email.setSubject("SC1mcm9tTmFtZQ==");
         email.setFromName("From SDK commiter");
         return email;
     }
@@ -31,7 +32,7 @@ public class UpdateEmailContentTest {
     @Test
     public void shouldContainSubject() throws Exception {
         Map<String, Object> parameters = updateEmailContent.getParameters();
-        assertThat(parameters).contains(entry("subject", "{\"type\":\"Text\",\"value\":\"New Subject\"}"));
+        assertThat(parameters).contains(entry("subject", "{\"type\":\"DynamicContent\",\"value\":\"SC1mcm9tTmFtZQ==\"}"));
     }
 
     @Test
