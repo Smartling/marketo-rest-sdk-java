@@ -2,19 +2,21 @@ package com.smartling.marketo.sdk.rest;
 
 import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.domain.Asset.Status;
-import com.smartling.marketo.sdk.domain.landingpage.LandingPage;
-import com.smartling.marketo.sdk.domain.landingpage.LandingPageContentItem;
-import com.smartling.marketo.sdk.domain.landingpage.LandingPageTextContentItem;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.domain.folder.FolderType;
+import com.smartling.marketo.sdk.domain.landingpage.LandingPage;
+import com.smartling.marketo.sdk.domain.landingpage.LandingPageContentItem;
+import com.smartling.marketo.sdk.domain.landingpage.LandingPageFullContent;
+import com.smartling.marketo.sdk.domain.landingpage.LandingPageTextContentItem;
 import com.smartling.marketo.sdk.domain.landingpage.LandingPageVariable;
 import com.smartling.marketo.sdk.rest.command.landingpage.CloneLandingPage;
 import com.smartling.marketo.sdk.rest.command.landingpage.DiscardLandingPageDraft;
-import com.smartling.marketo.sdk.rest.command.landingpage.GetLandingPageVariables;
-import com.smartling.marketo.sdk.rest.command.landingpage.GetLandingPagesByName;
-import com.smartling.marketo.sdk.rest.command.landingpage.GetLandingPages;
 import com.smartling.marketo.sdk.rest.command.landingpage.GetLandingPageById;
 import com.smartling.marketo.sdk.rest.command.landingpage.GetLandingPageContent;
+import com.smartling.marketo.sdk.rest.command.landingpage.GetLandingPageFullContent;
+import com.smartling.marketo.sdk.rest.command.landingpage.GetLandingPageVariables;
+import com.smartling.marketo.sdk.rest.command.landingpage.GetLandingPages;
+import com.smartling.marketo.sdk.rest.command.landingpage.GetLandingPagesByName;
 import com.smartling.marketo.sdk.rest.command.landingpage.UpdateLandingPageEditableSection;
 import com.smartling.marketo.sdk.rest.command.landingpage.UpdateLandingPageMetadata;
 import com.smartling.marketo.sdk.rest.command.landingpage.UpdateLandingPageVariable;
@@ -182,6 +184,23 @@ public class MarketoLandingPageRestClientTest {
         testedInstance.updateLandingPageContent(42, Arrays.asList(new LandingPageTextContentItem(), new LandingPageTextContentItem()));
 
         verify(executor, times(2)).execute(isA(UpdateLandingPageEditableSection.class));
+    }
+
+    @Test
+    public void shouldGetLandingPageFullContent() throws Exception {
+        LandingPageFullContent fullContent = new LandingPageFullContent();
+        given(executor.execute(isA(GetLandingPageFullContent.class))).willReturn(Collections.singletonList(fullContent));
+
+        LandingPageFullContent result = testedInstance.getLandingPageFullContent(42);
+
+        assertThat(result).isEqualTo(fullContent);
+    }
+
+    @Test(expected = ObjectNotFoundException.class)
+    public void shouldThrowExceptionIfGetLandingPageFullContentReturnsEmptyList() throws Exception {
+        given(executor.execute(isA(GetLandingPageFullContent.class))).willReturn(Collections.emptyList());
+
+        testedInstance.getLandingPageFullContent(42);
     }
 
     @Test

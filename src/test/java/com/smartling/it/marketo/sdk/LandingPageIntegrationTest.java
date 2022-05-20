@@ -10,6 +10,7 @@ import com.smartling.marketo.sdk.domain.landingpage.DynamicContentItem;
 import com.smartling.marketo.sdk.domain.landingpage.LandingPage;
 import com.smartling.marketo.sdk.domain.landingpage.LandingPageContentItem;
 import com.smartling.marketo.sdk.domain.landingpage.LandingPageDynamicContentItem;
+import com.smartling.marketo.sdk.domain.landingpage.LandingPageFullContent;
 import com.smartling.marketo.sdk.domain.landingpage.LandingPageTextContentItem;
 import com.smartling.marketo.sdk.domain.landingpage.LandingPageVariable;
 import org.assertj.core.api.Condition;
@@ -258,6 +259,14 @@ public class LandingPageIntegrationTest extends BaseIntegrationTest {
 
         List<LandingPageContentItem> content = marketoLandingPageClient.getLandingPageContent(TEST_LANDING_PAGE_ID, Status.DRAFT);
         assertThat(content).haveExactly(1, new ContentItemWithIdAndText(newItem.getId(), newItem.getContent()));
+    }
+
+    @Test
+    public void shouldGetLandingPageFullContent() throws Exception
+    {
+        LandingPageFullContent fullContent = marketoLandingPageClient.getLandingPageFullContent(TEST_LANDING_PAGE_ID);
+
+        assertThat(fullContent.getContent()).isNotEmpty();
     }
 
     @Test

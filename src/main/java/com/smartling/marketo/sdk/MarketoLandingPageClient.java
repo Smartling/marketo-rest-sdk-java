@@ -6,6 +6,7 @@ import com.smartling.marketo.sdk.domain.landingpage.DynamicContent;
 import com.smartling.marketo.sdk.domain.landingpage.DynamicContentItem;
 import com.smartling.marketo.sdk.domain.landingpage.LandingPage;
 import com.smartling.marketo.sdk.domain.landingpage.LandingPageContentItem;
+import com.smartling.marketo.sdk.domain.landingpage.LandingPageFullContent;
 import com.smartling.marketo.sdk.domain.landingpage.LandingPageTextContentItem;
 import com.smartling.marketo.sdk.domain.landingpage.LandingPageVariable;
 
@@ -32,6 +33,8 @@ public interface MarketoLandingPageClient {
     List<LandingPageContentItem> getLandingPageContent(int id, Status status) throws MarketoApiException;
 
     void updateLandingPageContent(int id, List<LandingPageTextContentItem> contentItems) throws MarketoApiException;
+
+    LandingPageFullContent getLandingPageFullContent(int id) throws MarketoApiException;
 
     void discardLandingPageDraft(int id) throws MarketoApiException;
 

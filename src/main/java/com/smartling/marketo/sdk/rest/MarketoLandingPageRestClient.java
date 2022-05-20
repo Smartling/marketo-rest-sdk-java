@@ -3,11 +3,12 @@ package com.smartling.marketo.sdk.rest;
 import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.MarketoLandingPageClient;
 import com.smartling.marketo.sdk.domain.Asset.Status;
+import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.domain.landingpage.DynamicContent;
 import com.smartling.marketo.sdk.domain.landingpage.DynamicContentItem;
-import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.domain.landingpage.LandingPage;
 import com.smartling.marketo.sdk.domain.landingpage.LandingPageContentItem;
+import com.smartling.marketo.sdk.domain.landingpage.LandingPageFullContent;
 import com.smartling.marketo.sdk.domain.landingpage.LandingPageTextContentItem;
 import com.smartling.marketo.sdk.domain.landingpage.LandingPageVariable;
 import com.smartling.marketo.sdk.rest.command.landingpage.ApproveLandingPageDraft;
@@ -17,15 +18,16 @@ import com.smartling.marketo.sdk.rest.command.landingpage.DeleteLandingPage;
 import com.smartling.marketo.sdk.rest.command.landingpage.DiscardLandingPageDraft;
 import com.smartling.marketo.sdk.rest.command.landingpage.GetLandingPageById;
 import com.smartling.marketo.sdk.rest.command.landingpage.GetLandingPageContent;
+import com.smartling.marketo.sdk.rest.command.landingpage.GetLandingPageDynamicContent;
+import com.smartling.marketo.sdk.rest.command.landingpage.GetLandingPageFullContent;
 import com.smartling.marketo.sdk.rest.command.landingpage.GetLandingPageVariables;
 import com.smartling.marketo.sdk.rest.command.landingpage.GetLandingPages;
 import com.smartling.marketo.sdk.rest.command.landingpage.GetLandingPagesByName;
 import com.smartling.marketo.sdk.rest.command.landingpage.UnapproveLandingPage;
+import com.smartling.marketo.sdk.rest.command.landingpage.UpdateLandingPageDynamicContent;
 import com.smartling.marketo.sdk.rest.command.landingpage.UpdateLandingPageEditableSection;
 import com.smartling.marketo.sdk.rest.command.landingpage.UpdateLandingPageMetadata;
 import com.smartling.marketo.sdk.rest.command.landingpage.UpdateLandingPageVariable;
-import com.smartling.marketo.sdk.rest.command.landingpage.UpdateLandingPageDynamicContent;
-import com.smartling.marketo.sdk.rest.command.landingpage.GetLandingPageDynamicContent;
 
 import java.util.Collections;
 import java.util.List;
@@ -97,6 +99,16 @@ public class MarketoLandingPageRestClient implements MarketoLandingPageClient {
     public void updateLandingPageContent(int id, List<LandingPageTextContentItem> contentItems) throws MarketoApiException {
         for (LandingPageTextContentItem item : contentItems) {
             httpCommandExecutor.execute(new UpdateLandingPageEditableSection(id, item));
+        }
+    }
+
+    @Override
+    public LandingPageFullContent getLandingPageFullContent(int id) throws MarketoApiException {
+        List<LandingPageFullContent> fullContent = httpCommandExecutor.execute(new GetLandingPageFullContent(id));
+        if (fullContent != null && !fullContent.isEmpty()) {
+            return fullContent.get(0);
+        } else {
+            throw new ObjectNotFoundException(String.format("No full content for LandingPage[id = %d] found", id));
         }
     }
 
