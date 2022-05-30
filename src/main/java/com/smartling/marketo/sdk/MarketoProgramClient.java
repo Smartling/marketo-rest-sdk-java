@@ -3,10 +3,13 @@ package com.smartling.marketo.sdk;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.domain.program.Program;
 
+import java.util.Date;
 import java.util.List;
 
 public interface MarketoProgramClient {
     List<Program> getPrograms(Integer offset, Integer limit, FolderId folder) throws MarketoApiException;
+
+    List<Program> getPrograms(Integer offset, Integer limit, FolderId folder, Date earliestUpdatedAt, Date latestUpdatedAt) throws MarketoApiException;
 
     Program getProgramById(int id) throws MarketoApiException;
 

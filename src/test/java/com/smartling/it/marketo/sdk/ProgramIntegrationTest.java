@@ -11,7 +11,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,6 +42,25 @@ public class ProgramIntegrationTest extends BaseIntegrationTest {
         assertThat(programs.get(0).getId()).isPositive();
         assertThat(programs.get(0).getName()).isNotEmpty();
         assertThat(programs.get(0).getUpdatedAt()).isNotNull();
+        assertThat(programs.get(0).getStatus()).isNotNull();
+        assertThat(programs.get(0).getUrl()).isNotEmpty();
+        assertThat(programs.get(0).getFolder()).isNotNull();
+    }
+
+    @Test
+    public void shouldGetProgramsWithUpdatedAtFilter() throws Exception {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        formatter.setTimeZone(TimeZone.getTimeZone("Etc/UTC"));
+        Date updatedAt = formatter.parse("2016-10-10T12:55:51Z+0000");
+        Date earliestUpdatedAt = formatter.parse("2016-10-10T12:55:50Z+0000");
+        Date latestUpdatedAt = formatter.parse("2016-10-10T12:55:52Z+0000");
+
+        List<Program> programs = marketoProgramClient.getPrograms(0, 1, null, earliestUpdatedAt, latestUpdatedAt);
+
+        assertThat(programs).hasSize(1);
+        assertThat(programs.get(0).getId()).isPositive();
+        assertThat(programs.get(0).getName()).isNotEmpty();
+        assertThat(programs.get(0).getUpdatedAt()).isEqualTo(updatedAt);
         assertThat(programs.get(0).getStatus()).isNotNull();
         assertThat(programs.get(0).getUrl()).isNotEmpty();
         assertThat(programs.get(0).getFolder()).isNotNull();

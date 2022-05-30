@@ -11,6 +11,7 @@ import com.smartling.marketo.sdk.rest.command.program.GetPrograms;
 import com.smartling.marketo.sdk.rest.command.program.GetProgramsByName;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 public class MarketoProgramRestClient implements MarketoProgramClient {
@@ -23,7 +24,12 @@ public class MarketoProgramRestClient implements MarketoProgramClient {
 
     @Override
     public List<Program> getPrograms(Integer offset, Integer limit, FolderId folder) throws MarketoApiException {
-        List<Program> programs = httpCommandExecutor.execute(new GetPrograms(offset, limit, folder));
+        return getPrograms(offset, limit, folder, null, null);
+    }
+
+    @Override
+    public List<Program> getPrograms(Integer offset, Integer limit, FolderId folder, Date earliestUpdatedAt, Date latestUpdatedAt) throws MarketoApiException {
+        List<Program> programs = httpCommandExecutor.execute(new GetPrograms(offset, limit, folder, earliestUpdatedAt, latestUpdatedAt));
         return (programs != null) ? programs : Collections.emptyList();
     }
 

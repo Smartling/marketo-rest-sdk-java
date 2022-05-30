@@ -1,13 +1,13 @@
 package com.smartling.marketo.sdk.rest;
 
 import com.smartling.marketo.sdk.MarketoApiException;
-import com.smartling.marketo.sdk.domain.program.Program;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.domain.folder.FolderType;
+import com.smartling.marketo.sdk.domain.program.Program;
 import com.smartling.marketo.sdk.rest.command.program.CloneProgram;
-import com.smartling.marketo.sdk.rest.command.program.GetProgramsByName;
-import com.smartling.marketo.sdk.rest.command.program.GetPrograms;
 import com.smartling.marketo.sdk.rest.command.program.GetProgramById;
+import com.smartling.marketo.sdk.rest.command.program.GetPrograms;
+import com.smartling.marketo.sdk.rest.command.program.GetProgramsByName;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -17,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,11 +48,21 @@ public class MarketoProgramRestClientTest {
     }
 
     @Test
-    public void shouldRequestProgramListWithFilter() throws Exception {
+    public void shouldRequestProgramListWithFolderFilter() throws Exception {
         Program program = new Program();
         given(executor.execute(isA(GetPrograms.class))).willReturn(Collections.singletonList(program));
 
         List<Program> programs = testedInstance.getPrograms(0, 10, new FolderId(1, FolderType.FOLDER));
+
+        assertThat(programs).contains(program);
+    }
+
+    @Test
+    public void shouldRequestProgramListWithUpdatedAtFilter() throws Exception {
+        Program program = new Program();
+        given(executor.execute(isA(GetPrograms.class))).willReturn(Collections.singletonList(program));
+
+        List<Program> programs = testedInstance.getPrograms(0, 10, null, new Date(), new Date());
 
         assertThat(programs).contains(program);
     }
