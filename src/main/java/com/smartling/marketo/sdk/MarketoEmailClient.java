@@ -6,6 +6,7 @@ import com.smartling.marketo.sdk.domain.email.DynamicContentItem;
 import com.smartling.marketo.sdk.domain.email.Email;
 import com.smartling.marketo.sdk.domain.email.EmailContentItem;
 import com.smartling.marketo.sdk.domain.email.EmailFullContent;
+import com.smartling.marketo.sdk.domain.email.EmailSnippetContentItem;
 import com.smartling.marketo.sdk.domain.email.EmailTextContentItem;
 import com.smartling.marketo.sdk.domain.email.EmailVariable;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
@@ -36,6 +37,8 @@ public interface MarketoEmailClient {
     Email updateEmailMetadata(Email email) throws MarketoApiException;
 
     void updateEmailContentItem(int id, EmailTextContentItem contentItem) throws MarketoApiException;
+
+    void updateEmailSnippetContentItem(int id, EmailSnippetContentItem contentItem) throws MarketoApiException;
 
     void updateEmail(Email email) throws MarketoApiException;
 
