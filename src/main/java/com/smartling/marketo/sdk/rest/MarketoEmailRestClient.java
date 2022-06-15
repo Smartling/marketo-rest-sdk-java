@@ -1,17 +1,37 @@
 package com.smartling.marketo.sdk.rest;
 
+import com.smartling.marketo.sdk.MarketoApiException;
+import com.smartling.marketo.sdk.MarketoEmailClient;
 import com.smartling.marketo.sdk.domain.Asset.Status;
 import com.smartling.marketo.sdk.domain.email.DynamicContent;
 import com.smartling.marketo.sdk.domain.email.DynamicContentItem;
 import com.smartling.marketo.sdk.domain.email.Email;
 import com.smartling.marketo.sdk.domain.email.EmailContentItem;
 import com.smartling.marketo.sdk.domain.email.EmailFullContent;
+import com.smartling.marketo.sdk.domain.email.EmailSnippetContentItem;
 import com.smartling.marketo.sdk.domain.email.EmailTextContentItem;
 import com.smartling.marketo.sdk.domain.email.EmailVariable;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
-import com.smartling.marketo.sdk.MarketoApiException;
-import com.smartling.marketo.sdk.MarketoEmailClient;
-import com.smartling.marketo.sdk.rest.command.email.*;
+import com.smartling.marketo.sdk.rest.command.email.ApproveEmailDraft;
+import com.smartling.marketo.sdk.rest.command.email.CloneEmail;
+import com.smartling.marketo.sdk.rest.command.email.CreateEmail;
+import com.smartling.marketo.sdk.rest.command.email.DeleteEmail;
+import com.smartling.marketo.sdk.rest.command.email.GetEmailDynamicContent;
+import com.smartling.marketo.sdk.rest.command.email.GetEmailFullContent;
+import com.smartling.marketo.sdk.rest.command.email.GetEmailVariables;
+import com.smartling.marketo.sdk.rest.command.email.GetEmailsByName;
+import com.smartling.marketo.sdk.rest.command.email.GetEmailsCommand;
+import com.smartling.marketo.sdk.rest.command.email.LoadEmailById;
+import com.smartling.marketo.sdk.rest.command.email.LoadEmailContent;
+import com.smartling.marketo.sdk.rest.command.email.SendSample;
+import com.smartling.marketo.sdk.rest.command.email.UnapproveEmail;
+import com.smartling.marketo.sdk.rest.command.email.UpdateEmailContent;
+import com.smartling.marketo.sdk.rest.command.email.UpdateEmailDynamicContent;
+import com.smartling.marketo.sdk.rest.command.email.UpdateEmailEditableSection;
+import com.smartling.marketo.sdk.rest.command.email.UpdateEmailFullContent;
+import com.smartling.marketo.sdk.rest.command.email.UpdateEmailMetadata;
+import com.smartling.marketo.sdk.rest.command.email.UpdateEmailSnippetContent;
+import com.smartling.marketo.sdk.rest.command.email.UpdateEmailVariable;
 
 import java.util.Collections;
 import java.util.List;
@@ -97,6 +117,11 @@ public class MarketoEmailRestClient implements MarketoEmailClient {
     @Override
     public void updateEmailContentItem(int id, EmailTextContentItem contentItem) throws MarketoApiException {
         httpCommandExecutor.execute(new UpdateEmailEditableSection(id, contentItem));
+    }
+
+    @Override
+    public void updateEmailSnippetContentItem(int id, EmailSnippetContentItem contentItem) throws MarketoApiException {
+        httpCommandExecutor.execute(new UpdateEmailSnippetContent(id, contentItem));
     }
 
     @Override

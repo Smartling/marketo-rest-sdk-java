@@ -35,6 +35,7 @@ public class EmailIntegrationTest extends BaseIntegrationTest
     private static final int TEST_EMAIL_V2_ID = 2466;
     private static final String TEST_EMAIL_V2_DYNAMIC_CONTENT_ID = "RVMtdGl0bGU1";
     private static final int TEST_EMAIL_WITH_SNIPPET_ID = 2180;
+    private static final int TEST_EMAIL_V2_WITH_SNIPPET_ID = 5577;
     private static final int TEST_EMAIL_WITH_DYNAMIC_CONTENT_ID = 2193;
     private static final String TEST_EMAIL_NAME = "Email For Integration Tests";
     private static final FolderId TEST_FOLDER_ID = new FolderId(44, FolderType.FOLDER);
@@ -326,6 +327,19 @@ public class EmailIntegrationTest extends BaseIntegrationTest
         newItem.getValue().get(1).setValue(null);
 
         marketoEmailClient.updateEmailContent(TEST_EMAIL_ID, Collections.singletonList(newItem));
+
+        // Can not verify - no way to fetch not approved content
+    }
+
+    @Test
+    public void shouldUpdateEmailSnippetContent() throws Exception
+    {
+        EmailSnippetContentItem newItem = new EmailSnippetContentItem();
+        newItem.setHtmlId("text");
+        newItem.setContentType("Snippet");
+        newItem.setValue("2");
+
+        marketoEmailClient.updateEmailSnippetContentItem(TEST_EMAIL_V2_WITH_SNIPPET_ID, newItem);
 
         // Can not verify - no way to fetch not approved content
     }

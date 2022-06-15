@@ -5,6 +5,7 @@ import com.smartling.marketo.sdk.domain.Asset.Status;
 import com.smartling.marketo.sdk.domain.email.Email;
 import com.smartling.marketo.sdk.domain.email.EmailContentItem;
 import com.smartling.marketo.sdk.domain.email.EmailFullContent;
+import com.smartling.marketo.sdk.domain.email.EmailSnippetContentItem;
 import com.smartling.marketo.sdk.domain.email.EmailTextContentItem;
 import com.smartling.marketo.sdk.domain.email.EmailVariable;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
@@ -19,6 +20,7 @@ import com.smartling.marketo.sdk.rest.command.email.LoadEmailContent;
 import com.smartling.marketo.sdk.rest.command.email.SendSample;
 import com.smartling.marketo.sdk.rest.command.email.UpdateEmailContent;
 import com.smartling.marketo.sdk.rest.command.email.UpdateEmailEditableSection;
+import com.smartling.marketo.sdk.rest.command.email.UpdateEmailSnippetContent;
 import com.smartling.marketo.sdk.rest.command.email.UpdateEmailVariable;
 import org.junit.Rule;
 import org.junit.Test;
@@ -181,6 +183,13 @@ public class MarketoEmailRestClientTest {
         testedInstance.updateEmailContentItem(42, new EmailTextContentItem());
 
         verify(executor).execute(isA(UpdateEmailEditableSection.class));
+    }
+
+    @Test
+    public void shouldUpdateEmailSnippetContentItem() throws Exception {
+        testedInstance.updateEmailSnippetContentItem(42, new EmailSnippetContentItem());
+
+        verify(executor).execute(isA(UpdateEmailSnippetContent.class));
     }
 
     @Test
