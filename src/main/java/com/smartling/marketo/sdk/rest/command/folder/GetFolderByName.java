@@ -6,6 +6,7 @@ import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.domain.folder.FolderType;
 import com.smartling.marketo.sdk.rest.command.BaseGetCommand;
 
+import java.util.Collections;
 import java.util.Map;
 
 public class GetFolderByName extends BaseGetCommand<FolderDetails> {
@@ -28,10 +29,16 @@ public class GetFolderByName extends BaseGetCommand<FolderDetails> {
     @Override
     public Map<String, Object> getParameters() {
         ImmutableMap.Builder<String, Object> builder = ImmutableMap.<String, Object>builder()
-                .put("name", name)
-                .put("type", type.name())
-                .put("root", root);
+                .put("name", name);
+
+        if (type != null) {
+            builder.put("type", type.name());
+        }
+
+        if (root != null) {
+            builder.put("root", root);
+        }
+
         return builder.build();
     }
-
 }

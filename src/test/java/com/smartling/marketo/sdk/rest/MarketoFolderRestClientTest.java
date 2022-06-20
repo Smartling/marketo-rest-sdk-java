@@ -76,4 +76,13 @@ public class MarketoFolderRestClientTest {
         assertThat(folders).contains(folder);
     }
 
+    @Test
+    public void shouldReturnFolderByNameWithoutFolderTypeAndParentFolderId() throws Exception {
+        FolderDetails folder = new FolderDetails();
+        given(executor.execute(isA(GetFolderByName.class))).willReturn(Collections.singletonList(folder));
+
+        List<FolderDetails> folders = testedInstance.getFolderByName("Dummy folder", null, null);
+
+        assertThat(folders).contains(folder);
+    }
 }

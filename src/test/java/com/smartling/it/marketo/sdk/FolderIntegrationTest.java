@@ -1,10 +1,10 @@
 package com.smartling.it.marketo.sdk;
 
+import com.smartling.marketo.sdk.MarketoFolderClient;
 import com.smartling.marketo.sdk.domain.folder.FolderContentItem;
 import com.smartling.marketo.sdk.domain.folder.FolderDetails;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.domain.folder.FolderType;
-import com.smartling.marketo.sdk.MarketoFolderClient;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
