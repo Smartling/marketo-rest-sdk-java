@@ -18,6 +18,8 @@ public class FormField {
     private String text;
     private List<String> fields;
 
+    private Boolean required;
+
     public String getId() {
         return id;
     }
@@ -130,6 +132,14 @@ public class FormField {
         this.fields = fields;
     }
 
+    public Boolean isRequired() {
+        return required;
+    }
+
+    public void setRequired(Boolean required) {
+        this.required = required;
+    }
+
     @Override
     public String toString() {
         return "FormField{" +
@@ -147,6 +157,7 @@ public class FormField {
                 ", fieldMetaData=" + fieldMetaData +
                 ", text='" + text + '\'' +
                 ", fields=" + fields +
+                ", required=" + required +
                 '}';
     }
 }
