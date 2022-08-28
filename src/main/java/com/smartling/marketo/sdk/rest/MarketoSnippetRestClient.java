@@ -11,6 +11,7 @@ import com.smartling.marketo.sdk.rest.command.snippet.CloneSnippet;
 import com.smartling.marketo.sdk.rest.command.snippet.GetSnippets;
 import com.smartling.marketo.sdk.rest.command.snippet.LoadSnippetById;
 import com.smartling.marketo.sdk.rest.command.snippet.LoadSnippetContent;
+import com.smartling.marketo.sdk.rest.command.snippet.LoadSnippetDynamicContent;
 import com.smartling.marketo.sdk.rest.command.snippet.UpdateSnippetContent;
 
 import java.util.Collections;
@@ -38,6 +39,11 @@ public class MarketoSnippetRestClient implements MarketoSnippetClient {
     @Override
     public List<SnippetContentItem> loadSnippetContent(int id) throws MarketoApiException {
         return httpCommandExecutor.execute(new LoadSnippetContent(id));
+    }
+
+    @Override
+    public List<String> loadSnippetDynamicContent(int id) throws MarketoApiException {
+        return httpCommandExecutor.execute(new LoadSnippetDynamicContent(id));
     }
 
     @Override
