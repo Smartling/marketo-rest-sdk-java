@@ -29,6 +29,12 @@ public class FormUtils {
         if (formField.getFieldMetaData() != null && formField.getFieldMetaData().getValues() != null) {
             builder.put("values", formField.getFieldMetaData());
         }
+        if (formField.getDataType() != null) {
+            builder.put("dataType", formField.getDataType());
+        }
+        if (formField.isRequired() != null) {
+            builder.put("required", formField.isRequired());
+        }
 
         return builder.build();
     }
