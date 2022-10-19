@@ -12,7 +12,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <jersey.version>2.35</jersey.version>
-        <jackson.version>2.13.0-rc2</jackson.version>
+        <jackson.version>2.13.4.1</jackson.version>
 
         <integration.tests.location>com/smartling/it/**/*.java</integration.tests.location>
     </properties>
