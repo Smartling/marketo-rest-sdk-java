@@ -2,7 +2,7 @@ package com.smartling.marketo.sdk.domain.form;
 
 import java.util.List;
 
-public abstract class FormFieldBase<T>
+public class FormFieldBase<T>
 {
     private String id;
     private String label;

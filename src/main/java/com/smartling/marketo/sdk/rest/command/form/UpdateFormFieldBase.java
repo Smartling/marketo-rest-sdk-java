@@ -9,12 +9,12 @@ import java.util.Map;
 
 import static com.smartling.marketo.sdk.rest.command.form.FormUtils.copyFormFieldProperties;
 
-public class UpdateFormFieldBase<V> implements Command<FormFieldBase<V>>
+public class UpdateFormFieldBase<T> implements Command<FormFieldBase<T>>
 {
     private final int formId;
-    private final FormFieldBase<V> formField;
+    private final FormFieldBase<T> formField;
 
-    public UpdateFormFieldBase(int formId, FormFieldBase<V> formField) {
+    public UpdateFormFieldBase(int formId, FormFieldBase<T> formField) {
         this.formId = formId;
         this.formField = formField;
     }
