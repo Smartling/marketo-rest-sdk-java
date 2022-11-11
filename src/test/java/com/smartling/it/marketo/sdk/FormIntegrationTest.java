@@ -5,6 +5,8 @@ import com.smartling.marketo.sdk.MarketoFormClient;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.domain.folder.FolderType;
 import com.smartling.marketo.sdk.domain.form.FieldMetaData;
+import com.smartling.marketo.sdk.domain.form.SelectFormField;
+import com.smartling.marketo.sdk.domain.form.SelectItemValue;
 import com.smartling.marketo.sdk.domain.form.Value;
 import com.smartling.marketo.sdk.domain.form.Form;
 import com.smartling.marketo.sdk.domain.form.Form.KnownVisitor;
@@ -155,6 +157,34 @@ public class FormIntegrationTest extends BaseIntegrationTest {
         assertThat(dropdownValues).hasSizeGreaterThanOrEqualTo(5);
         assertThat(dropdownValues.get(0).getLabel()).isEqualTo("Select...");
         assertThat(dropdownValues.get(2).getLabel()).isEqualTo("Male");
+    }
+
+    @Test
+    public void shouldReadSelectForm() throws Exception {
+        SelectFormField formField = marketoFormClient.getFormSelectField(TEST_FORM_ID, "MarketoSocialGender");
+
+        assertThat(formField.getId()).isEqualTo("MarketoSocialGender");
+        assertThat(formField.getLabel()).isEqualTo("Marketo Social Gender:");
+        assertThat(formField.getDataType()).isEqualTo("select");
+        assertThat(formField.getValidationMessage()).isEqualTo("This field is required.");
+        assertThat(formField.getVisibilityRules().getRuleType()).isEqualTo(RuleType.SHOW);
+
+        VisibilityRules visibilityRules = formField.getVisibilityRules();
+        assertThat(visibilityRules.getRules().get(0).getSubjectField()).isEqualTo("FirstName");
+        assertThat(visibilityRules.getRules().get(0).getAltLabel()).isEqualTo("Marketo Social Gender:");
+
+        assertThat(formField.getFieldMetaData()).isNotNull();
+        assertThat(formField.getFieldMetaData().getValues()).isNotNull();
+        List<SelectItemValue> dropdownValues = formField.getFieldMetaData().getValues();
+        assertThat(dropdownValues).hasSizeGreaterThanOrEqualTo(5);
+        assertThat(dropdownValues.get(0).getLabel()).isEqualTo("Select...");
+        assertThat(dropdownValues.get(0).getValue()).isEmpty();
+        assertThat(dropdownValues.get(0).isDefault()).isTrue();
+        assertThat(dropdownValues.get(0).isSelected()).isTrue();
+        assertThat(dropdownValues.get(2).getLabel()).isEqualTo("Male");
+        assertThat(dropdownValues.get(2).getValue()).isEqualTo("Male");
+        assertThat(dropdownValues.get(0).isDefault()).isFalse();
+        assertThat(dropdownValues.get(0).isSelected()).isFalse();
     }
 
     @Test
