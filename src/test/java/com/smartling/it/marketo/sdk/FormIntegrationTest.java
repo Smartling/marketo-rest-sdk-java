@@ -5,7 +5,7 @@ import com.smartling.marketo.sdk.MarketoFormClient;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.domain.folder.FolderType;
 import com.smartling.marketo.sdk.domain.form.FieldMetaData;
-import com.smartling.marketo.sdk.domain.form.FieldMetaData.Value;
+import com.smartling.marketo.sdk.domain.form.Value;
 import com.smartling.marketo.sdk.domain.form.Form;
 import com.smartling.marketo.sdk.domain.form.Form.KnownVisitor;
 import com.smartling.marketo.sdk.domain.form.FormField;
