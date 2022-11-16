@@ -1,8 +1,12 @@
 package com.smartling.marketo.sdk.domain.form;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Value {
     private String label;
     private String value;
+    private boolean isDefault;
+    private boolean selected;
 
     public String getLabel() {
         return label;
@@ -20,9 +24,28 @@ public class Value {
         this.value = value;
     }
 
+    @JsonProperty("isDefault")
+    public boolean isDefault() {
+        return isDefault;
+    }
+
+    public void setDefault(boolean isDefault) {
+        this.isDefault = isDefault;
+    }
+
+    @JsonProperty("selected")
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+    }
+
     @Override
     public String toString()
     {
-        return "Value{" + "label='" + label + '\'' + ", value='" + value + '\'' + '}';
+        return "Value{" + "label='" + this.getLabel() + '\'' + ", value='" + this.getValue() + '\'' +
+                ", isDefault=" + isDefault + ", selected=" + selected + '}';
     }
 }

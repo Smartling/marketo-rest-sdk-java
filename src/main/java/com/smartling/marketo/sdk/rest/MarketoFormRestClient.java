@@ -6,7 +6,6 @@ import com.smartling.marketo.sdk.domain.Asset.Status;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.domain.form.Form;
 import com.smartling.marketo.sdk.domain.form.FormField;
-import com.smartling.marketo.sdk.domain.form.SelectFormField;
 import com.smartling.marketo.sdk.domain.form.VisibilityRulesParameter;
 import com.smartling.marketo.sdk.rest.command.form.ApproveFormDraft;
 import com.smartling.marketo.sdk.rest.command.form.CloneForm;
@@ -19,7 +18,6 @@ import com.smartling.marketo.sdk.rest.command.form.GetFormById;
 import com.smartling.marketo.sdk.rest.command.form.GetFormFields;
 import com.smartling.marketo.sdk.rest.command.form.GetForms;
 import com.smartling.marketo.sdk.rest.command.form.GetFormsByName;
-import com.smartling.marketo.sdk.rest.command.form.GetSelectFormField;
 import com.smartling.marketo.sdk.rest.command.form.ReArrangeFormFields;
 import com.smartling.marketo.sdk.rest.command.form.UpdateFieldPositionsList;
 import com.smartling.marketo.sdk.rest.command.form.UpdateForm;
@@ -67,12 +65,6 @@ public class MarketoFormRestClient implements MarketoFormClient {
     @Override
     public List<FormField> getFormFields(int formId, Status status) throws MarketoApiException {
         return httpCommandExecutor.execute(new GetFormFields(formId, status));
-    }
-
-    @Override
-    public SelectFormField getFormSelectField(int formId, String fieldId) throws MarketoApiException {
-        List<SelectFormField> fields = httpCommandExecutor.execute(new GetSelectFormField(formId, fieldId));
-        return fields.get(0);
     }
 
     @Override

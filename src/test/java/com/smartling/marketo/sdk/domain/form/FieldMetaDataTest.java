@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import com.smartling.marketo.sdk.HasToBeMappedToJson;
 import com.smartling.marketo.sdk.MarketoApiException;
-import com.smartling.marketo.sdk.rest.command.form.UpdateFormFieldBase;
 import org.junit.Test;
 
 import java.io.UnsupportedEncodingException;
@@ -16,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.core.IsCollectionContaining.hasItem;
 
 public class FieldMetaDataTest
 {
@@ -24,8 +22,8 @@ public class FieldMetaDataTest
 
     @Test
     public void metadataShouldBePostProcessable() throws Exception {
-        SelectFieldMetaData fieldMetaData = new SelectFieldMetaData();
-        List<SelectItemValue> values = new ArrayList<>();
+        FieldMetaData fieldMetaData = new FieldMetaData();
+        List<Value> values = new ArrayList<>();
         values.add(getValue("label1", "value1", true, true));
         values.add(getValue("label2", "value2", false, false));
         values.add(getValue("label3", "value3", false, false));
@@ -39,8 +37,8 @@ public class FieldMetaDataTest
         assertThat(params.get("values")).isEqualTo("[{\"label\":\"label1\",\"value\":\"value1\",\"selected\":true,\"isDefault\":true},{\"label\":\"label2\",\"value\":\"value2\",\"selected\":false,\"isDefault\":false},{\"label\":\"label3\",\"value\":\"value3\",\"selected\":false,\"isDefault\":false}]");
     }
 
-    private SelectItemValue getValue(String label, String value, boolean isDefault, boolean selected) {
-        SelectItemValue val = new SelectItemValue();
+    private Value getValue(String label, String value, boolean isDefault, boolean selected) {
+        Value val = new Value();
         val.setLabel(label);
         val.setValue(value);
         val.setDefault(isDefault);
