@@ -1,6 +1,5 @@
 package com.smartling.marketo.sdk.domain.form;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class SelectItemValue extends Value

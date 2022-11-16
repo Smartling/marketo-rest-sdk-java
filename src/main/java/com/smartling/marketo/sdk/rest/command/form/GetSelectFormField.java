@@ -16,6 +16,6 @@ public class GetSelectFormField extends BaseGetCommand<SelectFormField>
 
     @Override
     public String getPath() {
-        return "/asset/v1/form/" + formId + "/fields" + fieldId +".json";
+        return "/asset/v1/form/" + formId + "/fields/" + fieldId +".json";
     }
 }
