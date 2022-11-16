@@ -9,8 +9,7 @@ import java.util.Map;
 
 import static com.smartling.marketo.sdk.rest.command.form.FormUtils.copyFormFieldProperties;
 
-public class UpdateFormField implements Command<FormField>
-{
+public class UpdateFormField implements Command<FormField> {
     private final int formId;
     private final FormField formField;
 

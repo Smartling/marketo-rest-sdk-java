@@ -2,8 +2,7 @@ package com.smartling.marketo.sdk.domain.form;
 
 import java.util.List;
 
-public class FormField
-{
+public class FormField {
     private String id;
     private String label;
     private int rowNumber;

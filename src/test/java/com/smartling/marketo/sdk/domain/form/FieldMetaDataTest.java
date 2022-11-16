@@ -23,7 +23,7 @@ public class FieldMetaDataTest
     @Test
     public void metadataShouldBePostProcessable() throws Exception {
         FieldMetaData fieldMetaData = new FieldMetaData();
-        List<Value> values = new ArrayList<>();
+        List<FieldMetaData.Value> values = new ArrayList<>();
         values.add(getValue("label1", "value1", true, true));
         values.add(getValue("label2", "value2", false, false));
         values.add(getValue("label3", "value3", false, false));
@@ -37,8 +37,8 @@ public class FieldMetaDataTest
         assertThat(params.get("values")).isEqualTo("[{\"label\":\"label1\",\"value\":\"value1\",\"selected\":true,\"isDefault\":true},{\"label\":\"label2\",\"value\":\"value2\",\"selected\":false,\"isDefault\":false},{\"label\":\"label3\",\"value\":\"value3\",\"selected\":false,\"isDefault\":false}]");
     }
 
-    private Value getValue(String label, String value, boolean isDefault, boolean selected) {
-        Value val = new Value();
+    private FieldMetaData.Value getValue(String label, String value, boolean isDefault, boolean selected) {
+        FieldMetaData.Value val = new FieldMetaData.Value();
         val.setLabel(label);
         val.setValue(value);
         val.setDefault(isDefault);

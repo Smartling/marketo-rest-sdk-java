@@ -10,7 +10,6 @@ import com.smartling.marketo.sdk.domain.form.Form.KnownVisitor;
 import com.smartling.marketo.sdk.domain.form.FormField;
 import com.smartling.marketo.sdk.domain.form.PickListDTO;
 import com.smartling.marketo.sdk.domain.form.RuleType;
-import com.smartling.marketo.sdk.domain.form.Value;
 import com.smartling.marketo.sdk.domain.form.VisibilityRules;
 import com.smartling.marketo.sdk.domain.form.VisibilityRulesParameter;
 import com.smartling.marketo.sdk.rest.command.form.UpdateFieldPosition;
@@ -151,7 +150,7 @@ public class FormIntegrationTest extends BaseIntegrationTest {
         formField = formFields.get(21);
         assertThat(formField.getFieldMetaData()).isNotNull();
         assertThat(formField.getFieldMetaData().getValues()).isNotNull();
-        List<Value> dropdownValues = formField.getFieldMetaData().getValues();
+        List<FieldMetaData.Value> dropdownValues = formField.getFieldMetaData().getValues();
         assertThat(dropdownValues).hasSizeGreaterThanOrEqualTo(5);
         assertThat(dropdownValues.get(0).getLabel()).isEqualTo("Select...");
         assertThat(dropdownValues.get(2).getLabel()).isEqualTo("Male");
@@ -174,7 +173,7 @@ public class FormIntegrationTest extends BaseIntegrationTest {
 
         assertThat(formField.getFieldMetaData()).isNotNull();
         assertThat(formField.getFieldMetaData().getValues()).isNotNull();
-        List<Value> dropdownValues = formField.getFieldMetaData().getValues();
+        List<FieldMetaData.Value> dropdownValues = formField.getFieldMetaData().getValues();
         assertThat(dropdownValues).hasSizeGreaterThanOrEqualTo(5);
         assertThat(dropdownValues.get(0).getLabel()).isEqualTo("Select...");
         assertThat(dropdownValues.get(0).getValue()).isEmpty();
@@ -252,7 +251,7 @@ public class FormIntegrationTest extends BaseIntegrationTest {
 
     private FieldMetaData fieldMetaData() {
         FieldMetaData fieldMetaData = new FieldMetaData();
-        List<Value> values = new ArrayList<>();
+        List<FieldMetaData.Value> values = new ArrayList<>();
         values.add(metaDataValue("Sélectionnez...", ""));
         values.add(metaDataValue("Femme", "f"));
         values.add(metaDataValue("Homme.", "m"));
@@ -262,8 +261,8 @@ public class FormIntegrationTest extends BaseIntegrationTest {
         return fieldMetaData;
     }
 
-    private Value metaDataValue(String label, String value) {
-        Value metaDataValue = new Value();
+    private FieldMetaData.Value metaDataValue(String label, String value) {
+        FieldMetaData.Value metaDataValue = new FieldMetaData.Value();
         metaDataValue.setLabel(label);
         metaDataValue.setValue(value);
         return metaDataValue;
