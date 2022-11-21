@@ -5,7 +5,6 @@ import com.smartling.marketo.sdk.MarketoFormClient;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.domain.folder.FolderType;
 import com.smartling.marketo.sdk.domain.form.FieldMetaData;
-import com.smartling.marketo.sdk.domain.form.FieldMetaData.Value;
 import com.smartling.marketo.sdk.domain.form.Form;
 import com.smartling.marketo.sdk.domain.form.Form.KnownVisitor;
 import com.smartling.marketo.sdk.domain.form.FormField;
@@ -151,10 +150,39 @@ public class FormIntegrationTest extends BaseIntegrationTest {
         formField = formFields.get(21);
         assertThat(formField.getFieldMetaData()).isNotNull();
         assertThat(formField.getFieldMetaData().getValues()).isNotNull();
-        List<Value> dropdownValues = formField.getFieldMetaData().getValues();
+        List<FieldMetaData.Value> dropdownValues = formField.getFieldMetaData().getValues();
         assertThat(dropdownValues).hasSizeGreaterThanOrEqualTo(5);
         assertThat(dropdownValues.get(0).getLabel()).isEqualTo("Select...");
         assertThat(dropdownValues.get(2).getLabel()).isEqualTo("Male");
+    }
+
+    @Test
+    public void shouldReadSelectForm() throws Exception {
+        List<FormField> formFields = marketoFormClient.getFormFields(TEST_FORM_ID, APPROVED);
+
+        FormField formField = formFields.get(21);
+        assertThat(formField.getId()).isEqualTo("MarketoSocialGender");
+        assertThat(formField.getLabel()).isEqualTo("Marketo Social Gender:");
+        assertThat(formField.getDataType()).isEqualTo("select");
+        assertThat(formField.getValidationMessage()).isEqualTo("This field is required.");
+        assertThat(formField.getVisibilityRules().getRuleType()).isEqualTo(RuleType.SHOW);
+
+        VisibilityRules visibilityRules = formField.getVisibilityRules();
+        assertThat(visibilityRules.getRules().get(0).getSubjectField()).isEqualTo("FirstName");
+        assertThat(visibilityRules.getRules().get(0).getAltLabel()).isEqualTo("Marketo Social Gender:");
+
+        assertThat(formField.getFieldMetaData()).isNotNull();
+        assertThat(formField.getFieldMetaData().getValues()).isNotNull();
+        List<FieldMetaData.Value> dropdownValues = formField.getFieldMetaData().getValues();
+        assertThat(dropdownValues).hasSizeGreaterThanOrEqualTo(5);
+        assertThat(dropdownValues.get(0).getLabel()).isEqualTo("Select...");
+        assertThat(dropdownValues.get(0).getValue()).isEmpty();
+        assertThat(dropdownValues.get(0).isDefault()).isTrue();
+        assertThat(dropdownValues.get(0).isSelected()).isTrue();
+        assertThat(dropdownValues.get(2).getLabel()).isEqualTo("Male");
+        assertThat(dropdownValues.get(2).getValue()).isEqualTo("Male");
+        assertThat(dropdownValues.get(2).isDefault()).isFalse();
+        assertThat(dropdownValues.get(2).isSelected()).isFalse();
     }
 
     @Test
@@ -223,7 +251,7 @@ public class FormIntegrationTest extends BaseIntegrationTest {
 
     private FieldMetaData fieldMetaData() {
         FieldMetaData fieldMetaData = new FieldMetaData();
-        List<Value> values = new ArrayList<>();
+        List<FieldMetaData.Value> values = new ArrayList<>();
         values.add(metaDataValue("Sélectionnez...", ""));
         values.add(metaDataValue("Femme", "f"));
         values.add(metaDataValue("Homme.", "m"));
@@ -233,8 +261,8 @@ public class FormIntegrationTest extends BaseIntegrationTest {
         return fieldMetaData;
     }
 
-    private Value metaDataValue(String label, String value) {
-        Value metaDataValue = new Value();
+    private FieldMetaData.Value metaDataValue(String label, String value) {
+        FieldMetaData.Value metaDataValue = new FieldMetaData.Value();
         metaDataValue.setLabel(label);
         metaDataValue.setValue(value);
         return metaDataValue;
