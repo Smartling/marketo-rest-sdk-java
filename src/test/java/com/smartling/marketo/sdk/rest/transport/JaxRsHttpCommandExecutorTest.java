@@ -12,6 +12,7 @@ import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.rest.FolderTypeNotSupportedException;
 import com.smartling.marketo.sdk.rest.ObjectNotFoundException;
 import com.smartling.marketo.sdk.rest.RequestLimitExceededException;
+import com.smartling.marketo.sdk.rest.UpdateContentNotAllowedException;
 import com.smartling.marketo.sdk.rest.command.email.LoadEmailContent;
 import net.minidev.json.JSONObject;
 import org.junit.Before;
@@ -242,6 +243,18 @@ public class JaxRsHttpCommandExecutorTest extends BaseTransportTest {
         thrown.expect(RequestLimitExceededException.class);
         thrown.expect(exceptionWithCode("615"));
         thrown.expectMessage("Error!");
+
+        testedInstance.execute(command);
+    }
+
+    @Test
+    public void shouldHandleUpdateContentNotAllowedErrors() throws Exception {
+        givenThat(get(urlStartingWith("/rest")).willReturn(
+                aJsonResponse("{\"success\":false,\"warnings\":[],\"errors\":[{\"code\":\"702\",\"message\":\"Update content on dynamic email is not allowed.\"}]}")));
+
+        thrown.expect(UpdateContentNotAllowedException.class);
+        thrown.expect(exceptionWithCode("702"));
+        thrown.expectMessage("Update content on dynamic email is not allowed.");
 
         testedInstance.execute(command);
     }

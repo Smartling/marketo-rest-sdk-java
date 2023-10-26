@@ -10,6 +10,7 @@ import com.smartling.marketo.sdk.rest.FolderTypeNotSupportedException;
 import com.smartling.marketo.sdk.rest.HttpCommandExecutor;
 import com.smartling.marketo.sdk.rest.ObjectNotFoundException;
 import com.smartling.marketo.sdk.rest.RequestLimitExceededException;
+import com.smartling.marketo.sdk.rest.UpdateContentNotAllowedException;
 import com.smartling.marketo.sdk.rest.transport.logging.JsonClientLoggingFilter;
 import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.jackson.JacksonFeature;
@@ -51,6 +52,10 @@ public class JaxRsHttpCommandExecutor implements HttpCommandExecutor {
             "607",  // Daily quota
             "615"   // Concurrent request limit
     );
+    private static final Set<String> UPDATE_CONTENT_NOT_ALLOWED_CODES = ImmutableSet.of("702");
+    private static final String UPDATE_CONTENT_NOT_ALLOWED_MESSAGE_START = "Update content";
+    private static final String UPDATE_CONTENT_NOT_ALLOWED_MESSAGE_END = "not allowed.";
+
     private static final Set<String> NOT_FOUND_CODES = ImmutableSet.of("702", "710");
 
     private static final Set<String> FOLDER_TYPE_NOT_SUPPORTED_CODES = ImmutableSet.of(
@@ -133,6 +138,14 @@ public class JaxRsHttpCommandExecutor implements HttpCommandExecutor {
         if (requestLimitError.isPresent()) {
             MarketoResponse.Error error = requestLimitError.get();
             return new RequestLimitExceededException(error.getCode(), description(command, error));
+        }
+
+        Optional<MarketoResponse.Error> updateContentNotAllowedError = getError(UPDATE_CONTENT_NOT_ALLOWED_CODES, errors);
+        if (updateContentNotAllowedError.isPresent()) {
+            MarketoResponse.Error error = updateContentNotAllowedError.get();
+            if (error.getMessage().startsWith(UPDATE_CONTENT_NOT_ALLOWED_MESSAGE_START) && error.getMessage().endsWith(UPDATE_CONTENT_NOT_ALLOWED_MESSAGE_END)) {
+                return new UpdateContentNotAllowedException(error.getCode(), description(command, error));
+            }
         }
 
         Optional<MarketoResponse.Error> notFoundError = getError(NOT_FOUND_CODES, errors);
