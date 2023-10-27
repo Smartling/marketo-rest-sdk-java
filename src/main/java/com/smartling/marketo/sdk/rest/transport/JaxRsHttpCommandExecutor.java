@@ -53,8 +53,7 @@ public class JaxRsHttpCommandExecutor implements HttpCommandExecutor {
             "615"   // Concurrent request limit
     );
     private static final Set<String> UPDATE_CONTENT_NOT_ALLOWED_CODES = ImmutableSet.of("702");
-    private static final String UPDATE_CONTENT_NOT_ALLOWED_MESSAGE_START = "Update content";
-    private static final String UPDATE_CONTENT_NOT_ALLOWED_MESSAGE_END = "not allowed.";
+    private static final String UPDATE_CONTENT_NOT_ALLOWED_PATTERN = "^Update content.*not allowed.$";
 
     private static final Set<String> NOT_FOUND_CODES = ImmutableSet.of("702", "710");
 
@@ -143,7 +142,7 @@ public class JaxRsHttpCommandExecutor implements HttpCommandExecutor {
         Optional<MarketoResponse.Error> updateContentNotAllowedError = getError(UPDATE_CONTENT_NOT_ALLOWED_CODES, errors);
         if (updateContentNotAllowedError.isPresent()) {
             MarketoResponse.Error error = updateContentNotAllowedError.get();
-            if (error.getMessage().startsWith(UPDATE_CONTENT_NOT_ALLOWED_MESSAGE_START) && error.getMessage().endsWith(UPDATE_CONTENT_NOT_ALLOWED_MESSAGE_END)) {
+            if (error.getMessage().matches(UPDATE_CONTENT_NOT_ALLOWED_PATTERN)) {
                 return new UpdateContentNotAllowedException(error.getCode(), description(command, error));
             }
         }
