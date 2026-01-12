@@ -41,6 +41,9 @@ public abstract class BaseIntegrationTest {
 
     @Before
     public void setUpBase() throws Exception {
+        // Rate limiting: delay between tests to avoid hitting Marketo's 100 requests/20 seconds limit
+        Thread.sleep(1000L);
+
         marketoClientManager = MarketoRestClientManager.create(identityEndpoint, restEndpoint)
                 .withConnectionTimeout(2000)
                 .withSocketReadTimeout(20000)
