@@ -1,6 +1,8 @@
 package com.smartling.marketo.sdk;
 
-public interface MarketoClientManager {
+import java.io.Closeable;
+
+public interface MarketoClientManager extends Closeable {
     MarketoFolderClient getMarketoFolderClient();
 
     MarketoEmailClient getMarketoEmailClient();

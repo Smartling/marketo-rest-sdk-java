@@ -14,6 +14,9 @@ import com.smartling.marketo.sdk.MarketoTokenClient;
 import com.smartling.marketo.sdk.rest.transport.*;
 import com.smartling.marketo.sdk.rest.transport.logging.JsonClientLoggingFilter;
 
+import java.io.Closeable;
+import java.io.IOException;
+
 public class MarketoRestClientManager implements MarketoClientManager {
     private static final TokenProvider tokenProvider = new CacheableTokenProvider(new BasicTokenProvider());
 
@@ -28,6 +31,13 @@ public class MarketoRestClientManager implements MarketoClientManager {
         Preconditions.checkNotNull(restUrl, "REST endpoint URL is empty");
 
         return new Builder(identityUrl, restUrl);
+    }
+
+    @Override
+    public void close() throws IOException {
+        if (httpCommandExecutor instanceof Closeable) {
+            ((Closeable) httpCommandExecutor).close();
+        }
     }
 
     @Override

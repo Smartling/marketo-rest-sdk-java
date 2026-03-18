@@ -29,6 +29,7 @@ import javax.ws.rs.core.Form;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import java.io.ByteArrayInputStream;
+import java.io.Closeable;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -44,7 +45,7 @@ import java.util.logging.Logger;
 import static java.util.logging.Level.INFO;
 import static org.glassfish.jersey.logging.LoggingFeature.Verbosity.PAYLOAD_ANY;
 
-public class JaxRsHttpCommandExecutor implements HttpCommandExecutor {
+public class JaxRsHttpCommandExecutor implements HttpCommandExecutor, Closeable {
     private final static ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     private static final Set<String> API_LIMIT_ERROR_CODES = ImmutableSet.of(
@@ -94,6 +95,11 @@ public class JaxRsHttpCommandExecutor implements HttpCommandExecutor {
 
     public void setSocketReadTimeout(int timeout) {
         client.property(ClientProperties.READ_TIMEOUT, timeout);
+    }
+
+    @Override
+    public void close() {
+        client.close();
     }
 
     @Override
