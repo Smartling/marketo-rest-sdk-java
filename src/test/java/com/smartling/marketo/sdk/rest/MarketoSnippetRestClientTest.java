@@ -17,15 +17,14 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.isA;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -43,7 +42,7 @@ public class MarketoSnippetRestClientTest {
     @Test
     public void shouldRequestSnippetListWithFilter() throws Exception {
         Snippet snippet= new Snippet();
-        given(executor.execute(isA(GetSnippets.class))).willReturn(Collections.singletonList(snippet));
+        given(executor.execute(any(GetSnippets.class))).willReturn(Collections.singletonList(snippet));
 
         List<Snippet> snippets = testedInstance.listSnippets(0, 10, Asset.Status.APPROVED);
 
@@ -53,7 +52,7 @@ public class MarketoSnippetRestClientTest {
     @Test
     public void shouldLoadSnippetById() throws Exception {
         Snippet snippet = new Snippet();
-        given(executor.execute(isA(LoadSnippetById.class))).willReturn(Collections.singletonList(snippet));
+        given(executor.execute(any(LoadSnippetById.class))).willReturn(Collections.singletonList(snippet));
 
         Snippet result = testedInstance.loadSnippetById(42);
 
@@ -63,7 +62,7 @@ public class MarketoSnippetRestClientTest {
     @Test
     public void shouldLoadSnippetContent() throws Exception {
         SnippetContentItem contentItem = new SnippetContentItem();
-        given(executor.execute(isA(LoadSnippetContent.class))).willReturn(Collections.singletonList(contentItem));
+        given(executor.execute(any(LoadSnippetContent.class))).willReturn(Collections.singletonList(contentItem));
 
         List<SnippetContentItem> result = testedInstance.loadSnippetContent(42);
 
@@ -73,7 +72,7 @@ public class MarketoSnippetRestClientTest {
     @Test
     public void shouldCloneSnippet() throws Exception {
         Snippet clone = new Snippet();
-        given(executor.execute(isA(CloneSnippet.class))).willReturn(Collections.singletonList(clone));
+        given(executor.execute(any(CloneSnippet.class))).willReturn(Collections.singletonList(clone));
 
         Snippet result = testedInstance.cloneSnippet(42, "blah", new FolderId(999, FolderType.FOLDER));
 
@@ -84,7 +83,7 @@ public class MarketoSnippetRestClientTest {
     public void shouldUpdateSnippetContent() throws Exception {
         testedInstance.updateSnippetContent(42, new SnippetContentItem());
 
-        verify(executor).execute(isA(UpdateSnippetContent.class));
+        verify(executor).execute(any(UpdateSnippetContent.class));
     }
 
     @Test

@@ -41,11 +41,11 @@ public abstract class BaseIntegrationTest {
 
     @Before
     public void setUpBase() throws Exception {
-        marketoClientManager = MarketoRestClientManager.create(identityEndpoint, restEndpoint)
+        marketoClientManager = MarketoRestClientManager.create()
                 .withConnectionTimeout(2000)
                 .withSocketReadTimeout(20000)
                 .withRetryPolicy(RetryPolicy.NONE)
-                .withCredentials(clientId, clientSecret);
+                .withCredentials(identityEndpoint, restEndpoint, clientId, clientSecret);
     }
 
     protected class EntityWithName extends Condition<BaseEntity> {

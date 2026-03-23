@@ -28,7 +28,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -36,8 +36,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.isA;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -56,7 +55,7 @@ public class MarketoEmailRestClientTest {
     @Test
     public void shouldRequestEmailList() throws Exception {
         Email email = new Email();
-        given(executor.execute(isA(GetEmailsCommand.class))).willReturn(Collections.singletonList(email));
+        given(executor.execute(any(GetEmailsCommand.class))).willReturn(Collections.singletonList(email));
 
         List<Email> emails = testedInstance.listEmails(0, 10);
 
@@ -66,7 +65,7 @@ public class MarketoEmailRestClientTest {
     @Test
     public void shouldRequestEmailListWithFilter() throws Exception {
         Email email = new Email();
-        given(executor.execute(isA(GetEmailsCommand.class))).willReturn(Collections.singletonList(email));
+        given(executor.execute(any(GetEmailsCommand.class))).willReturn(Collections.singletonList(email));
 
         List<Email> emails = testedInstance.listEmails(0, 10, new FolderId(1, FolderType.FOLDER), Status.APPROVED);
 
@@ -101,7 +100,7 @@ public class MarketoEmailRestClientTest {
     @Test
     public void shouldLoadEmailById() throws Exception {
         Email email = new Email();
-        given(executor.execute(isA(LoadEmailById.class))).willReturn(Collections.singletonList(email));
+        given(executor.execute(any(LoadEmailById.class))).willReturn(Collections.singletonList(email));
 
         Email result = testedInstance.loadEmailById(42);
 
@@ -113,7 +112,7 @@ public class MarketoEmailRestClientTest {
     {
         int nonExistingId = 42;
 
-        given(executor.execute(isA(LoadEmailById.class))).willReturn(null);
+        given(executor.execute(any(LoadEmailById.class))).willReturn(null);
 
         thrown.expect(MarketoApiException.class);
         thrown.expectMessage("Email[id = 42] not found");
@@ -124,7 +123,7 @@ public class MarketoEmailRestClientTest {
     @Test
     public void shouldGetEmailsByName() throws Exception {
         Email expected = new Email();
-        given(executor.execute(isA(GetEmailsByName.class))).willReturn(Collections.singletonList(expected));
+        given(executor.execute(any(GetEmailsByName.class))).willReturn(Collections.singletonList(expected));
 
         List<Email> result = testedInstance.getEmailsByName("name", new FolderId(42, FolderType.FOLDER), Status.APPROVED);
 
@@ -134,7 +133,7 @@ public class MarketoEmailRestClientTest {
     @Test
     public void shouldGetPaginatedEmailsByName() throws Exception {
         Email expected = new Email();
-        given(executor.execute(isA(GetEmailsByName.class))).willReturn(Collections.singletonList(expected));
+        given(executor.execute(any(GetEmailsByName.class))).willReturn(Collections.singletonList(expected));
 
         List<Email> result = testedInstance.getEmailsByName(0, 10, "name", new FolderId(42, FolderType.FOLDER), Status.APPROVED);
 
@@ -144,7 +143,7 @@ public class MarketoEmailRestClientTest {
     @Test
     public void shouldLoadEmailContent() throws Exception {
         EmailContentItem contentItem = new EmailTextContentItem();
-        given(executor.execute(isA(LoadEmailContent.class))).willReturn(Collections.singletonList(contentItem));
+        given(executor.execute(any(LoadEmailContent.class))).willReturn(Collections.singletonList(contentItem));
 
         List<EmailContentItem> result = testedInstance.loadEmailContent(42);
 
@@ -154,7 +153,7 @@ public class MarketoEmailRestClientTest {
     @Test
     public void shouldCloneEmail() throws Exception {
         Email clone = new Email();
-        given(executor.execute(isA(CloneEmail.class))).willReturn(Collections.singletonList(clone));
+        given(executor.execute(any(CloneEmail.class))).willReturn(Collections.singletonList(clone));
 
         Email result = testedInstance.cloneEmail(42, "blah", new FolderId(999, FolderType.FOLDER));
 
@@ -164,7 +163,7 @@ public class MarketoEmailRestClientTest {
     @Test
     public void shouldCloneExistingEmail() throws Exception {
         Email clone = new Email();
-        given(executor.execute(isA(CloneEmail.class))).willReturn(Collections.singletonList(clone));
+        given(executor.execute(any(CloneEmail.class))).willReturn(Collections.singletonList(clone));
 
         Email result = testedInstance.cloneEmail(new Email(), "blah");
 
@@ -175,41 +174,41 @@ public class MarketoEmailRestClientTest {
     public void shouldUpdateEmailContent() throws Exception {
         testedInstance.updateEmailContent(42, Arrays.asList(new EmailTextContentItem(), new EmailTextContentItem()));
 
-        verify(executor, times(2)).execute(isA(UpdateEmailEditableSection.class));
+        verify(executor, times(2)).execute(any(UpdateEmailEditableSection.class));
     }
 
     @Test
     public void shouldUpdateEmailContentItem() throws Exception {
         testedInstance.updateEmailContentItem(42, new EmailTextContentItem());
 
-        verify(executor).execute(isA(UpdateEmailEditableSection.class));
+        verify(executor).execute(any(UpdateEmailEditableSection.class));
     }
 
     @Test
     public void shouldUpdateEmailSnippetContentItem() throws Exception {
         testedInstance.updateEmailSnippetContentItem(42, new EmailSnippetContentItem());
 
-        verify(executor).execute(isA(UpdateEmailSnippetContent.class));
+        verify(executor).execute(any(UpdateEmailSnippetContent.class));
     }
 
     @Test
     public void shouldUpdateEmail() throws Exception {
         testedInstance.updateEmail(new Email());
 
-        verify(executor).execute(isA(UpdateEmailContent.class));
+        verify(executor).execute(any(UpdateEmailContent.class));
     }
 
     @Test
     public void shouldSendSample() throws Exception {
         testedInstance.sendSample(42, "foo@bar.baz", false);
 
-        verify(executor).execute(isA(SendSample.class));
+        verify(executor).execute(any(SendSample.class));
     }
 
     @Test
     public void shouldGetEmailVariables() throws Exception {
         EmailVariable variable = new EmailVariable();
-        given(executor.execute(isA(GetEmailVariables.class))).willReturn(Collections.singletonList(variable));
+        given(executor.execute(any(GetEmailVariables.class))).willReturn(Collections.singletonList(variable));
 
         List<EmailVariable> result = testedInstance.getEmailVariables(42);
 
@@ -220,18 +219,18 @@ public class MarketoEmailRestClientTest {
     public void shouldUpdateEmailVariables() throws Exception {
         EmailVariable variable = new EmailVariable();
         EmailVariable updated = new EmailVariable();
-        given(executor.execute(isA(UpdateEmailVariable.class))).willReturn(Collections.singletonList(updated));
+        given(executor.execute(any(UpdateEmailVariable.class))).willReturn(Collections.singletonList(updated));
 
         EmailVariable response = testedInstance.updateEmailVariable(42, variable);
 
         assertThat(response).isEqualTo(updated);
-        verify(executor).execute(isA(UpdateEmailVariable.class));
+        verify(executor).execute(any(UpdateEmailVariable.class));
     }
 
     @Test
     public void shouldGetEmailFullContent() throws Exception {
         EmailFullContent fullContent = new EmailFullContent();
-        given(executor.execute(isA(GetEmailFullContent.class))).willReturn(Collections.singletonList(fullContent));
+        given(executor.execute(any(GetEmailFullContent.class))).willReturn(Collections.singletonList(fullContent));
 
         EmailFullContent result = testedInstance.getEmailFullContent(42, Status.DRAFT);
 

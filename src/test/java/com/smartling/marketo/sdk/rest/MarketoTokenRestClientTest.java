@@ -10,14 +10,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.isA;
+import static org.mockito.ArgumentMatchers.any;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MarketoTokenRestClientTest {
@@ -31,7 +31,7 @@ public class MarketoTokenRestClientTest {
     @Test
     public void shouldRequestTokensList() throws Exception {
         Token token = new Token();
-        given(executor.execute(isA(GetTokens.class))).willReturn(Collections.singletonList(tokenResult(token)));
+        given(executor.execute(any(GetTokens.class))).willReturn(Collections.singletonList(tokenResult(token)));
 
         List<Token> tokens = testedInstance.getTokens(new FolderId(1, FolderType.FOLDER));
 
@@ -47,7 +47,7 @@ public class MarketoTokenRestClientTest {
     @Test
     public void shouldCreateToken() throws Exception {
         Token token = new Token();
-        given(executor.execute(isA(CreateToken.class))).willReturn(Collections.singletonList(tokenResult(token)));
+        given(executor.execute(any(CreateToken.class))).willReturn(Collections.singletonList(tokenResult(token)));
 
         Token result = testedInstance.createToken(new FolderId(999, FolderType.FOLDER), "name", Token.Type.TEXT, "value");
 

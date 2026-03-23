@@ -13,14 +13,14 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.isA;
+import static org.mockito.ArgumentMatchers.any;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MarketoLandingPageTemplateRestClientTest {
@@ -38,7 +38,7 @@ public class MarketoLandingPageTemplateRestClientTest {
     public void shouldGetlandingPageTemplates() throws Exception {
         LandingPageTemplate landingPageTemplate = new LandingPageTemplate();
 
-        given(executor.execute(isA(GetLandingPageTemplates.class))).willReturn(Collections.singletonList(landingPageTemplate));
+        given(executor.execute(any(GetLandingPageTemplates.class))).willReturn(Collections.singletonList(landingPageTemplate));
 
         List<LandingPageTemplate> result = testedInstance.getLandingPageTemplates(0, 200, null, null);
 
@@ -49,7 +49,7 @@ public class MarketoLandingPageTemplateRestClientTest {
     @Test
     public void shouldGetLandingPageById() throws Exception {
         LandingPageTemplate landingPageTemplate = new LandingPageTemplate();
-        given(executor.execute(isA(GetLandingPageTemplateById.class))).willReturn(Collections.singletonList(landingPageTemplate));
+        given(executor.execute(any(GetLandingPageTemplateById.class))).willReturn(Collections.singletonList(landingPageTemplate));
 
         LandingPageTemplate result = testedInstance.getLandingPageTemplateById(42);
 
@@ -59,7 +59,7 @@ public class MarketoLandingPageTemplateRestClientTest {
     @Test
     public void shouldGetLandingPageByIdAndStatus() throws Exception {
         LandingPageTemplate landingPageTemplate = new LandingPageTemplate();
-        given(executor.execute(isA(GetLandingPageTemplateById.class))).willReturn(Collections.singletonList(landingPageTemplate));
+        given(executor.execute(any(GetLandingPageTemplateById.class))).willReturn(Collections.singletonList(landingPageTemplate));
 
         LandingPageTemplate result = testedInstance.getLandingPageTemplateById(42, Status.DRAFT);
 
@@ -71,7 +71,7 @@ public class MarketoLandingPageTemplateRestClientTest {
     {
         int nonExistingId = 42;
 
-        given(executor.execute(isA(GetLandingPageTemplateById.class))).willReturn(null);
+        given(executor.execute(any(GetLandingPageTemplateById.class))).willReturn(null);
 
         thrown.expect(MarketoApiException.class);
         thrown.expectMessage("LandingPageTemplate[id = 42] not found");
@@ -82,7 +82,7 @@ public class MarketoLandingPageTemplateRestClientTest {
     @Test
     public void shouldGetLandingPageContent() throws Exception {
         LandingPageTemplateContent contentItem = new LandingPageTemplateContent();
-        given(executor.execute(isA(GetLandingPageTemplateContent.class))).willReturn(Collections.singletonList(contentItem));
+        given(executor.execute(any(GetLandingPageTemplateContent.class))).willReturn(Collections.singletonList(contentItem));
 
         List<LandingPageTemplateContent> result = testedInstance.getLandingPageTemplateContent(42);
 

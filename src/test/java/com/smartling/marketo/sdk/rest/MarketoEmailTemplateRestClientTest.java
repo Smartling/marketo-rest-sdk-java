@@ -13,14 +13,14 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.isA;
+import static org.mockito.ArgumentMatchers.any;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MarketoEmailTemplateRestClientTest {
@@ -38,7 +38,7 @@ public class MarketoEmailTemplateRestClientTest {
     public void shouldGetemailtemplates() throws Exception {
         EmailTemplate emailTemplate = new EmailTemplate();
 
-        given(executor.execute(isA(GetEmailTemplates.class))).willReturn(Collections.singletonList(emailTemplate));
+        given(executor.execute(any(GetEmailTemplates.class))).willReturn(Collections.singletonList(emailTemplate));
 
         List<EmailTemplate> result = testedInstance.getEmailTemplates(0, 200, null, null);
 
@@ -49,7 +49,7 @@ public class MarketoEmailTemplateRestClientTest {
     @Test
     public void shouldGetEmailById() throws Exception {
         EmailTemplate emailTemplate = new EmailTemplate();
-        given(executor.execute(isA(GetEmailTemplateById.class))).willReturn(Collections.singletonList(emailTemplate));
+        given(executor.execute(any(GetEmailTemplateById.class))).willReturn(Collections.singletonList(emailTemplate));
 
         EmailTemplate result = testedInstance.getEmailTemplateById(42);
 
@@ -59,7 +59,7 @@ public class MarketoEmailTemplateRestClientTest {
     @Test
     public void shouldGetEmailByIdAndStatus() throws Exception {
         EmailTemplate emailTemplate = new EmailTemplate();
-        given(executor.execute(isA(GetEmailTemplateById.class))).willReturn(Collections.singletonList(emailTemplate));
+        given(executor.execute(any(GetEmailTemplateById.class))).willReturn(Collections.singletonList(emailTemplate));
 
         EmailTemplate result = testedInstance.getEmailTemplateById(42, Status.DRAFT);
 
@@ -71,7 +71,7 @@ public class MarketoEmailTemplateRestClientTest {
     {
         int nonExistingId = 42;
 
-        given(executor.execute(isA(GetEmailTemplateById.class))).willReturn(null);
+        given(executor.execute(any(GetEmailTemplateById.class))).willReturn(null);
 
         thrown.expect(MarketoApiException.class);
         thrown.expectMessage("EmailTemplate[id = 42] not found");
@@ -82,7 +82,7 @@ public class MarketoEmailTemplateRestClientTest {
     @Test
     public void shouldGetEmailContent() throws Exception {
         EmailTemplateContent contentItem = new EmailTemplateContent();
-        given(executor.execute(isA(GetEmailTemplateContent.class))).willReturn(Collections.singletonList(contentItem));
+        given(executor.execute(any(GetEmailTemplateContent.class))).willReturn(Collections.singletonList(contentItem));
 
         List<EmailTemplateContent> result = testedInstance.getEmailTemplateContent(42);
 

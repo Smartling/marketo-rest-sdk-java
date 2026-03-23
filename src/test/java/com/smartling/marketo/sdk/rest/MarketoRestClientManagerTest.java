@@ -19,12 +19,12 @@ public class MarketoRestClientManagerTest {
 
     @Before
     public void setUp() {
-        testedInstance = MarketoRestClientManager.create("IdentityURL", "RestURL").withCredentials("ClientId", "ClientSecret");
+        testedInstance = MarketoRestClientManager.create().withCredentials("IdentityURL", "RestURL", "ClientId", "ClientSecret");
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldValidateRetryPolicy() throws Exception {
-        MarketoRestClientManager.create("IdentityURL", "RestURL")
+        MarketoRestClientManager.create()
                 .withRetryPolicy(null);
     }
 

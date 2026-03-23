@@ -14,7 +14,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,7 +22,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.isA;
+import static org.mockito.ArgumentMatchers.any;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MarketoFolderRestClientTest {
@@ -39,7 +39,7 @@ public class MarketoFolderRestClientTest {
     @Test
     public void shouldReturnFolderById() throws Exception {
         FolderDetails folder = new FolderDetails();
-        given(executor.execute(isA(GetFolderById.class))).willReturn(Collections.singletonList(folder));
+        given(executor.execute(any(GetFolderById.class))).willReturn(Collections.singletonList(folder));
 
         FolderDetails folderResult = testedInstance.getFolderById(new FolderId(1, FolderType.FOLDER));
 
@@ -49,7 +49,7 @@ public class MarketoFolderRestClientTest {
     @Test
     public void shouldReturnFolderWithFilter() throws Exception {
         FolderDetails folder = new FolderDetails();
-        given(executor.execute(isA(GetFoldersCommand.class))).willReturn(Collections.singletonList(folder));
+        given(executor.execute(any(GetFoldersCommand.class))).willReturn(Collections.singletonList(folder));
 
         List<FolderDetails> folders = testedInstance.getFolders(new FolderId(1, FolderType.FOLDER), 0, 1, 10, null);
 
@@ -59,7 +59,7 @@ public class MarketoFolderRestClientTest {
     @Test
     public void shouldReturnFolderContents() throws Exception {
         FolderContentItem asset = new FolderContentItem();
-        given(executor.execute(isA(GetFolderContents.class))).willReturn(Collections.singletonList(asset));
+        given(executor.execute(any(GetFolderContents.class))).willReturn(Collections.singletonList(asset));
 
         List<FolderContentItem> assets = testedInstance.getFolderContents(new FolderId(1, FolderType.FOLDER), 0, 1);
 
@@ -69,7 +69,7 @@ public class MarketoFolderRestClientTest {
     @Test
     public void shouldReturnFolderByName() throws Exception {
         FolderDetails folder = new FolderDetails();
-        given(executor.execute(isA(GetFolderByName.class))).willReturn(Collections.singletonList(folder));
+        given(executor.execute(any(GetFolderByName.class))).willReturn(Collections.singletonList(folder));
 
         List<FolderDetails> folders = testedInstance.getFolderByName("Dummy folder", FolderType.FOLDER, new FolderId(1, FolderType.FOLDER));
 
@@ -79,7 +79,7 @@ public class MarketoFolderRestClientTest {
     @Test
     public void shouldReturnFolderByNameWithoutFolderTypeAndParentFolderId() throws Exception {
         FolderDetails folder = new FolderDetails();
-        given(executor.execute(isA(GetFolderByName.class))).willReturn(Collections.singletonList(folder));
+        given(executor.execute(any(GetFolderByName.class))).willReturn(Collections.singletonList(folder));
 
         List<FolderDetails> folders = testedInstance.getFolderByName("Dummy folder", null, null);
 
