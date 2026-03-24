@@ -3,6 +3,7 @@ package com.smartling.marketo.sdk.rest.command.email;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
+import com.smartling.marketo.sdk.domain.email.ContentField;
 import com.smartling.marketo.sdk.domain.email.Email;
 import com.smartling.marketo.sdk.rest.Command;
 
@@ -46,7 +47,7 @@ public class UpdateEmailContent implements Command<Void> {
         return builder.build();
     }
 
-    private String getWrappedValue(Email.TextField textField) {
+    private String getWrappedValue(ContentField textField) {
         ObjectNode objectNode = objectMapper.createObjectNode();
         objectNode.put("type", textField.getType());
         objectNode.put("value", textField.getValue());

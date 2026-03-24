@@ -5,8 +5,8 @@ import com.smartling.marketo.sdk.domain.Asset;
 import java.util.Objects;
 
 public class Email extends Asset {
-    private TextField subject = new TextField();
-    private TextField fromName = new TextField();
+    private ContentField subject = new TextField();
+    private ContentField fromName = new TextField();
     private Integer template;
     private int version;
     private String preHeader;
@@ -45,19 +45,19 @@ public class Email extends Asset {
         fromName.setType(type);
     }
 
-    public TextField getSubjectField() {
+    public ContentField getSubjectField() {
         return subject;
     }
 
-    public TextField getFromNameField() {
+    public ContentField getFromNameField() {
         return fromName;
     }
 
-    public void setSubjectField(TextField subject) {
+    public void setSubjectField(ContentField subject) {
         this.subject = subject;
     }
 
-    public void setFromNameField(TextField fromName) {
+    public void setFromNameField(ContentField fromName) {
         this.fromName = fromName;
     }
 
@@ -105,28 +105,6 @@ public class Email extends Asset {
     public void setAutoCopyToText(boolean autoCopyToText)
     {
         this.autoCopyToText = autoCopyToText;
-    }
-
-    public static class TextField {
-
-        private String type = "Text";
-        private String value;
-
-        public String getType() {
-            return type;
-        }
-
-        public void setType(String type) {
-            this.type = type;
-        }
-
-        public String getValue() {
-            return value;
-        }
-
-        public void setValue(String value) {
-            this.value = value;
-        }
     }
 
     @Override
