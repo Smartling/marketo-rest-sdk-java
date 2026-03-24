@@ -3,6 +3,7 @@ package com.smartling.it.marketo.sdk;
 import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.MarketoEmailClient;
 import com.smartling.marketo.sdk.rest.MarketoRestClientManager;
+import com.smartling.marketo.sdk.rest.MarketoRestClientManagerFactory;
 
 /**
  * feel free to use this class for your experiments on live Marketo
@@ -11,8 +12,9 @@ public class RealMarketoConnectionTest {
 
 //    @Test
     public void test() throws MarketoApiException {
-        MarketoRestClientManager clientManager = MarketoRestClientManager.create()
-                .withCredentials(
+        MarketoRestClientManager clientManager = new MarketoRestClientManagerFactory.Builder()
+                .build()
+                .create(
                         "<your_marketo_host>/identity",
                         "<your_marketo_host>/rest",
                         "<your_client_id>",
