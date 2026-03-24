@@ -14,7 +14,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 import java.util.Date;
@@ -22,8 +22,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.isA;
+import static org.mockito.ArgumentMatchers.any;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MarketoProgramRestClientTest {
@@ -40,7 +39,7 @@ public class MarketoProgramRestClientTest {
     @Test
     public void shouldRequestAllPrograms() throws Exception {
         Program program = new Program();
-        given(executor.execute(isA(GetPrograms.class))).willReturn(Collections.singletonList(program));
+        given(executor.execute(any(GetPrograms.class))).willReturn(Collections.singletonList(program));
 
         List<Program> programs = testedInstance.getPrograms(0, 10, null);
 
@@ -50,7 +49,7 @@ public class MarketoProgramRestClientTest {
     @Test
     public void shouldRequestProgramListWithFolderFilter() throws Exception {
         Program program = new Program();
-        given(executor.execute(isA(GetPrograms.class))).willReturn(Collections.singletonList(program));
+        given(executor.execute(any(GetPrograms.class))).willReturn(Collections.singletonList(program));
 
         List<Program> programs = testedInstance.getPrograms(0, 10, new FolderId(1, FolderType.FOLDER));
 
@@ -60,7 +59,7 @@ public class MarketoProgramRestClientTest {
     @Test
     public void shouldRequestProgramListWithUpdatedAtFilter() throws Exception {
         Program program = new Program();
-        given(executor.execute(isA(GetPrograms.class))).willReturn(Collections.singletonList(program));
+        given(executor.execute(any(GetPrograms.class))).willReturn(Collections.singletonList(program));
 
         List<Program> programs = testedInstance.getPrograms(0, 10, null, new Date(), new Date());
 
@@ -95,7 +94,7 @@ public class MarketoProgramRestClientTest {
     @Test
     public void shouldGetProgramById() throws Exception {
         Program program = new Program();
-        given(executor.execute(isA(GetProgramById.class))).willReturn(Collections.singletonList(program));
+        given(executor.execute(any(GetProgramById.class))).willReturn(Collections.singletonList(program));
 
         Program result = testedInstance.getProgramById(42);
 
@@ -107,7 +106,7 @@ public class MarketoProgramRestClientTest {
     {
         int nonExistingId = 42;
 
-        given(executor.execute(isA(GetProgramById.class))).willReturn(null);
+        given(executor.execute(any(GetProgramById.class))).willReturn(null);
 
         thrown.expect(MarketoApiException.class);
         thrown.expectMessage("Program[id = 42] not found");
@@ -118,7 +117,7 @@ public class MarketoProgramRestClientTest {
     @Test
     public void shouldGetProgramsByName() throws Exception {
         Program expected = new Program();
-        given(executor.execute(isA(GetProgramsByName.class))).willReturn(Collections.singletonList(expected));
+        given(executor.execute(any(GetProgramsByName.class))).willReturn(Collections.singletonList(expected));
 
         List<Program> result = testedInstance.getProgramsByName("name");
 
@@ -128,7 +127,7 @@ public class MarketoProgramRestClientTest {
     @Test
     public void shouldGetPaginatedProgramsByName() throws Exception {
         Program expected = new Program();
-        given(executor.execute(isA(GetProgramsByName.class))).willReturn(Collections.singletonList(expected));
+        given(executor.execute(any(GetProgramsByName.class))).willReturn(Collections.singletonList(expected));
 
         List<Program> result = testedInstance.getProgramsByName(0, 10, "name");
 
@@ -138,7 +137,7 @@ public class MarketoProgramRestClientTest {
     @Test
     public void shouldCloneProgram() throws Exception {
         Program clone = new Program();
-        given(executor.execute(isA(CloneProgram.class))).willReturn(Collections.singletonList(clone));
+        given(executor.execute(any(CloneProgram.class))).willReturn(Collections.singletonList(clone));
 
         Program result = testedInstance.cloneProgram(42, "blah", new FolderId(999, FolderType.FOLDER));
 
@@ -148,7 +147,7 @@ public class MarketoProgramRestClientTest {
     @Test
     public void shouldCloneExistingProgram() throws Exception {
         Program clone = new Program();
-        given(executor.execute(isA(CloneProgram.class))).willReturn(Collections.singletonList(clone));
+        given(executor.execute(any(CloneProgram.class))).willReturn(Collections.singletonList(clone));
 
         Program result = testedInstance.cloneProgram(new Program(), "blah");
 

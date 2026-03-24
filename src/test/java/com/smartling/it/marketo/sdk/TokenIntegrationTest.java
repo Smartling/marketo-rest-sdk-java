@@ -39,7 +39,7 @@ public class TokenIntegrationTest extends BaseIntegrationTest {
 
     @Test
     public void shouldReturnEmptyList() throws Exception {
-        List<Token> tokens = marketoTokenClient.getTokens(new FolderId(1039, FolderType.PROGRAM));
+        List<Token> tokens = marketoTokenClient.getTokens(new FolderId(2639, FolderType.PROGRAM));
 
         assertThat(tokens).isEmpty();
     }

@@ -5,15 +5,16 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientResponseContext;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
-
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
@@ -21,7 +22,15 @@ import java.util.List;
 import static com.smartling.marketo.sdk.rest.transport.logging.JsonClientLoggingFilter.REQUEST_BODY_PROPERTY;
 import static com.smartling.marketo.sdk.rest.transport.logging.JsonClientLoggingFilter.REQUEST_START_TIME;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyList;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class JsonClientLoggingFilterTest {
@@ -63,8 +72,6 @@ public class JsonClientLoggingFilterTest {
     @Test
     public void dontFilterRequestContextWhenLoggingDisabled() throws Exception{
         when(logger.enabled()).thenReturn(false);
-        when(requestContext.hasEntity()).thenReturn(true);
-        when(requestContext.getUri()).thenReturn(URI.create("http://some.com/emails"));
         target.filter(requestContext);
 
         verify(requestContext, never()).setEntityStream(any(OutputStream.class));
@@ -76,12 +83,12 @@ public class JsonClientLoggingFilterTest {
         when(logger.enabled()).thenReturn(true);
         when(requestContext.hasEntity()).thenReturn(true);
         when(requestContext.getUri()).thenReturn(URI.create("http://some.com/emails"));
-        when(requestContext.getEntityStream()).thenReturn(mock(OutputStream.class));
+        when(requestContext.getEntityStream()).thenReturn(new ByteArrayOutputStream());
 
         target.filter(requestContext);
 
-        verify(requestContext).setEntityStream(any(PipedOutputStream.class));
-        verify(requestContext).setProperty(eq(REQUEST_BODY_PROPERTY), any(PipedInputStream.class));
+        verify(requestContext).setEntityStream(any(MultiOutputStream.class));
+        verify(requestContext).setProperty(eq(REQUEST_BODY_PROPERTY), any(ByteArrayOutputStream.class));
         verify(requestContext).setProperty(eq(REQUEST_START_TIME), anyLong());
     }
 
@@ -98,7 +105,6 @@ public class JsonClientLoggingFilterTest {
     @Test
     public void dontFilterResponseContextWhenLoggingDisabled() throws Exception{
         when(logger.enabled()).thenReturn(false);
-        when(requestContext.getUri()).thenReturn(URI.create("http://some.com/emails"));
 
         target.filter(requestContext, responseContext);
 

@@ -26,7 +26,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -34,8 +34,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.isA;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -54,7 +53,7 @@ public class MarketoLandingPageRestClientTest {
     @Test
     public void shouldRequestLandingPageList() throws Exception {
         LandingPage landingPage = new LandingPage();
-        given(executor.execute(isA(GetLandingPages.class))).willReturn(Collections.singletonList(landingPage));
+        given(executor.execute(any(GetLandingPages.class))).willReturn(Collections.singletonList(landingPage));
 
         List<LandingPage> landingPages = testedInstance.getLandingPages(0, 10, null, null);
 
@@ -64,7 +63,7 @@ public class MarketoLandingPageRestClientTest {
     @Test
     public void shouldRequestLandingPageListWithFilter() throws Exception {
         LandingPage landingPage = new LandingPage();
-        given(executor.execute(isA(GetLandingPages.class))).willReturn(Collections.singletonList(landingPage));
+        given(executor.execute(any(GetLandingPages.class))).willReturn(Collections.singletonList(landingPage));
 
         List<LandingPage> landingPages = testedInstance.getLandingPages(0, 10, new FolderId(1, FolderType.FOLDER), Status.APPROVED);
 
@@ -99,7 +98,7 @@ public class MarketoLandingPageRestClientTest {
     @Test
     public void shouldGetLandingPageById() throws Exception {
         LandingPage landingPage = new LandingPage();
-        given(executor.execute(isA(GetLandingPageById.class))).willReturn(Collections.singletonList(landingPage));
+        given(executor.execute(any(GetLandingPageById.class))).willReturn(Collections.singletonList(landingPage));
 
         LandingPage result = testedInstance.getLandingPageById(42);
 
@@ -109,7 +108,7 @@ public class MarketoLandingPageRestClientTest {
     @Test
     public void shouldGetLandingPageByIdAndStatus() throws Exception {
         LandingPage landingPage = new LandingPage();
-        given(executor.execute(isA(GetLandingPageById.class))).willReturn(Collections.singletonList(landingPage));
+        given(executor.execute(any(GetLandingPageById.class))).willReturn(Collections.singletonList(landingPage));
 
         LandingPage result = testedInstance.getLandingPageById(42, Status.DRAFT);
 
@@ -121,7 +120,7 @@ public class MarketoLandingPageRestClientTest {
     {
         int nonExistingId = 42;
 
-        given(executor.execute(isA(GetLandingPageById.class))).willReturn(null);
+        given(executor.execute(any(GetLandingPageById.class))).willReturn(null);
 
         thrown.expect(MarketoApiException.class);
         thrown.expectMessage("LandingPage[id = 42] not found");
@@ -132,7 +131,7 @@ public class MarketoLandingPageRestClientTest {
     @Test
     public void shouldGetLandingPagesByName() throws Exception {
         LandingPage expected = new LandingPage();
-        given(executor.execute(isA(GetLandingPagesByName.class))).willReturn(Collections.singletonList(expected));
+        given(executor.execute(any(GetLandingPagesByName.class))).willReturn(Collections.singletonList(expected));
 
         List<LandingPage> result = testedInstance.getLandingPagesByName("name", new FolderId(42, FolderType.FOLDER), Status.APPROVED);
 
@@ -142,7 +141,7 @@ public class MarketoLandingPageRestClientTest {
     @Test
     public void shouldGetPaginatedLandingPagesByName() throws Exception {
         LandingPage expected = new LandingPage();
-        given(executor.execute(isA(GetLandingPagesByName.class))).willReturn(Collections.singletonList(expected));
+        given(executor.execute(any(GetLandingPagesByName.class))).willReturn(Collections.singletonList(expected));
 
         List<LandingPage> result = testedInstance.getLandingPagesByName(0, 10, "name", new FolderId(42, FolderType.FOLDER), Status.APPROVED);
 
@@ -152,7 +151,7 @@ public class MarketoLandingPageRestClientTest {
     @Test
     public void shouldGetLandingPageContent() throws Exception {
         LandingPageContentItem contentItem = new LandingPageTextContentItem();
-        given(executor.execute(isA(GetLandingPageContent.class))).willReturn(Collections.singletonList(contentItem));
+        given(executor.execute(any(GetLandingPageContent.class))).willReturn(Collections.singletonList(contentItem));
 
         List<LandingPageContentItem> result = testedInstance.getLandingPageContent(42);
 
@@ -162,7 +161,7 @@ public class MarketoLandingPageRestClientTest {
     @Test
     public void shouldCloneLandingPage() throws Exception {
         LandingPage clone = new LandingPage();
-        given(executor.execute(isA(CloneLandingPage.class))).willReturn(Collections.singletonList(clone));
+        given(executor.execute(any(CloneLandingPage.class))).willReturn(Collections.singletonList(clone));
 
         LandingPage result = testedInstance.cloneLandingPage(42, "blah", new FolderId(999, FolderType.FOLDER), 1);
 
@@ -172,7 +171,7 @@ public class MarketoLandingPageRestClientTest {
     @Test
     public void shouldCloneExistingLandingPage() throws Exception {
         LandingPage clone = new LandingPage();
-        given(executor.execute(isA(CloneLandingPage.class))).willReturn(Collections.singletonList(clone));
+        given(executor.execute(any(CloneLandingPage.class))).willReturn(Collections.singletonList(clone));
 
         LandingPage result = testedInstance.cloneLandingPage(new LandingPage(), "blah");
 
@@ -183,13 +182,13 @@ public class MarketoLandingPageRestClientTest {
     public void shouldUpdateLandingPageContent() throws Exception {
         testedInstance.updateLandingPageContent(42, Arrays.asList(new LandingPageTextContentItem(), new LandingPageTextContentItem()));
 
-        verify(executor, times(2)).execute(isA(UpdateLandingPageEditableSection.class));
+        verify(executor, times(2)).execute(any(UpdateLandingPageEditableSection.class));
     }
 
     @Test
     public void shouldGetLandingPageFullContent() throws Exception {
         LandingPageFullContent fullContent = new LandingPageFullContent();
-        given(executor.execute(isA(GetLandingPageFullContent.class))).willReturn(Collections.singletonList(fullContent));
+        given(executor.execute(any(GetLandingPageFullContent.class))).willReturn(Collections.singletonList(fullContent));
 
         LandingPageFullContent result = testedInstance.getLandingPageFullContent(42);
 
@@ -198,7 +197,7 @@ public class MarketoLandingPageRestClientTest {
 
     @Test(expected = ObjectNotFoundException.class)
     public void shouldThrowExceptionIfGetLandingPageFullContentReturnsEmptyList() throws Exception {
-        given(executor.execute(isA(GetLandingPageFullContent.class))).willReturn(Collections.emptyList());
+        given(executor.execute(any(GetLandingPageFullContent.class))).willReturn(Collections.emptyList());
 
         testedInstance.getLandingPageFullContent(42);
     }
@@ -207,20 +206,20 @@ public class MarketoLandingPageRestClientTest {
     public void shouldDiscardLandingPage() throws Exception {
         testedInstance.discardLandingPageDraft(42);
 
-        verify(executor).execute(isA(DiscardLandingPageDraft.class));
+        verify(executor).execute(any(DiscardLandingPageDraft.class));
     }
 
     @Test
     public void shouldUpdateLandingPageMetadata() throws Exception {
         testedInstance.updateLandingPageMetadata(42, "title");
 
-        verify(executor).execute(isA(UpdateLandingPageMetadata.class));
+        verify(executor).execute(any(UpdateLandingPageMetadata.class));
     }
 
     @Test
     public void shouldGetLandingPageVariables() throws Exception {
         LandingPageVariable variable = new LandingPageVariable();
-        given(executor.execute(isA(GetLandingPageVariables.class))).willReturn(Collections.singletonList(variable));
+        given(executor.execute(any(GetLandingPageVariables.class))).willReturn(Collections.singletonList(variable));
 
         List<LandingPageVariable> result = testedInstance.getLandingPageVariables(42);
 
@@ -230,7 +229,7 @@ public class MarketoLandingPageRestClientTest {
     @Test
     public void shouldGetLandingPageVariablesWithStatus() throws Exception {
         LandingPageVariable variable = new LandingPageVariable();
-        given(executor.execute(isA(GetLandingPageVariables.class))).willReturn(Collections.singletonList(variable));
+        given(executor.execute(any(GetLandingPageVariables.class))).willReturn(Collections.singletonList(variable));
 
         List<LandingPageVariable> result = testedInstance.getLandingPageVariables(42, Status.DRAFT);
 
@@ -241,11 +240,11 @@ public class MarketoLandingPageRestClientTest {
     public void shouldUpdateLandingPageVariables() throws Exception {
         LandingPageVariable variable = new LandingPageVariable();
         LandingPageVariable updated = new LandingPageVariable();
-        given(executor.execute(isA(UpdateLandingPageVariable.class))).willReturn(Collections.singletonList(updated));
+        given(executor.execute(any(UpdateLandingPageVariable.class))).willReturn(Collections.singletonList(updated));
 
         LandingPageVariable response = testedInstance.updateLandingPageVariable(42, variable);
 
         assertThat(response).isEqualTo(updated);
-        verify(executor).execute(isA(UpdateLandingPageVariable.class));
+        verify(executor).execute(any(UpdateLandingPageVariable.class));
     }
 }

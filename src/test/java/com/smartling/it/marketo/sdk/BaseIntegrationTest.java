@@ -41,11 +41,14 @@ public abstract class BaseIntegrationTest {
 
     @Before
     public void setUpBase() throws Exception {
-        marketoClientManager = MarketoRestClientManager.create(identityEndpoint, restEndpoint)
+        // Rate limiting: delay between tests to avoid hitting Marketo's 100 requests/20 seconds limit
+        Thread.sleep(1000L);
+
+        marketoClientManager = MarketoRestClientManager.create()
                 .withConnectionTimeout(2000)
                 .withSocketReadTimeout(20000)
                 .withRetryPolicy(RetryPolicy.NONE)
-                .withCredentials(clientId, clientSecret);
+                .withCredentials(identityEndpoint, restEndpoint, clientId, clientSecret);
     }
 
     protected class EntityWithName extends Condition<BaseEntity> {

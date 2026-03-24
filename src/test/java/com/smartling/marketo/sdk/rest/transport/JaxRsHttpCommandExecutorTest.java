@@ -2,19 +2,23 @@ package com.smartling.marketo.sdk.rest.transport;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.domain.email.EmailContentItem;
 import com.smartling.marketo.sdk.domain.email.EmailSnippetContentItem;
 import com.smartling.marketo.sdk.domain.email.EmailTextContentItem;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.domain.folder.FolderType;
 import com.smartling.marketo.sdk.rest.Command;
-import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.rest.FolderTypeNotSupportedException;
 import com.smartling.marketo.sdk.rest.ObjectNotFoundException;
 import com.smartling.marketo.sdk.rest.RequestLimitExceededException;
 import com.smartling.marketo.sdk.rest.UpdateContentNotAllowedException;
 import com.smartling.marketo.sdk.rest.command.email.LoadEmailContent;
 import net.minidev.json.JSONObject;
+import org.glassfish.jersey.client.ClientProperties;
+import org.glassfish.jersey.jackson.JacksonFeature;
+import org.glassfish.jersey.logging.LoggingFeature;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -22,24 +26,35 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.ArgumentMatchers;
 
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
 import java.net.URLEncoder;
-
-import static java.time.LocalDateTime.now;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Logger;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.client.WireMock.addRequestProcessingDelay;
+import static com.github.tomakehurst.wiremock.client.WireMock.containing;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.givenThat;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static java.time.LocalDateTime.now;
+import static java.util.logging.Level.INFO;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.glassfish.jersey.logging.LoggingFeature.Verbosity.PAYLOAD_ANY;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -70,10 +85,10 @@ public class JaxRsHttpCommandExecutorTest extends BaseTransportTest {
         when(command.getMethod()).thenReturn("GET");
         when(command.getPath()).thenReturn("/some/path");
 
-        when(tokenProvider.authenticate(getClientConnectionData(any(Client.class), CLIENT_ID)))
+        when(tokenProvider.authenticate(ArgumentMatchers.any(ClientConnectionData.class)))
                 .thenReturn(new Token(now().plusHours(1), "token"));
 
-        testedInstance = new JaxRsHttpCommandExecutor(IDENTITY_URL, REST_URL, CLIENT_ID, CLIENT_SECRET, tokenProvider, null);
+        testedInstance = new JaxRsHttpCommandExecutor(IDENTITY_URL, REST_URL, CLIENT_ID, CLIENT_SECRET, tokenProvider, buildTestClient(0));
     }
 
     @Test
@@ -201,7 +216,7 @@ public class JaxRsHttpCommandExecutorTest extends BaseTransportTest {
     @Test
     public void shouldReThrowExceptionWhenTokenProviderThrowException() throws Exception {
 
-        when(tokenProvider.authenticate(any(ClientConnectionData.class)))
+        when(tokenProvider.authenticate(ArgumentMatchers.any(ClientConnectionData.class)))
                 .thenThrow(new MarketoApiException("401", "unauthorized: Error!"));
 
         thrown.expect(MarketoApiException.class);
@@ -358,7 +373,7 @@ public class JaxRsHttpCommandExecutorTest extends BaseTransportTest {
     public void shouldSupportSocketTimeoutConfiguration() throws Exception {
         addRequestProcessingDelay(5 * 1000);
 
-        testedInstance.setSocketReadTimeout(1000);
+        testedInstance = new JaxRsHttpCommandExecutor(IDENTITY_URL, REST_URL, CLIENT_ID, CLIENT_SECRET, tokenProvider, buildTestClient(1000));
         testedInstance.execute(command);
     }
 
@@ -489,5 +504,16 @@ public class JaxRsHttpCommandExecutorTest extends BaseTransportTest {
         item.setType(type);
         item.setValue(value);
         return item;
+    }
+
+    private static Client buildTestClient(int socketReadTimeout) {
+        Client client = ClientBuilder.newClient()
+                .register(JacksonFeature.class)
+                .register(ObjectMapperProvider.class)
+                .register(MultiPartFeature.class)
+                .register(new LoggingFeature(Logger.getLogger("PayloadLogger"), INFO, PAYLOAD_ANY, null));
+        client.property(ClientProperties.CONNECT_TIMEOUT, 0);
+        client.property(ClientProperties.READ_TIMEOUT, socketReadTimeout);
+        return client;
     }
 }

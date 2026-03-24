@@ -11,17 +11,11 @@ import com.smartling.marketo.sdk.rest.HttpCommandExecutor;
 import com.smartling.marketo.sdk.rest.ObjectNotFoundException;
 import com.smartling.marketo.sdk.rest.RequestLimitExceededException;
 import com.smartling.marketo.sdk.rest.UpdateContentNotAllowedException;
-import com.smartling.marketo.sdk.rest.transport.logging.JsonClientLoggingFilter;
-import org.glassfish.jersey.client.ClientProperties;
-import org.glassfish.jersey.jackson.JacksonFeature;
-import org.glassfish.jersey.logging.LoggingFeature;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.MultiPart;
-import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.media.multipart.file.StreamDataBodyPart;
 
 import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
@@ -39,10 +33,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
-import java.util.logging.Logger;
-
-import static java.util.logging.Level.INFO;
-import static org.glassfish.jersey.logging.LoggingFeature.Verbosity.PAYLOAD_ANY;
 
 public class JaxRsHttpCommandExecutor implements HttpCommandExecutor {
     private final static ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -68,32 +58,13 @@ public class JaxRsHttpCommandExecutor implements HttpCommandExecutor {
     private final TokenProvider tokenProvider;
     private final Client client;
 
-    public JaxRsHttpCommandExecutor(String identityUrl, String restUrl, String clientId, String clientSecret, TokenProvider tokenProvider, JsonClientLoggingFilter loggingFilter) {
+    public JaxRsHttpCommandExecutor(String identityUrl, String restUrl, String clientId, String clientSecret, TokenProvider tokenProvider, Client client) {
         this.identityUrl = identityUrl;
         this.restUrl = restUrl;
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         this.tokenProvider = tokenProvider;
-        Client client = ClientBuilder.newClient()
-                .register(JacksonFeature.class)
-                .register(ObjectMapperProvider.class)
-                .register(MultiPartFeature.class);
-
-        if (loggingFilter == null) {
-            client = client.register(new LoggingFeature(Logger.getLogger("PayloadLogger"), INFO, PAYLOAD_ANY, null));
-        } else {
-            client = client.register(loggingFilter);
-        }
-
         this.client = client;
-    }
-
-    public void setConnectionTimeout(int timeout) {
-        client.property(ClientProperties.CONNECT_TIMEOUT, timeout);
-    }
-
-    public void setSocketReadTimeout(int timeout) {
-        client.property(ClientProperties.READ_TIMEOUT, timeout);
     }
 
     @Override
