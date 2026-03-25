@@ -1,6 +1,7 @@
 package com.smartling.marketo.sdk.rest;
 
 import com.smartling.marketo.sdk.MarketoEmailClient;
+import com.smartling.marketo.sdk.rest.MarketoRestClientManagerFactory;
 import com.smartling.marketo.sdk.MarketoEmailTemplateClient;
 import com.smartling.marketo.sdk.MarketoFolderClient;
 import com.smartling.marketo.sdk.MarketoLandingPageClient;
@@ -19,12 +20,14 @@ public class MarketoRestClientManagerTest {
 
     @Before
     public void setUp() {
-        testedInstance = MarketoRestClientManager.create().withCredentials("IdentityURL", "RestURL", "ClientId", "ClientSecret");
+        testedInstance = new MarketoRestClientManagerFactory.Builder()
+                .build()
+                .create("IdentityURL", "RestURL", "ClientId", "ClientSecret");
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldValidateRetryPolicy() throws Exception {
-        MarketoRestClientManager.create()
+        new MarketoRestClientManagerFactory.Builder()
                 .withRetryPolicy(null);
     }
 

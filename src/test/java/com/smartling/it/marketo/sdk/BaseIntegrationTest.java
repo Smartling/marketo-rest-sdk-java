@@ -4,7 +4,7 @@ import com.smartling.marketo.sdk.domain.Asset;
 import com.smartling.marketo.sdk.domain.BaseEntity;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.MarketoClientManager;
-import com.smartling.marketo.sdk.rest.MarketoRestClientManager;
+import com.smartling.marketo.sdk.rest.MarketoRestClientManagerFactory;
 import com.smartling.marketo.sdk.rest.RetryPolicy;
 import org.assertj.core.api.Condition;
 import org.junit.Before;
@@ -44,11 +44,12 @@ public abstract class BaseIntegrationTest {
         // Rate limiting: delay between tests to avoid hitting Marketo's 100 requests/20 seconds limit
         Thread.sleep(1000L);
 
-        marketoClientManager = MarketoRestClientManager.create()
+        marketoClientManager = new MarketoRestClientManagerFactory.Builder()
                 .withConnectionTimeout(2000)
                 .withSocketReadTimeout(20000)
                 .withRetryPolicy(RetryPolicy.NONE)
-                .withCredentials(identityEndpoint, restEndpoint, clientId, clientSecret);
+                .build()
+                .create(identityEndpoint, restEndpoint, clientId, clientSecret);
     }
 
     protected class EntityWithName extends Condition<BaseEntity> {
