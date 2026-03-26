@@ -1,5 +1,6 @@
 package com.smartling.marketo.sdk.rest.command;
 
+import com.smartling.marketo.sdk.domain.email.DynamicContentField;
 import com.smartling.marketo.sdk.domain.email.Email;
 import com.smartling.marketo.sdk.rest.command.email.UpdateEmailContent;
 import org.junit.Test;
@@ -39,5 +40,18 @@ public class UpdateEmailContentTest {
     public void shouldContainFromName() throws Exception {
         Map<String, Object> parameters = updateEmailContent.getParameters();
         assertThat(parameters).contains(entry("fromName", "{\"type\":\"Text\",\"value\":\"From SDK commiter\"}"));
+    }
+
+    @Test
+    public void shouldSerializeDynamicContentSubject() throws Exception {
+        DynamicContentField dynamicSubject = new DynamicContentField();
+        dynamicSubject.setValue("SC1zdWJqZWN0");
+        Email email = new Email();
+        email.setId(1);
+        email.setSubjectField(dynamicSubject);
+
+        Map<String, Object> parameters = new UpdateEmailContent(email).getParameters();
+
+        assertThat(parameters).contains(entry("subject", "{\"type\":\"DynamicContent\",\"value\":\"SC1zdWJqZWN0\"}"));
     }
 }
