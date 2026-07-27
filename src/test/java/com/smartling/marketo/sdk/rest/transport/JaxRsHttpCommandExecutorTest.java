@@ -178,6 +178,18 @@ public class JaxRsHttpCommandExecutorTest extends BaseTransportTest {
     }
 
     @Test
+    public void shouldHandleResponseWithExtraFieldsWithoutTrailingTokenError() throws Exception {
+        given(command.getPath()).willReturn("/some/path");
+        givenThat(get(path("/rest/some/path")).willReturn(
+                aJsonResponse("{\"success\": true, \"result\": {\"string\": \"test\"}, \"requestId\": \"abc#123\", \"moreInfo\": \"extra\"}")));
+
+        Data response = testedInstance.execute(command);
+
+        assertThat(response).isNotNull();
+        assertThat(response.string).isEqualTo("test");
+    }
+
+    @Test
     public void shouldQueryParameters() throws Exception {
         given(command.getPath()).willReturn("/some/path");
         given(command.getParameters()).willReturn(Collections.singletonMap("key", "value"));
