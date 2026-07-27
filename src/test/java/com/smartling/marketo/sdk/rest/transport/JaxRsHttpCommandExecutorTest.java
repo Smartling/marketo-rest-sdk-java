@@ -14,7 +14,9 @@ import com.smartling.marketo.sdk.rest.ObjectNotFoundException;
 import com.smartling.marketo.sdk.rest.RequestLimitExceededException;
 import com.smartling.marketo.sdk.rest.UpdateContentNotAllowedException;
 import com.smartling.marketo.sdk.rest.command.email.LoadEmailContent;
-import net.minidev.json.JSONObject;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.LinkedHashMap;
 import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.logging.LoggingFeature;
@@ -29,9 +31,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.ArgumentMatchers;
 
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.ProcessingException;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
 import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.Collections;
@@ -39,7 +41,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.addRequestProcessingDelay;
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
@@ -371,7 +372,8 @@ public class JaxRsHttpCommandExecutorTest extends BaseTransportTest {
 
     @Test(timeout = 2 * 1000, expected = ProcessingException.class)
     public void shouldSupportSocketTimeoutConfiguration() throws Exception {
-        addRequestProcessingDelay(5 * 1000);
+        stubFor(get(urlStartingWith("/rest")).willReturn(
+                aJsonResponse("{\"success\": true}").withFixedDelay(5000)));
 
         testedInstance = new JaxRsHttpCommandExecutor(IDENTITY_URL, REST_URL, CLIENT_ID, CLIENT_SECRET, tokenProvider, buildTestClient(1000));
         testedInstance.execute(command);
@@ -412,91 +414,96 @@ public class JaxRsHttpCommandExecutorTest extends BaseTransportTest {
         }
     }
 
+    private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
+
+    private static String toJson(Object obj) {
+        try {
+            return JSON_MAPPER.writeValueAsString(obj);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private String json()
     {
-        List<JSONObject> value = Arrays.asList(
+        List<LinkedHashMap<String, Object>> value = Arrays.asList(
                 jsonTextContentItemValue("HTML", "<p>html"),
                 jsonTextContentItemValue("Text", "text")
         );
 
-        List<JSONObject> result = Collections.singletonList(
+        List<LinkedHashMap<String, Object>> result = Collections.singletonList(
                 jsonTextContentItem(value)
         );
 
-        JSONObject response = jsonResponse(result);
-        return response.toJSONString();
+        return toJson(jsonResponse(result));
     }
 
     private String jsonWithNoTextValue()
     {
-        List<JSONObject> value = Collections.singletonList(
+        List<LinkedHashMap<String, Object>> value = Collections.singletonList(
                 jsonTextContentItemValue("Text", null)
         );
 
-        List<JSONObject> result = Collections.singletonList(
+        List<LinkedHashMap<String, Object>> result = Collections.singletonList(
                 jsonTextContentItem(value)
         );
 
-        JSONObject response = jsonResponse(result);
-        return response.toJSONString();
+        return toJson(jsonResponse(result));
     }
 
     private String jsonWithEmptyTextValue()
     {
-        List<JSONObject> value = Collections.singletonList(
+        List<LinkedHashMap<String, Object>> value = Collections.singletonList(
                 jsonTextContentItemValue("Text", "")
         );
 
-        List<JSONObject> result = Collections.singletonList(
+        List<LinkedHashMap<String, Object>> result = Collections.singletonList(
                 jsonTextContentItem(value)
         );
 
-        JSONObject response = jsonResponse(result);
-        return response.toJSONString();
+        return toJson(jsonResponse(result));
     }
 
     private String jsonWithSnippetItem()
     {
-        List<JSONObject> value = Arrays.asList(
+        List<LinkedHashMap<String, Object>> value = Arrays.asList(
                 jsonTextContentItemValue("HTML", "<p>html"),
                 jsonTextContentItemValue("Text", "text")
         );
 
-        List<JSONObject> result = Arrays.asList(jsonSnippetContentItem(), jsonTextContentItem(value));
+        List<LinkedHashMap<String, Object>> result = Arrays.asList(jsonSnippetContentItem(), jsonTextContentItem(value));
 
-        JSONObject response = jsonResponse(result);
-        return response.toJSONString();
+        return toJson(jsonResponse(result));
     }
 
-    private JSONObject jsonTextContentItem(List<JSONObject> value) {
-        return new JSONObject() {{
-            this.put("htmlId", "edit_content");
-            this.put("value", value);
-            this.put("contentType", CONTENT_TYPE_TEXT);
-        }};
+    private LinkedHashMap<String, Object> jsonTextContentItem(List<LinkedHashMap<String, Object>> value) {
+        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+        map.put("htmlId", "edit_content");
+        map.put("value", value);
+        map.put("contentType", CONTENT_TYPE_TEXT);
+        return map;
     }
 
-    private JSONObject jsonSnippetContentItem() {
-        return new JSONObject() {{
-            this.put("htmlId", "edit_content");
-            this.put("value", "Snippet text value");
-            this.put("contentType", CONTENT_TYPE_SNIPPET);
-        }};
+    private LinkedHashMap<String, Object> jsonSnippetContentItem() {
+        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+        map.put("htmlId", "edit_content");
+        map.put("value", "Snippet text value");
+        map.put("contentType", CONTENT_TYPE_SNIPPET);
+        return map;
     }
 
-    private JSONObject jsonResponse(List<JSONObject> result) {
-        JSONObject response = new JSONObject();
-        response.put("success", true);
-        response.put("result", result);
-        return response;
+    private LinkedHashMap<String, Object> jsonResponse(List<LinkedHashMap<String, Object>> result) {
+        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+        map.put("success", true);
+        map.put("result", result);
+        return map;
     }
 
-    private JSONObject jsonTextContentItemValue(String type, String value) {
-        return new JSONObject()
-        {{
-            this.put("type", type);
-            this.put("value", value);
-        }};
+    private LinkedHashMap<String, Object> jsonTextContentItemValue(String type, String value) {
+        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+        map.put("type", type);
+        map.put("value", value);
+        return map;
     }
 
     private EmailTextContentItem.Value getTextContentItemValue(String type, String value) {
