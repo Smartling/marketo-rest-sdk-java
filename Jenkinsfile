@@ -4,8 +4,8 @@ pipeline {
     }
 
     tools {
-        maven 'maven-3'
-        jdk 'java-17'
+        maven 'Maven 3'
+        jdk 'JDK17'
     }
 
     options {
