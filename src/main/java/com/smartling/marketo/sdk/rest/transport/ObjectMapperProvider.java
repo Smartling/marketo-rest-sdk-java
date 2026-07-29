@@ -36,7 +36,8 @@ public class ObjectMapperProvider implements ContextResolver<ObjectMapper> {
 
     private static final class VoidDeserializer extends JsonDeserializer<Void> {
         @Override
-        public Void deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) {
+        public Void deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws java.io.IOException {
+            jsonParser.skipChildren();
             return null;
         }
     }
