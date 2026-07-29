@@ -216,4 +216,15 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <distributionManagement>
+        <repository>
+            <id>smartling-releases</id>
+            <url>https://artifactory.smartling.net/artifactory/local-releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>smartling-snapshots</id>
+            <url>https://artifactory.smartling.net/artifactory/local-snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
 </project>

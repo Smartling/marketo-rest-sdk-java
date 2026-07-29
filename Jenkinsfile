@@ -35,17 +35,16 @@ pipeline {
         }
 
         stage('Publish') {
-            when {
-                branch 'master'
-            }
             steps {
                 withCredentials([
-                    usernamePassword(credentialsId: 'Artifactory file', usernameVariable: 'artifactory_user', passwordVariable: 'artifactory_password')
+                    usernamePassword(credentialsId: 'Artifactory file', usernameVariable: 'continuous_integration', passwordVariable: 'ci_pass')
                 ]) {
-                    sh '''
-                        mvn deploy --settings /opt/scripts/build/env-definitions/settings.xml \
-                            -DskipTests
-                    '''
+                    withEnv(["artifactory_user=${continuous_integration}", "artifactory_password=${ci_pass}"]) {
+                        sh '''
+                            mvn deploy --settings .mvn/settings.xml \
+                                -DskipTests
+                        '''
+                    }
                 }
             }
         }
