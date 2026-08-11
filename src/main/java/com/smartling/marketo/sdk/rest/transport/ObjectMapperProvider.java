@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.smartling.marketo.sdk.domain.landingpage.LandingPageContentItem;
 import com.smartling.marketo.sdk.domain.landingpage.LandingPageContentItemDeserializer;
 
-import javax.ws.rs.ext.ContextResolver;
+import jakarta.ws.rs.ext.ContextResolver;
 import java.text.SimpleDateFormat;
 
 public class ObjectMapperProvider implements ContextResolver<ObjectMapper> {
@@ -18,6 +18,7 @@ public class ObjectMapperProvider implements ContextResolver<ObjectMapper> {
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         objectMapper.configure(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE, false);
         objectMapper.configure(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_AS_NULL, true);
+        objectMapper.configure(DeserializationFeature.FAIL_ON_TRAILING_TOKENS, false);
         objectMapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         objectMapper.setVisibility(objectMapper.getSerializationConfig().getDefaultVisibilityChecker()
@@ -35,7 +36,8 @@ public class ObjectMapperProvider implements ContextResolver<ObjectMapper> {
 
     private static final class VoidDeserializer extends JsonDeserializer<Void> {
         @Override
-        public Void deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) {
+        public Void deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws java.io.IOException {
+            jsonParser.skipChildren();
             return null;
         }
     }

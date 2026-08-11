@@ -4,9 +4,9 @@ import com.google.common.base.Preconditions;
 import com.smartling.marketo.sdk.AuthenticationErrorException;
 import com.smartling.marketo.sdk.MarketoApiException;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.time.LocalDateTime;
 
 import static java.time.LocalDateTime.now;

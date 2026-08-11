@@ -1,6 +1,6 @@
 package com.smartling.marketo.sdk.rest.transport;
 
-import javax.ws.rs.client.Client;
+import jakarta.ws.rs.client.Client;
 
 class ClientConnectionData {
     private final Client wsClient;

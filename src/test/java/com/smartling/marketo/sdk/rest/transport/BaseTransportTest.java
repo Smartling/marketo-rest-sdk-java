@@ -1,16 +1,16 @@
 package com.smartling.marketo.sdk.rest.transport;
 
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
-import com.github.tomakehurst.wiremock.client.UrlMatchingStrategy;
-import com.github.tomakehurst.wiremock.client.ValueMatchingStrategy;
+import com.github.tomakehurst.wiremock.matching.UrlPattern;
+import com.github.tomakehurst.wiremock.matching.StringValuePattern;
 import com.smartling.marketo.sdk.MarketoApiException;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
 import java.util.Random;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -41,15 +41,15 @@ public abstract class BaseTransportTest {
         };
     }
 
-    ValueMatchingStrategy withFormParam(String key, String value) {
+    StringValuePattern withFormParam(String key, String value) {
         return containing(key + "=" + value);
     }
 
-    static UrlMatchingStrategy urlStartingWith(String path) {
+    static UrlPattern urlStartingWith(String path) {
         return urlMatching(path + ".*");
     }
 
-    static UrlMatchingStrategy path(String path) {
+    static UrlPattern path(String path) {
         return urlMatching(path + "(\\?.+)?");
     }
 
