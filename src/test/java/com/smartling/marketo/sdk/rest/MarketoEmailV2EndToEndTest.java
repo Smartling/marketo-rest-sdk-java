@@ -2,6 +2,7 @@ package com.smartling.marketo.sdk.rest;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.MarketoEmailV2Client;
@@ -222,7 +223,7 @@ public class MarketoEmailV2EndToEndTest
         wireMockRule.stubFor(get(urlPathEqualTo(FILTER_PATH)).willReturn(jsonResponse(String.format(ERROR_BODY_TEMPLATE, code))));
     }
 
-    private static com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder jsonResponse(String body)
+    private static ResponseDefinitionBuilder jsonResponse(String body)
     {
         return aResponse()
                 .withHeader("Content-Type", "application/json")
