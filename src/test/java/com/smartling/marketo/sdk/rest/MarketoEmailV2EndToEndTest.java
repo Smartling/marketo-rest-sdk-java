@@ -191,14 +191,13 @@ public class MarketoEmailV2EndToEndTest
     }
 
     @Test
-    public void shouldSurface603OnGetAsMarketoApiExceptionNotObjectNotFound()
+    public void shouldMapError603OnGetToObjectNotFound()
     {
         wireMockRule.stubFor(get(urlPathEqualTo(GET_PATH)).willReturn(jsonResponse(String.format(ERROR_BODY_TEMPLATE, "603"))));
 
         Throwable thrown = catchThrowable(() -> client.loadEmailById(EMAIL_ID));
 
-        assertThat(thrown).isExactlyInstanceOf(MarketoApiException.class);
-        assertThat(thrown).isNotInstanceOf(ObjectNotFoundException.class);
+        assertThat(thrown).isExactlyInstanceOf(ObjectNotFoundException.class);
         assertThat(((MarketoApiException) thrown).getErrorCode()).isEqualTo("603");
     }
 

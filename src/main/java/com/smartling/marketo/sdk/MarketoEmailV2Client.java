@@ -36,11 +36,11 @@ public interface MarketoEmailV2Client
      * identifies: {@link EmailV2#getState()} is {@code published} or {@code draft}. The API's get-by-id
      * call has no {@code status} parameter, so the id alone selects the version.
      * <p>
-     * A missing id comes back from the API as error {@code 603} ("Access denied"),
-     * surfaced as {@link MarketoApiException} with code {@code 603}, not as
-     * {@link com.smartling.marketo.sdk.rest.ObjectNotFoundException}. This client throws that exception
-     * when the result array is null or empty; the transport also maps error code {@code 710} to it,
-     * and error code {@code 702} unless its message is an "update content not allowed" message.
+     * A missing id comes back from the API as error {@code 603} ("Access denied"). This client reports it
+     * as {@link com.smartling.marketo.sdk.rest.ObjectNotFoundException} with the error code {@code 603}, so
+     * that callers do not retry it. That exception is also thrown when the result array is null or empty;
+     * the transport maps error code {@code 710} to it, and error code {@code 702} unless its message is an
+     * "update content not allowed" message. Every other API error stays a {@link MarketoApiException}.
      *
      * @throws IllegalArgumentException if the id is not all digits
      */

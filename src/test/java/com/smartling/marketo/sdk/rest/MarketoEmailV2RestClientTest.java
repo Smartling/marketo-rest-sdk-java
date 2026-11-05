@@ -1,5 +1,6 @@
 package com.smartling.marketo.sdk.rest;
 
+import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.domain.v2.email.EmailV2;
 import com.smartling.marketo.sdk.domain.v2.email.EmailV2Filter;
 import com.smartling.marketo.sdk.domain.v2.email.EmailV2Page;
@@ -17,6 +18,7 @@ import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -28,6 +30,9 @@ public class MarketoEmailV2RestClientTest
     private static final String WORKSPACE_ID = "test-workspace";
     private static final String EMAIL_ID = "42";
     private static final String LEADING_ZERO_ID = "007";
+    private static final String MISSING_EMAIL_ERROR_CODE = "603";
+    private static final String ACCESS_DENIED_MESSAGE = "Access denied";
+    private static final String INVALID_PARAMETER_ERROR_CODE = "611";
 
     @Mock
     private HttpCommandExecutor executor;
@@ -101,6 +106,27 @@ public class MarketoEmailV2RestClientTest
         assertThatThrownBy(() -> testedInstance.loadEmailById(EMAIL_ID))
                 .isInstanceOf(ObjectNotFoundException.class)
                 .hasMessageContaining("Email[id = 42] not found");
+    }
+
+    @Test
+    public void shouldMapErrorCode603ToObjectNotFound() throws Exception
+    {
+        given(executor.execute(any(GetEmailById.class)))
+                .willThrow(new MarketoApiException(MISSING_EMAIL_ERROR_CODE, ACCESS_DENIED_MESSAGE));
+
+        Throwable thrown = catchThrowable(() -> testedInstance.loadEmailById(EMAIL_ID));
+
+        assertThat(thrown).isExactlyInstanceOf(ObjectNotFoundException.class).hasMessage(ACCESS_DENIED_MESSAGE);
+        assertThat(((ObjectNotFoundException) thrown).getErrorCode()).isEqualTo(MISSING_EMAIL_ERROR_CODE);
+    }
+
+    @Test
+    public void shouldRethrowOtherApiErrorsUnchanged() throws Exception
+    {
+        MarketoApiException original = new MarketoApiException(INVALID_PARAMETER_ERROR_CODE, "bad parameter");
+        given(executor.execute(any(GetEmailById.class))).willThrow(original);
+
+        assertThatThrownBy(() -> testedInstance.loadEmailById(EMAIL_ID)).isSameAs(original);
     }
 
     @Test

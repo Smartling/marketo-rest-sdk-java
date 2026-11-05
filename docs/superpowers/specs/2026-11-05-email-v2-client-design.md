@@ -59,7 +59,7 @@ swagger**, so they are not in this design.
 | `scriptEngine` | Accepted: `VELOCITY` (matched all 11 emails) and `AJO` (matched none). Rejected with `611`: `velocity`, `Velocity`, `HANDLEBARS`, `handlebars`, `HANDLEBAR`, `MUSTACHE`, `AMPSCRIPT`, `JAVASCRIPT`, `SMARTY`, `MARKETO`; the match is case-sensitive. |
 | `includeArchived`, `isValueNonNullable` | Accepted; no visible effect on this data (no archived emails to observe). |
 | HTTP status of errors | Every error probed (`603`, `611`, `704`, bad `sortKey`, bad date, bad `scriptEngine`, missing id, bad token) came back as **HTTP 200** with `success:false`. The "HTTP 400/500" inside the `611` message text refers to a downstream call, not this response. |
-| Missing / non-numeric id on get | `603 Access denied`, not a "not found" code. |
+| Missing / non-numeric id on get | `603 Access denied`, not one of the codes the executor maps to "not found" (`702`, `710`). |
 | Timestamps in responses | `"2026-10-30T12:30:07Z+0000"`. This matches the SDK's existing `ObjectMapper` date format `yyyy-MM-dd'T'HH:mm:ss'Z'Z`. |
 | List item vs get | List items have no `data`. Get returns `data.html.body`, `data.text.body`, `data.text.syncFromHtml`. |
 | URL | Neither response carries an external/web URL for the email. |
@@ -134,9 +134,9 @@ which share flat packages with their v1 siblings. `SortOrder` is a generic name:
 - `MarketoEmailV2Client` (interface, in `com.smartling.marketo.sdk` beside `MarketoEmailClient` and
   `MarketoClientManager`) and `rest/MarketoEmailV2RestClient`:
   - `EmailV2 loadEmailById(String id)` — throws `ObjectNotFoundException` if the result is null or the array is empty,
-    mirroring v1 (`MarketoEmailRestClient` null-checks before `isEmpty()`). On the sandbox a missing id returns `603`,
-    not an empty array, so this branch is a safety net kept for parity with v1 and has
-    a unit test. The API types the id as a string and returns it as a JSON string (`"6885"`). The client rejects a
+    mirroring v1 (`MarketoEmailRestClient` null-checks before `isEmpty()`), and rethrows error `603` as
+    `ObjectNotFoundException` (see Error handling). On the sandbox a missing id returns `603`, not an empty array,
+    so the empty-array branch is kept for parity with v1 and has a unit test. The API types the id as a string and returns it as a JSON string (`"6885"`). The client rejects a
     null/blank id, or one that is not all digits (`[0-9]+`), with `IllegalArgumentException` **before** building the
     command, because the id becomes a URL path segment: Jersey treats `{...}` as a template (unchecked exception), `/`
     or `?` would change the route, `null` would become `.../email/null`, and a word such as `filter` would hit the list
@@ -166,8 +166,11 @@ rate-limit response was not observed. Three v2 facts matter to callers:
 
 - `611` (bad `sortKey`, date format, `scriptEngine`, or `sortOrder` without `sortKey`) surfaces as `MarketoApiException`
   with code `611`.
-- A missing id returns `603 Access denied`. The SDK does **not** map
-  `603` to `ObjectNotFoundException`; it surfaces as `MarketoApiException` with code `603`.
+- A missing id returns `603 Access denied`. `MarketoEmailV2RestClient.loadEmailById` rethrows it as
+  `ObjectNotFoundException` with the same error code and message, so that callers do not retry a missing email:
+  the provider wraps each SDK client in a retry proxy whose classifier retries a plain `MarketoApiException` and
+  does not retry `ObjectNotFoundException`. The mapping is in the client, not in the shared executor, so the v1
+  commands are unaffected.
 - Marketo's `60019` and similar generic codes stay `MarketoApiException`.
 
 ### Versioning
@@ -202,7 +205,8 @@ JUnit 4, Mockito and AssertJ as in the existing tests; WireMock for transport.
   keeps existing `%XX` as written and treats `{...}` as a template, so `FilterEmails` percent-encodes its string filters
   and each `status` element (UTF-8, `%` as `%25`, `+` as `%2B`, space as `%20`) before `queryParam`; `FilterEmailsTest`
   pins the encoded form and this end-to-end test pins the round trip.
-- A `603` on get by id end to end is a `MarketoApiException` with code `603`, not `ObjectNotFoundException`.
+- A `603` on get by id end to end is an `ObjectNotFoundException` with code `603`; the client unit tests also cover that
+  another API error (`611`) is rethrown unchanged.
 - `MarketoEmailV2RestClientTest`: delegates to the executor with the right command; empty array → `ObjectNotFoundException`.
 - Deserialization tests using the fixtures `src/test/resources/json/email-v2-*.json` (sanitized
   real sandbox payloads, HTML body shortened): `EmailV2` and

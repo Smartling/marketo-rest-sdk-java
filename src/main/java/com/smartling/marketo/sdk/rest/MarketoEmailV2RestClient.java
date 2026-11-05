@@ -13,6 +13,8 @@ import java.util.Objects;
 
 public class MarketoEmailV2RestClient implements MarketoEmailV2Client
 {
+    private static final String MISSING_EMAIL_ERROR_CODE = "603";
+
     private final HttpCommandExecutor httpCommandExecutor;
 
     MarketoEmailV2RestClient(HttpCommandExecutor httpCommandExecutor)
@@ -38,7 +40,23 @@ public class MarketoEmailV2RestClient implements MarketoEmailV2Client
             throw new IllegalArgumentException("id must be a number, but was: " + id);
         }
 
-        List<EmailV2> emails = httpCommandExecutor.execute(new GetEmailById(id));
+        // Load the email, reporting Marketo's "missing email" error as not found
+        List<EmailV2> emails;
+        try
+        {
+            emails = httpCommandExecutor.execute(new GetEmailById(id));
+        }
+        catch (MarketoApiException e)
+        {
+            // Marketo answers a missing email with error 603; report it as not found so that callers do not retry it
+            if (MISSING_EMAIL_ERROR_CODE.equals(e.getErrorCode()))
+            {
+                throw new ObjectNotFoundException(e.getErrorCode(), e.getMessage());
+            }
+
+            throw e;
+        }
+
         if (emails == null || emails.isEmpty())
         {
             throw new ObjectNotFoundException(String.format("Email[id = %s] not found", id));
