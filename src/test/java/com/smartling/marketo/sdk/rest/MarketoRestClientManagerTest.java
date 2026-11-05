@@ -1,6 +1,7 @@
 package com.smartling.marketo.sdk.rest;
 
 import com.smartling.marketo.sdk.MarketoEmailClient;
+import com.smartling.marketo.sdk.MarketoEmailV2Client;
 import com.smartling.marketo.sdk.rest.MarketoRestClientManagerFactory;
 import com.smartling.marketo.sdk.MarketoEmailTemplateClient;
 import com.smartling.marketo.sdk.MarketoFolderClient;
@@ -48,7 +49,15 @@ public class MarketoRestClientManagerTest {
     }
 
     @Test
-    public void shouldReturnEmailTemplateRestClient() throws Exception {
+    public void shouldReturnEmailV2RestClient() throws Exception {
+        final MarketoEmailV2Client client = testedInstance.getMarketoEmailV2Client();
+
+        assertThat(client).isNotNull();
+        assertThat(client).isInstanceOf(MarketoEmailV2RestClient.class);
+    }
+
+    @Test
+    public void shouldReturnEmailTemplateRestClient()throws Exception {
         final MarketoEmailTemplateClient client = testedInstance.getMarketoEmailTemplateClient();
 
         assertThat(client).isNotNull();
