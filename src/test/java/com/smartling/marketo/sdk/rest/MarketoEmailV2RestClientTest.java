@@ -62,6 +62,16 @@ public class MarketoEmailV2RestClientTest
     }
 
     @Test
+    public void shouldRejectNullFilter()
+    {
+        assertThatThrownBy(() -> testedInstance.filterEmails(null))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("filter must not be null");
+
+        verifyNoInteractions(executor);
+    }
+
+    @Test
     public void shouldReturnFirstEmailForGet() throws Exception
     {
         EmailV2 first = new EmailV2();

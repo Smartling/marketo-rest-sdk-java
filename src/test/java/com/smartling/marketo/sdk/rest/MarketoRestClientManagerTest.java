@@ -57,7 +57,7 @@ public class MarketoRestClientManagerTest {
     }
 
     @Test
-    public void shouldReturnEmailTemplateRestClient()throws Exception {
+    public void shouldReturnEmailTemplateRestClient() throws Exception {
         final MarketoEmailTemplateClient client = testedInstance.getMarketoEmailTemplateClient();
 
         assertThat(client).isNotNull();

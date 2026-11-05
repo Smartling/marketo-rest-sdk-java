@@ -23,6 +23,8 @@ public class MarketoEmailV2RestClient implements MarketoEmailV2Client
     @Override
     public EmailV2Page filterEmails(EmailV2Filter filter) throws MarketoApiException
     {
+        Objects.requireNonNull(filter, "filter must not be null");
+
         EmailV2Page page = httpCommandExecutor.execute(new FilterEmails(filter));
         return page != null ? page : EmailV2Page.empty();
     }

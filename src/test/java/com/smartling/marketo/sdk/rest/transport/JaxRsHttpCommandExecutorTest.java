@@ -421,7 +421,6 @@ public class JaxRsHttpCommandExecutorTest extends BaseTransportTest {
         verify(getRequestedFor(urlStartingWith("/rest")).withQueryParam("folderId", equalTo(FOLDER_ID_JSON)));
     }
 
-    @SuppressWarnings("unused")
     @Test
     public void shouldSendCommandHeaders() throws Exception {
         given(command.getHeaders()).willReturn(Collections.singletonMap(HEADER_NAME, HEADER_VALUE));
@@ -482,6 +481,7 @@ public class JaxRsHttpCommandExecutorTest extends BaseTransportTest {
     private static class JsonList extends ArrayList<String> implements HasToBeMappedToJson {
     }
 
+    @SuppressWarnings("unused")
     private static class Data {
         private String string;
         private Date date;

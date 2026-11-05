@@ -37,6 +37,16 @@ public class EmailV2FilterTest
     }
 
     @Test
+    public void shouldAcceptImmutableStatusList()
+    {
+        List<String> statuses = List.of(DRAFT, APPROVED);
+
+        EmailV2Filter filter = EmailV2Filter.builder(WORKSPACE_ID).status(statuses).build();
+
+        assertThat(filter.getStatus()).isEqualTo(statuses);
+    }
+
+    @Test
     public void shouldCopyStatusList()
     {
         List<String> statuses = new ArrayList<>(Arrays.asList(DRAFT, APPROVED));

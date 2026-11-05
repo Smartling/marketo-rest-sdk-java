@@ -5,7 +5,7 @@ import java.util.List;
 
 public class EmailV2Page
 {
-    private List<EmailV2> items;
+    private List<EmailV2> items = new ArrayList<>();
     private int totalItems;
     private int pageSize;
     private int currentPage;
@@ -19,12 +19,18 @@ public class EmailV2Page
 
     public List<EmailV2> getItems()
     {
-        return items == null ? new ArrayList<>() : items;
+        // Jackson writes the field directly, so an explicit null can still arrive here
+        if (items == null)
+        {
+            items = new ArrayList<>();
+        }
+
+        return items;
     }
 
     public void setItems(List<EmailV2> items)
     {
-        this.items = items;
+        this.items = items == null ? new ArrayList<>() : items;
     }
 
     public int getTotalItems()

@@ -8,6 +8,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +45,7 @@ public class FilterEmails extends BaseEmailGetCommand<EmailV2Page>
         putIfSet(params, "includeArchived", asString(filter.getIncludeArchived()));
         putIfSet(params, "pageIndex", asString(filter.getPageIndex()));
         putIfSet(params, "pageSize", asString(filter.getPageSize()));
-        this.parameters = params;
+        this.parameters = Collections.unmodifiableMap(params);
     }
 
     @Override
@@ -71,7 +72,7 @@ public class FilterEmails extends BaseEmailGetCommand<EmailV2Page>
     {
         if (status != null && !status.isEmpty())
         {
-            params.put("status", status.stream().map(FilterEmails::encodeQueryValue).collect(Collectors.toList()));
+            params.put("status", Collections.unmodifiableList(status.stream().map(FilterEmails::encodeQueryValue).collect(Collectors.toList())));
         }
     }
 

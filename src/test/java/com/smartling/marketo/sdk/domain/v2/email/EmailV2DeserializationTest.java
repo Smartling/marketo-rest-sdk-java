@@ -54,6 +54,18 @@ public class EmailV2DeserializationTest
     }
 
     @Test
+    public void shouldKeepSameItemsListWhenItemsAreMissingOrNull() throws Exception
+    {
+        EmailV2Page missing = objectMapper.readValue("{}", EmailV2Page.class);
+        EmailV2Page explicitNull = objectMapper.readValue("{\"items\": null}", EmailV2Page.class);
+
+        assertThat(missing.getItems()).isEmpty();
+        assertThat(missing.getItems()).isSameAs(missing.getItems());
+        assertThat(explicitNull.getItems()).isEmpty();
+        assertThat(explicitNull.getItems()).isSameAs(explicitNull.getItems());
+    }
+
+    @Test
     public void shouldDeserializeGetResponseIntoEmail() throws Exception
     {
         JsonNode result = readFixture(GET_FIXTURE).get("result");

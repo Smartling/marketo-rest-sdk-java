@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Immutable filter for the Asset API v2 email list endpoint. Every property except {@code workspaceId} is optional;
@@ -210,7 +211,7 @@ public final class EmailV2Filter
                 return this;
             }
 
-            if (status.contains(null))
+            if (status.stream().anyMatch(Objects::isNull))
             {
                 throw new IllegalArgumentException("status must not contain null elements");
             }

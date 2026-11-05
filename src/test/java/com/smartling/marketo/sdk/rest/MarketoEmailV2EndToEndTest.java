@@ -150,6 +150,24 @@ public class MarketoEmailV2EndToEndTest
     }
 
     @Test
+    public void shouldSendEachBooleanFilterUnderItsOwnQueryParameter() throws Exception
+    {
+        wireMockRule.stubFor(get(urlPathEqualTo(FILTER_PATH)).willReturn(jsonResponse(fixture(FILTER_FIXTURE))));
+        EmailV2Filter filter = EmailV2Filter.builder(WORKSPACE_ID)
+                .createdByMe(false)
+                .modifiedByMe(true)
+                .includeArchived(false)
+                .build();
+
+        client.filterEmails(filter);
+
+        wireMockRule.verify(getRequestedFor(urlPathEqualTo(FILTER_PATH))
+                .withQueryParam("isCreatedByMe", equalTo("false"))
+                .withQueryParam("isModifiedByMe", equalTo("true"))
+                .withQueryParam("includeArchived", equalTo("false")));
+    }
+
+    @Test
     public void shouldMapErrorCode611ToMarketoApiException()
     {
         stubFilterError("611");

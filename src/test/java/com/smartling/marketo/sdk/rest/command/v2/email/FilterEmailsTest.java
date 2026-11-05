@@ -106,6 +106,13 @@ public class FilterEmailsTest
     }
 
     @Test
+    public void shouldConvertBooleanFiltersIndependently()
+    {
+        assertBooleanParameters(false, true, false);
+        assertBooleanParameters(true, false, true);
+    }
+
+    @Test
     public void shouldConvertProgramFolderTypeToProgram()
     {
         FilterEmails command = new FilterEmails(EmailV2Filter.builder(WORKSPACE_ID).folderType(FolderType.PROGRAM).build());
@@ -143,5 +150,21 @@ public class FilterEmailsTest
                 .build());
 
         assertThat(command.getParameters().get("createdAtStart")).isEqualTo("2026-10-28T08:27:30");
+    }
+
+    private static void assertBooleanParameters(boolean createdByMe, boolean modifiedByMe, boolean includeArchived)
+    {
+        FilterEmails command = new FilterEmails(EmailV2Filter.builder(WORKSPACE_ID)
+                .createdByMe(createdByMe)
+                .modifiedByMe(modifiedByMe)
+                .includeArchived(includeArchived)
+                .build());
+        Map<String, Object> expected = new LinkedHashMap<>();
+        expected.put("workspaceId", WORKSPACE_ID);
+        expected.put("isCreatedByMe", String.valueOf(createdByMe));
+        expected.put("isModifiedByMe", String.valueOf(modifiedByMe));
+        expected.put("includeArchived", String.valueOf(includeArchived));
+
+        assertThat(command.getParameters()).isEqualTo(expected);
     }
 }
