@@ -6,7 +6,8 @@ import com.smartling.marketo.sdk.domain.v2.email.EmailV2Page;
 import com.smartling.marketo.sdk.domain.v2.email.SortOrder;
 import org.junit.Test;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -48,10 +49,10 @@ public class FilterEmailsTest
                 .folderId("folder-1")
                 .folderType(FolderType.FOLDER)
                 .status(STATUSES)
-                .createdAtStart(LocalDateTime.of(2026, 10, 28, 8, 27))
-                .createdAtEnd(LocalDateTime.of(2026, 10, 29, 9, 28))
-                .modifiedAtStart(LocalDateTime.of(2026, 10, 30, 10, 29))
-                .modifiedAtEnd(LocalDateTime.of(2026, 10, 31, 11, 30))
+                .createdAtStart(Instant.parse("2026-10-28T08:27:00Z"))
+                .createdAtEnd(Instant.parse("2026-10-29T09:28:00Z"))
+                .modifiedAtStart(Instant.parse("2026-10-30T10:29:00Z"))
+                .modifiedAtEnd(Instant.parse("2026-10-31T11:30:00Z"))
                 .name("test-name")
                 .sortKey("test-sort-key")
                 .sortOrder(SortOrder.ASC)
@@ -146,10 +147,22 @@ public class FilterEmailsTest
     public void shouldDropNanosecondsFromDates()
     {
         FilterEmails command = new FilterEmails(EmailV2Filter.builder(WORKSPACE_ID)
-                .createdAtStart(LocalDateTime.of(2026, 10, 28, 8, 27, 30, 123_000_000))
+                .createdAtStart(Instant.parse("2026-10-28T08:27:30.123Z"))
                 .build());
 
         assertThat(command.getParameters().get("createdAtStart")).isEqualTo("2026-10-28T08:27:30");
+    }
+
+    @Test
+    public void shouldSendDatesInUtc()
+    {
+        Instant instantWithPlusTwoOffset = OffsetDateTime.parse("2026-10-28T10:27:00+02:00").toInstant();
+
+        FilterEmails command = new FilterEmails(EmailV2Filter.builder(WORKSPACE_ID)
+                .modifiedAtEnd(instantWithPlusTwoOffset)
+                .build());
+
+        assertThat(command.getParameters().get("modifiedAtEnd")).isEqualTo("2026-10-28T08:27:00");
     }
 
     private static void assertBooleanParameters(boolean createdByMe, boolean modifiedByMe, boolean includeArchived)

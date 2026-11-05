@@ -22,7 +22,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import java.io.InputStream;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Arrays;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -109,10 +109,10 @@ public class MarketoEmailV2EndToEndTest
                 .folderId("folder-1")
                 .folderType(FolderType.PROGRAM)
                 .status(Arrays.asList("draft", "published"))
-                .createdAtStart(LocalDateTime.of(2026, 1, 2, 3, 4, 5))
-                .createdAtEnd(LocalDateTime.of(2026, 2, 3, 4, 5, 6))
-                .modifiedAtStart(LocalDateTime.of(2026, 3, 4, 5, 6, 7))
-                .modifiedAtEnd(LocalDateTime.of(2026, 4, 5, 6, 7, 8))
+                .createdAtStart(Instant.parse("2026-01-02T03:04:05Z"))
+                .createdAtEnd(Instant.parse("2026-02-03T04:05:06Z"))
+                .modifiedAtStart(Instant.parse("2026-03-04T05:06:07Z"))
+                .modifiedAtEnd(Instant.parse("2026-04-05T06:07:08Z"))
                 .name("test-name")
                 .sortKey("test-sort-key")
                 .sortOrder(SortOrder.DESC)

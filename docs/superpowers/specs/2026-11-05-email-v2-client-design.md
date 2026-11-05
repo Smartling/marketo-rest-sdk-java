@@ -100,8 +100,8 @@ which share flat packages with their v1 siblings. `SortOrder` is a generic name:
   constructor, returns method `GET`, returns no parameters by default, and defines the `x-app-type: marketo` header in
   `getHeaders()`, the single place that header is defined. `BaseMarketoCommand` and every v1 command are untouched.
 - `rest/command/v2/email/FilterEmails` — `BaseEmailGetCommand<EmailV2Page>`, path `/asset/v2/email/filter`. Puts only
-  non-null filter values into `getParameters()`, **already converted to strings by the command** (`LocalDateTime` →
-  `yyyy-MM-dd'T'HH:mm:ss` with a fixed formatter, because `LocalDateTime.toString()` drops zero seconds, `SortOrder` → `ASC`/`DESC`, `FolderType` → its `@JsonProperty` name `Folder`/`Program`, `Boolean`/`Integer` → `toString()`),
+  non-null filter values into `getParameters()`, **already converted to strings by the command** (`Instant` →
+  `yyyy-MM-dd'T'HH:mm:ss` in UTC with a fixed formatter, because `Instant.toString()` ends in `Z`, which the API rejects, `SortOrder` → `ASC`/`DESC`, `FolderType` → its `@JsonProperty` name `Folder`/`Program`, `Boolean`/`Integer` → `toString()`),
   because the executor sends `toString()` and does not apply the ObjectMapper. The one exception is `status`, which
   stays a `List<String>` so the executor expands it (see Transport changes).
 - `rest/command/v2/email/GetEmailById` — `BaseEmailGetCommand<List<EmailV2>>` (the array envelope), path
@@ -128,7 +128,7 @@ which share flat packages with their v1 siblings. `SortOrder` is a generic name:
 | `status` | `List<String>` (values are the API's; `Asset.Status` is v1 and would drop `published_with_draft`) |
 | `sortOrder` | new enum `SortOrder { ASC, DESC }` |
 | `isCreatedByMe`, `isModifiedByMe`, `includeArchived` | `Boolean` |
-| `createdAtStart`, `createdAtEnd`, `modifiedAtStart`, `modifiedAtEnd` | `LocalDateTime`, sent as `yyyy-MM-dd'T'HH:mm:ss` (no zone; the API reads it as UTC, see the Dates row). A caller with only a date uses `atStartOfDay()`. |
+| `createdAtStart`, `createdAtEnd`, `modifiedAtStart`, `modifiedAtEnd` | `Instant`, sent in UTC as `yyyy-MM-dd'T'HH:mm:ss` (no zone suffix, whole seconds; the API reads it as UTC, see the Dates row). An `Instant` has no local time zone, so a caller cannot send local time by mistake. |
 | `pageIndex`, `pageSize` | `Integer` |
 
 - `MarketoEmailV2Client` (interface, in `com.smartling.marketo.sdk` beside `MarketoEmailClient` and
@@ -182,7 +182,7 @@ JUnit 4, Mockito and AssertJ as in the existing tests; WireMock for transport.
 - `JaxRsHttpCommandExecutorTest`: a command's headers reach the wire; a collection parameter becomes repeated query
   parameters; existing behavior for single values is unchanged.
 - `FilterEmails` / `GetEmailById` tests: path, method, header, and that only set filters appear in the parameters
-  (every filter covered, including dates as `yyyy-MM-dd'T'HH:mm:ss` (a `LocalDateTime` with zero seconds still sends `:00`), `status` list, and `sortOrder`).
+  (every filter covered, including dates as `yyyy-MM-dd'T'HH:mm:ss` (an `Instant` with zero seconds still sends `:00`, and an instant with a non-UTC offset is converted to UTC), `status` list, and `sortOrder`).
 - One end-to-end WireMock test through `MarketoRestClientManager` with the real commands: both requests carry
   `x-app-type: marketo`; an HTTP 200 `{"success":false,"errors":[{"code":"611",...}]}` becomes `MarketoApiException`
   with code `611`; a `606` becomes `RequestLimitExceededException`.

@@ -18,8 +18,8 @@ public interface MarketoEmailV2Client
      * the keys {@code name}, {@code metadata.createdAt}, {@code metadata.modifiedAt},
      * {@code metadata.createdBy} and {@code metadata.modifiedBy}; the other keys tried were rejected with
      * error {@code 611}.</li>
-     * <li>Dates: a {@code LocalDateTime} is sent as whole seconds and read as UTC. A {@code *Start} date is
-     * inclusive and a {@code *End} date is exclusive.</li>
+     * <li>Dates: an {@code Instant} is sent in UTC as whole seconds. A {@code *Start} date is inclusive and a
+     * {@code *End} date is exclusive.</li>
      * <li>Folders: a {@code folderId} also matches emails in its sub-folders.</li>
      * <li>{@code scriptEngine}: the API accepts {@code VELOCITY} and {@code AJO}; the other values tried were
      * rejected, and the match is case-sensitive.</li>

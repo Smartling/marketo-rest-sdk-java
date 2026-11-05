@@ -2,7 +2,7 @@ package com.smartling.marketo.sdk.domain.v2.email;
 
 import com.smartling.marketo.sdk.domain.folder.FolderType;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -18,10 +18,10 @@ public final class EmailV2Filter
     private final String folderId;
     private final FolderType folderType;
     private final List<String> status;
-    private final LocalDateTime createdAtStart;
-    private final LocalDateTime createdAtEnd;
-    private final LocalDateTime modifiedAtStart;
-    private final LocalDateTime modifiedAtEnd;
+    private final Instant createdAtStart;
+    private final Instant createdAtEnd;
+    private final Instant modifiedAtStart;
+    private final Instant modifiedAtEnd;
     private final String name;
     private final String sortKey;
     private final SortOrder sortOrder;
@@ -82,22 +82,22 @@ public final class EmailV2Filter
         return status;
     }
 
-    public LocalDateTime getCreatedAtStart()
+    public Instant getCreatedAtStart()
     {
         return createdAtStart;
     }
 
-    public LocalDateTime getCreatedAtEnd()
+    public Instant getCreatedAtEnd()
     {
         return createdAtEnd;
     }
 
-    public LocalDateTime getModifiedAtStart()
+    public Instant getModifiedAtStart()
     {
         return modifiedAtStart;
     }
 
-    public LocalDateTime getModifiedAtEnd()
+    public Instant getModifiedAtEnd()
     {
         return modifiedAtEnd;
     }
@@ -163,10 +163,10 @@ public final class EmailV2Filter
         private String folderId;
         private FolderType folderType;
         private List<String> status;
-        private LocalDateTime createdAtStart;
-        private LocalDateTime createdAtEnd;
-        private LocalDateTime modifiedAtStart;
-        private LocalDateTime modifiedAtEnd;
+        private Instant createdAtStart;
+        private Instant createdAtEnd;
+        private Instant modifiedAtStart;
+        private Instant modifiedAtEnd;
         private String name;
         private String sortKey;
         private SortOrder sortOrder;
@@ -226,25 +226,37 @@ public final class EmailV2Filter
             return this;
         }
 
-        public Builder createdAtStart(LocalDateTime createdAtStart)
+        /**
+         * Matches emails created at or after this instant. It is sent in UTC as whole seconds.
+         */
+        public Builder createdAtStart(Instant createdAtStart)
         {
             this.createdAtStart = createdAtStart;
             return this;
         }
 
-        public Builder createdAtEnd(LocalDateTime createdAtEnd)
+        /**
+         * Matches emails created before this instant (the bound is exclusive). It is sent in UTC as whole seconds.
+         */
+        public Builder createdAtEnd(Instant createdAtEnd)
         {
             this.createdAtEnd = createdAtEnd;
             return this;
         }
 
-        public Builder modifiedAtStart(LocalDateTime modifiedAtStart)
+        /**
+         * Matches emails modified at or after this instant. It is sent in UTC as whole seconds.
+         */
+        public Builder modifiedAtStart(Instant modifiedAtStart)
         {
             this.modifiedAtStart = modifiedAtStart;
             return this;
         }
 
-        public Builder modifiedAtEnd(LocalDateTime modifiedAtEnd)
+        /**
+         * Matches emails modified before this instant (the bound is exclusive). It is sent in UTC as whole seconds.
+         */
+        public Builder modifiedAtEnd(Instant modifiedAtEnd)
         {
             this.modifiedAtEnd = modifiedAtEnd;
             return this;

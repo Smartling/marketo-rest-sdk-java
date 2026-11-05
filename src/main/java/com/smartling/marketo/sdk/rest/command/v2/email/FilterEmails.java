@@ -8,7 +8,8 @@ import com.smartling.marketo.sdk.rest.transport.ObjectMapperProvider;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -18,7 +19,10 @@ import java.util.stream.Collectors;
 
 public class FilterEmails extends BaseEmailGetCommand<EmailV2Page>
 {
-    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+    // The API reads a zone-less date-time as UTC
+    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter
+            .ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+            .withZone(ZoneOffset.UTC);
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapperProvider().getContext(null);
 
@@ -60,6 +64,11 @@ public class FilterEmails extends BaseEmailGetCommand<EmailV2Page>
         return "/asset/v2/email/filter";
     }
 
+    /**
+     * The values of the string filters and of each {@code status} element are already percent-encoded, because the
+     * HTTP client keeps existing {@code %XX} sequences as written and reads {@code {...}} as a URI template. They
+     * therefore also appear encoded in the error messages the executor builds from these parameters.
+     */
     @Override
     public Map<String, Object> getParameters()
     {
@@ -94,9 +103,9 @@ public class FilterEmails extends BaseEmailGetCommand<EmailV2Page>
         return URLEncoder.encode(value, StandardCharsets.UTF_8).replace("+", "%20");
     }
 
-    private static String format(LocalDateTime dateTime)
+    private static String format(Instant instant)
     {
-        return dateTime == null ? null : DATE_FORMAT.format(dateTime);
+        return instant == null ? null : DATE_FORMAT.format(instant);
     }
 
     private static String asString(Object value)
