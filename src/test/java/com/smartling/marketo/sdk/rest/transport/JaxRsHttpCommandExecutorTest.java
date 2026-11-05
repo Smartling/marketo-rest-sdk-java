@@ -2,6 +2,7 @@ package com.smartling.marketo.sdk.rest.transport;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.smartling.marketo.sdk.HasToBeMappedToJson;
 import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.domain.email.EmailContentItem;
 import com.smartling.marketo.sdk.domain.email.EmailSnippetContentItem;
@@ -35,21 +36,25 @@ import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.absent;
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.givenThat;
+import static com.github.tomakehurst.wiremock.client.WireMock.havingExactly;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static java.time.LocalDateTime.now;
 import static java.util.logging.Level.INFO;
@@ -64,6 +69,10 @@ public class JaxRsHttpCommandExecutorTest extends BaseTransportTest {
     private static final String FOLDER_ID_JSON = "{\"id\":42,\"type\":\"Folder\"}";
     private static final String CONTENT_TYPE_TEXT = "Text";
     private static final String CONTENT_TYPE_SNIPPET = "Snippet";
+    private static final String SOME_PATH = "/rest/some/path";
+    private static final String HEADER_NAME = "x-test";
+    private static final String HEADER_VALUE = "value";
+    private static final String STATUS_PARAM = "status";
 
     private JaxRsHttpCommandExecutor testedInstance;
 
@@ -413,6 +422,66 @@ public class JaxRsHttpCommandExecutorTest extends BaseTransportTest {
     }
 
     @SuppressWarnings("unused")
+    @Test
+    public void shouldSendCommandHeaders() throws Exception {
+        given(command.getHeaders()).willReturn(Collections.singletonMap(HEADER_NAME, HEADER_VALUE));
+
+        // Execute a command that declares a custom header
+        testedInstance.execute(command);
+
+        verify(getRequestedFor(urlPathEqualTo(SOME_PATH))
+                .withHeader(HEADER_NAME, equalTo(HEADER_VALUE)));
+    }
+
+    @Test
+    public void shouldNotSendXAppTypeHeaderForV1Commands() throws Exception {
+        givenThat(get(path("/rest/asset/v1/email/42/content.json")).willReturn(aJsonResponse(json())));
+
+        testedInstance.execute(new LoadEmailContent(42));
+
+        verify(getRequestedFor(urlPathEqualTo("/rest/asset/v1/email/42/content.json"))
+                .withoutHeader("x-app-type"));
+    }
+
+    @Test
+    public void shouldExpandCollectionParameterIntoRepeatedQueryParameters() throws Exception {
+        given(command.getParameters()).willReturn(Collections.singletonMap(STATUS_PARAM, Arrays.asList("draft", "published")));
+
+        // Execute a GET command with a collection parameter
+        testedInstance.execute(command);
+
+        verify(getRequestedFor(urlPathEqualTo(SOME_PATH))
+                .withQueryParam(STATUS_PARAM, havingExactly("draft", "published")));
+    }
+
+    @Test
+    public void shouldSendJsonMappedCollectionAsSingleQueryParameter() throws Exception {
+        JsonList ids = new JsonList();
+        ids.add("a");
+        ids.add("b");
+        given(command.getParameters()).willReturn(Collections.singletonMap("ids", ids));
+
+        // Execute a GET command with a collection that has to be mapped to JSON
+        testedInstance.execute(command);
+
+        verify(getRequestedFor(urlPathEqualTo(SOME_PATH))
+                .withQueryParam("ids", equalTo("[\"a\",\"b\"]")));
+    }
+
+    @Test
+    public void shouldOmitQueryParameterForEmptyCollection() throws Exception {
+        given(command.getParameters()).willReturn(Collections.singletonMap(STATUS_PARAM, Collections.emptyList()));
+
+        // Execute a GET command with an empty collection parameter
+        testedInstance.execute(command);
+
+        verify(getRequestedFor(urlPathEqualTo(SOME_PATH))
+                .withQueryParam(STATUS_PARAM, absent()));
+    }
+
+    private static class JsonList extends ArrayList<String> implements HasToBeMappedToJson {
+    }
+
     private static class Data {
         private String string;
         private Date date;

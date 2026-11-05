@@ -27,6 +27,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URLEncoder;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,6 +75,7 @@ public class JaxRsHttpCommandExecutor implements HttpCommandExecutor {
 
         WebTarget target = buildWebTarget(client, command);
         Invocation.Builder invocationBuilder = target.request(MediaType.APPLICATION_JSON_TYPE).header("Authorization", "Bearer " + token);
+        command.getHeaders().forEach(invocationBuilder::header);
         MarketoResponse<T> marketoResponse = execute(invocationBuilder, command);
 
         if (marketoResponse.isSuccess()) {
@@ -169,7 +171,13 @@ public class JaxRsHttpCommandExecutor implements HttpCommandExecutor {
         WebTarget target = client.target(restUrl).path(command.getPath());
         if ("GET".equalsIgnoreCase(command.getMethod())) {
             for (Entry<String, Object> param : processParameters(command.getParameters(), true).entrySet()) {
-                target = target.queryParam(param.getKey(), param.getValue());
+                Object value = param.getValue();
+                if (value instanceof Collection) {
+                    // Repeat the query parameter once per element (an empty collection adds none)
+                    target = target.queryParam(param.getKey(), ((Collection<?>) value).toArray());
+                } else {
+                    target = target.queryParam(param.getKey(), value);
+                }
             }
         }
 
