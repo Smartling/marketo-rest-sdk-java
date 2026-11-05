@@ -44,21 +44,21 @@ swagger**, so they are not in this design.
 
 | Behavior | Observation |
 |---|---|
-| `workspaceId` | Omitting it returns `603 Access denied` (misleading message). Treated as required. |
-| Get by id | `GET /email/6873` with only the `x-app-type` header (no `workspaceId`, no other query parameter) returns `success:true`, so `loadEmailById(String id)` needs only the id. The swagger's get-by-id parameters are exactly `access_token`, `x-app-type` and `id`: there is no `status` or other query parameter (unlike v1's `LoadEmailById`), so the SDK cannot choose draft vs published. Which version a bare get returns for an email in `published_with_draft` is **unverified**. |
+| `workspaceId` | Omitting it returns `603 Access denied` (misleading message), so the SDK requires it. |
+| Get by id | `GET /email/6873` with only the `x-app-type` header (no `workspaceId`, no other query parameter) returns `success:true`, so `loadEmailById(String id)` needs only the id. The swagger's get-by-id parameters are exactly `access_token`, `x-app-type` and `id`: there is no `status` or other query parameter (unlike v1's `LoadEmailById`), so the SDK cannot choose draft vs published. A get returns the version the id identifies: email `6886` has `status: published_with_draft`; a get on `6886` returns `state: published` and a get on `6888` (its draft) returns `state: draft`, and both list the two ids in `associatedStates`. A filter call returned `6886` and not `6888`. |
 | `x-app-type: marketo` | Omitting it returns `704`. Required on every v2 call. |
 | Response envelope (filter) | `result` is an object: `items`, `totalItems`, `pageSize`, `currentPage`. |
 | Response envelope (get by id) | `result` is an **array** with one element, as in v1. |
-| Pagination | `pageIndex` is zero-based. `pageSize` above 50 (tried 51, 100) is accepted and the response reports `pageSize: 50`. |
-| `sortKey` | `name` works (ASC and DESC change the order). `id`, `createdAt`, `modifiedAt` and a made-up key return `611` (HTTP 400 downstream). Other valid keys are unknown. |
+| Pagination | `pageIndex` is zero-based. `pageSize` above 50 (tried 51, 100) is accepted and the response reports `pageSize: 50`. Paging the 11 sandbox emails 3 at a time returned each email exactly once, with and without a `sortKey`, in two runs. |
+| `sortKey` | Accepted: `name`, `metadata.createdAt`, `metadata.modifiedAt`, `metadata.createdBy`, `metadata.modifiedBy` (`ASC` and `DESC` reverse the order, checked on `name` and `metadata.modifiedAt`). Rejected with `611`: `id`, `description`, `status`, `state`, `templateId`, `createdBy`, `modifiedBy`, `createdAt`, `modifiedAt`, `updatedAt`, `headers.subject`, `appData.folderId`, `scriptEngine`, `virtualId`, `externalId` and a made-up key. A lowercase `sortOrder` (`asc`) is rejected with `1003`. |
 | `sortOrder` alone | Without `sortKey` returns `611` (HTTP 400). |
-| Dates | `modifiedAtStart/End` and `createdAtStart/End` accept a **zone-less date-time `yyyy-MM-dd'T'HH:mm:ss`** (`2026-10-28T08:27:30`) and a date only (`2026-10-28`). A zone suffix or a space separator is rejected with `611` (HTTP 500 downstream): `2026-10-29T00:00:00Z`, `...00.000Z`, `...00+0000`, `...00Z+0000`, `2026-10-29 00:00:00`. Checked against the emails' own `metadata` timestamps (which are `Z`): the filtering is consistent with the value being read as UTC, though no test isolated the time zone. Start filters are inclusive (an email created at exactly `08:27:30` is returned by `createdAtStart=2026-10-28T08:27:30`), but the same email was **not** returned by `createdAtEnd=2026-10-28T08:27:30`; the cause is unknown (sub-second precision is one possibility, untested). Fractional seconds were not tried. |
+| Dates | `modifiedAtStart/End` and `createdAtStart/End` accept a **zone-less date-time `yyyy-MM-dd'T'HH:mm:ss`** (`2026-10-28T08:27:30`), a date only (`2026-10-28`), and fractional seconds (`...30.000`, `...30.5`). A zone suffix or a space separator is rejected with `611` (HTTP 500 downstream): `2026-10-29T00:00:00Z`, `...00.000Z`, `...00+0000`, `...00Z+0000`, `2026-10-29 00:00:00`. The value is read as UTC: email `6881` was modified at `2026-10-28T12:09:33Z`, `modifiedAtStart=2026-10-28T12:09:33` returned it and `...12:09:34` did not. A `*Start` bound is inclusive and a `*End` bound is exclusive: `modifiedAtEnd=2026-10-28T12:09:33` did not return `6881` and `...12:09:34` did (`createdAtStart`/`createdAtEnd` on email `6875`, created at `08:27:30Z`, behave the same). The SDK sends whole seconds. |
 | `status` repeated | `status=draft&status=published` returns the union (the swagger declares `status` an array with `collectionFormat: multi`, i.e. repeated parameters). Observed status values: `draft`, `published`, `published_with_draft`. |
-| `folderId` | Filters. `folderType` is accepted but did not change results for a plain folder. `folderId=2373` also returned emails whose own `appData.folderId` is `2622`; whether this means sub-folders are included is **unverified**. |
+| `folderId` | Filters. `folderType` is accepted but did not change results for a plain folder. Folder `2622` is a child of folder `2373` (v1 folder API), and `folderId=2373` also returned the emails whose own `appData.folderId` is `2622`: a folder filter includes sub-folders. |
 | `templateId`, `isCreatedByMe`, `isModifiedByMe` | Each narrows the result. |
-| `scriptEngine` | `VELOCITY` accepted; `HANDLEBARS` and a made-up value return `611` (HTTP 400). Valid values are unknown. |
+| `scriptEngine` | Accepted: `VELOCITY` (matched all 11 emails) and `AJO` (matched none). Rejected with `611`: `velocity`, `Velocity`, `HANDLEBARS`, `handlebars`, `HANDLEBAR`, `MUSTACHE`, `AMPSCRIPT`, `JAVASCRIPT`, `SMARTY`, `MARKETO`; the match is case-sensitive. |
 | `includeArchived`, `isValueNonNullable` | Accepted; no visible effect on this data (no archived emails to observe). |
-| HTTP status of errors | Every error probed (`603`, `611`, `704`, bad `sortKey`, bad date, bad `scriptEngine`, missing id, bad token) came back as **HTTP 200** with `success:false`, like v1. The "HTTP 400/500" inside the `611` message text refers to a downstream call, not this response. Probed once; other failure modes (gateway errors, throttling) were not exercised. |
+| HTTP status of errors | Every error probed (`603`, `611`, `704`, bad `sortKey`, bad date, bad `scriptEngine`, missing id, bad token) came back as **HTTP 200** with `success:false`, like v1. The "HTTP 400/500" inside the `611` message text refers to a downstream call, not this response. |
 | Missing / non-numeric id on get | `603 Access denied`, not a "not found" code. |
 | Timestamps in responses | `"2026-10-30T12:30:07Z+0000"`. This matches the SDK's existing `ObjectMapper` date format `yyyy-MM-dd'T'HH:mm:ss'Z'Z`. |
 | List item vs get | List items have no `data`. Get returns `data.html.body`, `data.text.body`, `data.text.syncFromHtml`. |
@@ -102,7 +102,7 @@ which share flat packages with their v1 siblings. `SortOrder` is a generic name 
   `getHeaders()`, the single place that header is defined. `BaseMarketoCommand` and every v1 command are untouched.
 - `rest/command/v2/email/FilterEmails` — `BaseEmailGetCommand<EmailV2Page>`, path `/asset/v2/email/filter`. Puts only
   non-null filter values into `getParameters()`, **already converted to strings by the command** (`LocalDateTime` →
-  `yyyy-MM-dd'T'HH:mm:ss` with a fixed formatter, because `LocalDateTime.toString()` drops zero seconds, `SortOrder` → `ASC`/`DESC`, `FolderType` → `Folder`/`Program`, `Boolean`/`Integer` → `toString()`),
+  `yyyy-MM-dd'T'HH:mm:ss` with a fixed formatter, because `LocalDateTime.toString()` drops zero seconds, `SortOrder` → `ASC`/`DESC`, `FolderType` → its `@JsonProperty` name `Folder`/`Program`, `Boolean`/`Integer` → `toString()`),
   because the executor sends `toString()` and does not apply the ObjectMapper. The one exception is `status`, which
   stays a `List<String>` so the executor expands it (see Transport changes).
 - `rest/command/v2/email/GetEmailById` — `BaseEmailGetCommand<List<EmailV2>>` (the array envelope), path
@@ -117,43 +117,43 @@ which share flat packages with their v1 siblings. `SortOrder` is a generic name 
   (boolean). That includes `id`, `templateId`, `externalId`, `virtualId`, `appData.workspaceId`, `appData.folderId`
   and the two `metadata` timestamps (parsed to `Date`). `headers`, `metadata`, `appData` and `data` are nested objects,
   and `data.html` / `data.text` are nested again; each becomes a small static nested class (builder's call). Sanitized
-  copies of one list response and one get response are in
-  `docs/superpowers/specs/2026-11-05-email-v2-client-fixtures/` and become the test fixtures.
+  copies of one list response and one get response are the test fixtures
+  `src/test/resources/json/email-v2-filter-response.json` and `email-v2-get-response.json`.
 - `domain/v2/email/EmailV2Page` — `items`, `totalItems`, `pageSize`, `currentPage`.
 - `domain/v2/email/EmailV2Filter` — immutable, built with a builder; `workspaceId` is required by the builder. Field types:
 
 | Filter | Java type |
 |---|---|
 | `workspaceId`, `folderId`, `name`, `templateId`, `scriptEngine`, `isValueNonNullable`, `sortKey` | `String` |
-| `folderType` | existing `FolderType`, sent as `Folder`/`Program` by an explicit mapping in the command (the enum's constants are `FOLDER`/`PROGRAM`, and `@JsonProperty` is not applied to query parameters; v1's `GetFolderByName` sends `type.name()` = `FOLDER`, which the v2 swagger does not list). Unit test pins the strings. |
+| `folderType` | existing `FolderType`, sent as `Folder`/`Program`. The names are not repeated in the command: it reads them from the enum's `@JsonProperty` through the SDK's `ObjectMapper` (`convertValue(folderType, String.class)`), because the executor sends GET parameters with `toString()`, which gives `FOLDER` (v1's `GetFolderByName` sends `type.name()` = `FOLDER`, which the v2 swagger does not list). Unit test pins the strings. |
 | `status` | `List<String>` (values are the API's; `Asset.Status` is v1 and would drop `published_with_draft`) |
 | `sortOrder` | new enum `SortOrder { ASC, DESC }` |
 | `isCreatedByMe`, `isModifiedByMe`, `includeArchived` | `Boolean` |
-| `createdAtStart`, `createdAtEnd`, `modifiedAtStart`, `modifiedAtEnd` | `LocalDateTime`, sent as `yyyy-MM-dd'T'HH:mm:ss` (no zone; the API appears to read it as UTC). A caller with only a date uses `atStartOfDay()`. |
+| `createdAtStart`, `createdAtEnd`, `modifiedAtStart`, `modifiedAtEnd` | `LocalDateTime`, sent as `yyyy-MM-dd'T'HH:mm:ss` (no zone; the API reads it as UTC, see the Dates row). A caller with only a date uses `atStartOfDay()`. |
 | `pageIndex`, `pageSize` | `Integer` |
 
 - `MarketoEmailV2Client` (interface, in `com.smartling.marketo.sdk` beside `MarketoEmailClient` and
   `MarketoClientManager`) and `rest/MarketoEmailV2RestClient`:
   - `EmailV2 loadEmailById(String id)` — throws `ObjectNotFoundException` if the result is null or the array is empty,
     mirroring v1 (`MarketoEmailRestClient` null-checks before `isEmpty()`). On the sandbox a missing id returns `603`,
-    not an empty array, so this branch is a safety net and is probably unreachable; it is kept for parity with v1 and has
+    not an empty array, so this branch is a safety net kept for parity with v1 and has
     a unit test. The API types the id as a string and returns it as a JSON string (`"6885"`). The client rejects a
     null/blank id, or one that is not all digits (`[0-9]+`), with `IllegalArgumentException` **before** building the
     command, because the id becomes a URL path segment: Jersey treats `{...}` as a template (unchecked exception), `/`
     or `?` would change the route, `null` would become `.../email/null`, and a word such as `filter` would hit the list
     endpoint (whose object result cannot be read as the array this call expects). Every email id seen is numeric
-    (`6873`, `40026`). This is my call; a later fragment client can use its own rule. A unit test covers `filter`,
-    `1/2`, `{a}`, `` and null. The Javadoc warns that the swagger gives get-by-id no `status` parameter and which version
-    is returned for a `published_with_draft` email is unverified; `EmailV2.status` is the caller's only signal.
+    (`6873`, `40026`). A later fragment client can use its own rule. A unit test covers `filter`,
+    `1/2`, `{a}`, `` and null. The Javadoc says that a get returns the version the id identifies (`EmailV2.getState()` is `published` or
+    `draft`) and that the swagger gives get-by-id no `status` parameter.
   - `EmailV2Page filterEmails(EmailV2Filter filter)` — a null `result` with `success:true` yields an empty
     `EmailV2Page` (no items, zero totals), like v1's null-to-empty-list normalization, so callers never get an NPE.
     Callers must paginate with the returned `pageSize` and `totalItems`, not the size they requested, because the API
-    clamps `pageSize` to 50; the Javadoc says so, and recommends `sortKey=name` for stable paging (see open
-    questions). An empty page from null normalization has no items and zero totals; callers stop on empty `items`,
+    clamps `pageSize` to 50; the Javadoc says so, and lists the accepted `sortKey` values, the UTC and inclusive/exclusive date rules,
+    sub-folder matching and the accepted `scriptEngine` values from the observed facts above. An empty page from null normalization has no items and zero totals; callers stop on empty `items`,
     not on `pageSize`.
 - `MarketoClientManager.getMarketoEmailV2Client()` (abstract interface method) and its implementation in
   `MarketoRestClientManager`. In this repo `MarketoRestClientManager` is the only implementer (checked with grep over
-  `src`); external implementers are unknown, which is why the version bump is minor and called out below.
+  `src`); external implementers may exist, which is why the version bump is minor and called out below.
   `HttpCommandExecutor` needs no change: its only implementers are `JaxRsHttpCommandExecutor` and the delegating
   `RetryingHttpCommandExecutor`. `x-app-type` is added to the request built in `execute`, so the token call is unaffected.
 
@@ -204,8 +204,8 @@ JUnit 4, Mockito and AssertJ as in the existing tests; WireMock for transport.
   string values itself (including `%` as `%25`) before `queryParam`.
 - A `603` on get by id end to end is a `MarketoApiException` with code `603`, not `ObjectNotFoundException`.
 - `MarketoEmailV2RestClientTest`: delegates to the executor with the right command; empty array → `ObjectNotFoundException`.
-- Deserialization tests using the fixtures in `docs/superpowers/specs/2026-11-05-email-v2-client-fixtures/` (sanitized
-  real sandbox payloads, HTML body shortened; copied to `src/test/resources/json/`): `EmailV2` and
+- Deserialization tests using the fixtures `src/test/resources/json/email-v2-*.json` (sanitized
+  real sandbox payloads, HTML body shortened): `EmailV2` and
   `EmailV2Page` including `Date` parsing of `2026-10-30T12:30:07Z+0000`.
 - Not added: a live integration test. The existing `*IntegrationTest` classes need real credentials; the sandbox probes
   above are the live evidence for this change.
@@ -229,12 +229,3 @@ JUnit 4, Mockito and AssertJ as in the existing tests; WireMock for transport.
 - Package and class naming details beyond the names above.
 - Builder ergonomics for `EmailV2Filter` (static `builder(workspaceId)` vs a required setter).
 - Javadoc wording.
-
-## Open questions (do not block the SDK)
-
-- Which `sortKey` values besides `name` are valid, and the valid `scriptEngine` values — untested; pass-through.
-- Whether `folderId` includes sub-folders for emails.
-- Whether the date filters read the zone-less value as UTC or as the instance's time zone (not isolated), whether fractional seconds are accepted, and why `createdAtEnd` excluded an email created at exactly the cutoff second.
-- Which version (draft or published) a bare get by id returns for a `published_with_draft` email.
-- Whether results without a `sortKey` keep a stable order across pages (the sandbox has 11 emails, so this was not
-  exercised). Until known, the Javadoc recommends `sortKey=name`.

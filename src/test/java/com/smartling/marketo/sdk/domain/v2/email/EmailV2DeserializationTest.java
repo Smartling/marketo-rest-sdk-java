@@ -39,16 +39,19 @@ public class EmailV2DeserializationTest
     {
         JsonNode result = readFixture(FILTER_FIXTURE).get("result");
 
-        EmailV2Page page = objectMapper.treeToValue(result, EmailV2Page.class);
-
         EmailV2 expectedItem = expectedEmail(
                 Date.from(Instant.parse("2026-10-30T12:30:07Z")),
                 Date.from(Instant.parse("2026-10-30T12:33:01Z")));
+
         EmailV2Page expected = new EmailV2Page();
         expected.setCurrentPage(0);
         expected.setPageSize(50);
         expected.setTotalItems(1);
         expected.setItems(Collections.singletonList(expectedItem));
+
+        // Deserialize the list response result
+        EmailV2Page page = objectMapper.treeToValue(result, EmailV2Page.class);
+
         assertThat(page).usingRecursiveComparison().isEqualTo(expected);
         assertThat(page.getItems().get(0).getData()).isNull();
     }
@@ -61,6 +64,7 @@ public class EmailV2DeserializationTest
 
         assertThat(missing.getItems()).isEmpty();
         assertThat(missing.getItems()).isSameAs(missing.getItems());
+
         assertThat(explicitNull.getItems()).isEmpty();
         assertThat(explicitNull.getItems()).isSameAs(explicitNull.getItems());
     }
@@ -70,20 +74,25 @@ public class EmailV2DeserializationTest
     {
         JsonNode result = readFixture(GET_FIXTURE).get("result");
 
-        EmailV2 email = objectMapper.treeToValue(result.get(0), EmailV2.class);
-
         EmailV2.Html html = new EmailV2.Html();
         html.setBody(HTML_BODY);
+
         EmailV2.Text text = new EmailV2.Text();
         text.setBody(TEXT_BODY);
         text.setSyncFromHtml(true);
+
         EmailV2.Data data = new EmailV2.Data();
         data.setHtml(html);
         data.setText(text);
+
         EmailV2 expected = expectedEmail(
                 Date.from(Instant.parse("2026-10-26T15:58:13Z")),
                 Date.from(Instant.parse("2026-10-30T10:31:55Z")));
         expected.setData(data);
+
+        // Deserialize the first element of the get response result array
+        EmailV2 email = objectMapper.treeToValue(result.get(0), EmailV2.class);
+
         assertThat(email).usingRecursiveComparison().isEqualTo(expected);
     }
 

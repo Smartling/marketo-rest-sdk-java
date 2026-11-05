@@ -1,8 +1,10 @@
 package com.smartling.marketo.sdk.rest.command.v2.email;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smartling.marketo.sdk.domain.folder.FolderType;
 import com.smartling.marketo.sdk.domain.v2.email.EmailV2Filter;
 import com.smartling.marketo.sdk.domain.v2.email.EmailV2Page;
+import com.smartling.marketo.sdk.rest.transport.ObjectMapperProvider;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -17,6 +19,8 @@ import java.util.stream.Collectors;
 public class FilterEmails extends BaseEmailGetCommand<EmailV2Page>
 {
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapperProvider().getContext(null);
 
     private final Map<String, Object> parameters;
 
@@ -45,6 +49,8 @@ public class FilterEmails extends BaseEmailGetCommand<EmailV2Page>
         putIfSet(params, "includeArchived", asString(filter.getIncludeArchived()));
         putIfSet(params, "pageIndex", asString(filter.getPageIndex()));
         putIfSet(params, "pageSize", asString(filter.getPageSize()));
+
+        // Expose the parameters as a read-only view
         this.parameters = Collections.unmodifiableMap(params);
     }
 
@@ -98,21 +104,10 @@ public class FilterEmails extends BaseEmailGetCommand<EmailV2Page>
         return value == null ? null : value.toString();
     }
 
+    // The executor sends query parameters with toString() (FOLDER), so take the wire name from the
+    // enum's @JsonProperty (Folder) through the SDK's mapper instead of repeating it here
     private static String folderTypeValue(FolderType folderType)
     {
-        if (folderType == null)
-        {
-            return null;
-        }
-
-        switch (folderType)
-        {
-            case FOLDER:
-                return "Folder";
-            case PROGRAM:
-                return "Program";
-            default:
-                throw new IllegalArgumentException("Unsupported folder type: " + folderType);
-        }
+        return folderType == null ? null : OBJECT_MAPPER.convertValue(folderType, String.class);
     }
 }

@@ -11,26 +11,34 @@ public interface MarketoEmailV2Client
 {
     /**
      * Filters emails. {@code workspaceId} is required (the filter builder enforces it).
-     * Paginate with the returned {@code pageSize} and {@code totalItems}: the API clamps
-     * {@code pageSize} to 50, so do not rely on the requested size, and stop on an empty
-     * {@code items}. Passing {@code sortKey=name} is recommended: it is the only sort key known
-     * to work, and whether unsorted results keep a stable order across pages is unverified.
+     * <ul>
+     * <li>Paging: the API clamps {@code pageSize} to 50. Page with the returned {@code pageSize} and
+     * {@code totalItems}, and stop on an empty {@code items}.</li>
+     * <li>Sorting: {@code sortOrder} ({@code ASC} or {@code DESC}) needs a {@code sortKey}. The API accepts
+     * the keys {@code name}, {@code metadata.createdAt}, {@code metadata.modifiedAt},
+     * {@code metadata.createdBy} and {@code metadata.modifiedBy}; any other key is an error.</li>
+     * <li>Dates: a {@code LocalDateTime} is sent as whole seconds and read as UTC. A {@code *Start} date is
+     * inclusive and a {@code *End} date is exclusive.</li>
+     * <li>Folders: a {@code folderId} also matches emails in its sub-folders.</li>
+     * <li>{@code scriptEngine}: the API accepts {@code VELOCITY} and {@code AJO} (upper case).</li>
+     * </ul>
      */
     EmailV2Page filterEmails(EmailV2Filter filter) throws MarketoApiException;
 
     /**
      * Loads an email by its id, which must be all digits; anything else throws
-     * {@link IllegalArgumentException} before any request is made. A bare get has no
-     * {@code status} parameter, so which version a {@code published_with_draft} email returns
-     * is unverified, and {@link EmailV2#getStatus()} is the caller's only signal of which
-     * version came back.
+     * {@link IllegalArgumentException} before any request is made.
+     * <p>
+     * An email that has both a published and a draft version has {@code status}
+     * {@code published_with_draft}. Each version has its own id, and a get returns the version the id
+     * identifies: {@link EmailV2#getState()} is {@code published} or {@code draft}.
      * <p>
      * A missing id and a permission problem both come back from the API as error {@code 603},
      * surfaced as {@link MarketoApiException} with code {@code 603}, not as
-     * {@link com.smartling.marketo.sdk.rest.ObjectNotFoundException}. That exception is only thrown for a null or empty result
-     * array, which the API has not been seen to return.
+     * {@link com.smartling.marketo.sdk.rest.ObjectNotFoundException}. That exception is only thrown
+     * for a null or empty result array.
      *
-     * @throws IllegalArgumentException if the id is not a number
+     * @throws IllegalArgumentException if the id is not all digits
      */
     EmailV2 loadEmailById(String id) throws MarketoApiException;
 }

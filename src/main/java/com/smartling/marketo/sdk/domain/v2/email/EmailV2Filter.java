@@ -181,10 +181,12 @@ public final class EmailV2Filter
 
         private Builder(String workspaceId)
         {
+            // The API requires a workspace for every filter call
             if (workspaceId == null || workspaceId.trim().isEmpty())
             {
                 throw new IllegalArgumentException("workspaceId must not be blank");
             }
+
             this.workspaceId = workspaceId;
         }
 
@@ -205,17 +207,22 @@ public final class EmailV2Filter
          */
         public Builder status(List<String> status)
         {
+            // No status filter
             if (status == null)
             {
                 this.status = null;
                 return this;
             }
 
+            // Reject null elements
             if (status.stream().anyMatch(Objects::isNull))
             {
                 throw new IllegalArgumentException("status must not contain null elements");
             }
+
+            // Keep an unmodifiable copy so later changes to the caller's list do not leak in
             this.status = Collections.unmodifiableList(new ArrayList<>(status));
+
             return this;
         }
 
