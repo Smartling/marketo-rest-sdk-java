@@ -4,11 +4,14 @@ import com.smartling.marketo.sdk.domain.folder.FolderType;
 import com.smartling.marketo.sdk.domain.v2.email.EmailV2Filter;
 import com.smartling.marketo.sdk.domain.v2.email.EmailV2Page;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class FilterEmails extends BaseEmailGetCommand<EmailV2Page>
 {
@@ -22,22 +25,22 @@ public class FilterEmails extends BaseEmailGetCommand<EmailV2Page>
 
         // Collect only the filters that are set, keyed by their wire names
         Map<String, Object> params = new LinkedHashMap<>();
-        params.put("workspaceId", filter.getWorkspaceId());
-        putIfSet(params, "folderId", filter.getFolderId());
+        params.put("workspaceId", encodeQueryValue(filter.getWorkspaceId()));
+        putIfSet(params, "folderId", encodeQueryValue(filter.getFolderId()));
         putIfSet(params, "folderType", folderTypeValue(filter.getFolderType()));
         putStatusIfNotEmpty(params, filter.getStatus());
         putIfSet(params, "createdAtStart", format(filter.getCreatedAtStart()));
         putIfSet(params, "createdAtEnd", format(filter.getCreatedAtEnd()));
         putIfSet(params, "modifiedAtStart", format(filter.getModifiedAtStart()));
         putIfSet(params, "modifiedAtEnd", format(filter.getModifiedAtEnd()));
-        putIfSet(params, "name", filter.getName());
-        putIfSet(params, "sortKey", filter.getSortKey());
+        putIfSet(params, "name", encodeQueryValue(filter.getName()));
+        putIfSet(params, "sortKey", encodeQueryValue(filter.getSortKey()));
         putIfSet(params, "sortOrder", filter.getSortOrder() == null ? null : filter.getSortOrder().name());
         putIfSet(params, "isCreatedByMe", asString(filter.getCreatedByMe()));
         putIfSet(params, "isModifiedByMe", asString(filter.getModifiedByMe()));
-        putIfSet(params, "templateId", filter.getTemplateId());
-        putIfSet(params, "scriptEngine", filter.getScriptEngine());
-        putIfSet(params, "isValueNonNullable", filter.getValueNonNullable());
+        putIfSet(params, "templateId", encodeQueryValue(filter.getTemplateId()));
+        putIfSet(params, "scriptEngine", encodeQueryValue(filter.getScriptEngine()));
+        putIfSet(params, "isValueNonNullable", encodeQueryValue(filter.getValueNonNullable()));
         putIfSet(params, "includeArchived", asString(filter.getIncludeArchived()));
         putIfSet(params, "pageIndex", asString(filter.getPageIndex()));
         putIfSet(params, "pageSize", asString(filter.getPageSize()));
@@ -68,8 +71,20 @@ public class FilterEmails extends BaseEmailGetCommand<EmailV2Page>
     {
         if (status != null && !status.isEmpty())
         {
-            params.put("status", status);
+            params.put("status", status.stream().map(FilterEmails::encodeQueryValue).collect(Collectors.toList()));
         }
+    }
+
+    // Percent-encode every reserved character so the HTTP client sends the value as written
+    // (it would otherwise keep existing %XX sequences and read {name} as a URI template)
+    private static String encodeQueryValue(String value)
+    {
+        if (value == null)
+        {
+            return null;
+        }
+
+        return URLEncoder.encode(value, StandardCharsets.UTF_8).replace("+", "%20");
     }
 
     private static String format(LocalDateTime dateTime)

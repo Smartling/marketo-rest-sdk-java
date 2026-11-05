@@ -18,6 +18,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class FilterEmailsTest
 {
     private static final String WORKSPACE_ID = "test-workspace";
+    private static final String SPECIAL_VALUE = "a+b&c=d#e %41 {x} é";
+    private static final String ENCODED_SPECIAL_VALUE = "a%2Bb%26c%3Dd%23e%20%2541%20%7Bx%7D%20%C3%A9";
     private static final List<String> STATUSES = Arrays.asList("draft", "approved");
 
     @Test
@@ -84,6 +86,21 @@ public class FilterEmailsTest
         expected.put("pageSize", "50");
 
         FilterEmails command = new FilterEmails(filter);
+
+        assertThat(command.getParameters()).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldPercentEncodeStringFilters()
+    {
+        FilterEmails command = new FilterEmails(EmailV2Filter.builder(WORKSPACE_ID)
+                .name(SPECIAL_VALUE)
+                .status(Collections.singletonList(SPECIAL_VALUE))
+                .build());
+        Map<String, Object> expected = new LinkedHashMap<>();
+        expected.put("workspaceId", WORKSPACE_ID);
+        expected.put("status", Collections.singletonList(ENCODED_SPECIAL_VALUE));
+        expected.put("name", ENCODED_SPECIAL_VALUE);
 
         assertThat(command.getParameters()).isEqualTo(expected);
     }
