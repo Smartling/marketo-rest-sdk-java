@@ -5,6 +5,8 @@ public interface MarketoClientManager {
 
     MarketoEmailClient getMarketoEmailClient();
 
+    MarketoEmailV2Client getMarketoEmailV2Client();
+
     MarketoEmailTemplateClient getMarketoEmailTemplateClient();
 
     MarketoSnippetClient getMarketoSnippetClient();
