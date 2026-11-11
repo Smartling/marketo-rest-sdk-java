@@ -79,7 +79,7 @@ public interface MarketoEmailV2Client
     void updateEmail(String id, EmailV2Update update) throws MarketoApiException;
 
     /**
-     * Creates a draft of the approved email {@code id} and returns it. The returned email is the draft with
+     * Creates a draft of the published email {@code id} and returns it. The returned email is the draft with
      * its own id, which is the id to update and approve.
      * <p>
      * It fails with a plain {@link MarketoApiException} (Marketo error {@code 60000}) when the email already

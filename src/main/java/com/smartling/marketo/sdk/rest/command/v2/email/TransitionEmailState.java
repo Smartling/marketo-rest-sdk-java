@@ -17,7 +17,7 @@ public class TransitionEmailState<R> extends BaseEmailPostCommand<R>
     }
 
     /**
-     * Approves the draft; the API answers without a result.
+     * Approves the draft; any result the API sends is ignored.
      */
     public static TransitionEmailState<Void> approve(String id)
     {
@@ -25,7 +25,7 @@ public class TransitionEmailState<R> extends BaseEmailPostCommand<R>
     }
 
     /**
-     * Creates a draft of the approved email; the API answers with the email.
+     * Creates a draft of the published email; the API answers with the email.
      */
     public static TransitionEmailState<List<EmailV2>> createDraft(String id)
     {

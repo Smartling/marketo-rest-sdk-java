@@ -32,7 +32,7 @@ Delivering a translation of a New Email Designer email needs four write calls th
 
 Declared by Adobe's `swagger-asset.json` (the untracked file in the repository root; it is only read, not committed): the three calls (`/email/clone`, `/email/{id}/update`, `/email/state/transition`) all answer `EmailNewResponse`, whose `result` is an **array** of `EmailDetailDTO`, the same shape as get-by-id; the transition `action` enum is `approve`, `unapprove`, `discard`, `create_draft`; `UpdateEmailRequest` has `headers.fromName` and `data.text.body`/`syncFromHtml`; `CloneNewAsset` has a required `name` and an optional `description`. This is the declared schema. Adobe's API reference shows the clone response example with 17 fields of the email object (`id`, `name`, `description`, `appType`, `headers`, `metadata`, `settings`, `status`, `state`, `virtualId`, `associatedStates`, `appData`, `templateId`, `externalId`, `editorContext`, `scriptEngine`, `data`); the clone fixture follows it.
 
-Observed on the sandbox on 11 November (author's token, user `marketo-connect`, run by hand in plan task 1):
+Observed on the sandbox on 11 November (author's token, API user with the Read-Write Assets role, run by hand in plan task 1):
 - **Clone could not be observed.** Every v2 clone (emails in two workspaces, a fragment) answered `603 Access denied`, although the same user cloned new-editor emails until 30 October (Marketo audit trail) and still clones classic assets with the v1 API. The role has every permission Adobe lists, IP restrictions are off, and the cause was not found. So the clone response shape is the documented one, not an observed one.
 - **Create draft** on a published email works: HTTP 200, `result` is an array with one email object (the draft: its own `id`, `status` `published_with_draft`, `state` `draft`). Reading the published email afterwards lists the draft in `associatedStates` (`contentId`, `externalId`, `state`).
 - **Create draft on an email that already has a draft** fails: HTTP 200, `success: false`, error `60000` "Content Wave api failed". It does not return the existing draft.
@@ -47,7 +47,7 @@ Patterns: **Command** (the SDK's request abstraction, reused), **Facade** (`Mark
 
 ### Transport change (shared, backward compatible)
 
-Status: implemented (plan task 2, commit 3d4e940). Done so far: this transport change and the response fixtures. Not yet done: the commands, `EmailV2Update`, the `associatedStates` model, the `60019` mapping, the client methods and the version bump.
+Status: implemented (plan tasks 2 to 6): the transport change, the response fixtures, the commands, `EmailV2Update`, the `associatedStates` model, the `60019` mapping, the client methods, the end-to-end tests and the version bump to 3.3.0.
 
 `JaxRsHttpCommandExecutor.execute` handles `GET`, `POST` (form) and `MULTIPART`; any other method name falls through to `invocationBuilder.method(name, ...)`, which would send the name as an HTTP verb. A new method name `JSON_POST` (the executor's own convention for names that are not HTTP verbs, like `MULTIPART`) gets its own branch before that fallback: it sends the command's body as `application/json; charset=UTF-8` with `invocationBuilder.post(entity, typeToken)`.
 
