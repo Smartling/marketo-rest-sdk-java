@@ -46,6 +46,7 @@ import java.util.logging.Logger;
 import static com.github.tomakehurst.wiremock.client.WireMock.absent;
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.givenThat;
@@ -73,6 +74,10 @@ public class JaxRsHttpCommandExecutorTest extends BaseTransportTest {
     private static final String HEADER_NAME = "x-test";
     private static final String HEADER_VALUE = "value";
     private static final String STATUS_PARAM = "status";
+    private static final String JSON_POST_METHOD = "JSON_POST";
+    private static final String JSON_CONTENT_TYPE = "application/json;charset=UTF-8";
+    private static final String SPECIAL_BODY_TEXT = "He said \"hi\" <p class=\"a\">x & y</p> {% if a %}{{!-- c --}} caf\u00e9 \u65e5\u672c";
+    private static final String SECRET_BODY_TEXT = "secret-body-text";
 
     private JaxRsHttpCommandExecutor testedInstance;
 
@@ -476,6 +481,84 @@ public class JaxRsHttpCommandExecutorTest extends BaseTransportTest {
 
         verify(getRequestedFor(urlPathEqualTo(SOME_PATH))
                 .withQueryParam(STATUS_PARAM, absent()));
+    }
+
+    @Test
+    public void shouldSendJsonBodyForJsonPost() throws Exception {
+        given(command.getMethod()).willReturn(JSON_POST_METHOD);
+        given(command.getBody()).willReturn(Collections.singletonMap("key", "value"));
+        given(command.getHeaders()).willReturn(Collections.singletonMap(HEADER_NAME, HEADER_VALUE));
+
+        // Execute a command that posts a JSON body
+        testedInstance.execute(command);
+
+        verify(postRequestedFor(urlPathEqualTo(SOME_PATH))
+                .withHeader("Content-Type", equalTo(JSON_CONTENT_TYPE))
+                .withHeader(HEADER_NAME, equalTo(HEADER_VALUE))
+                .withHeader("Authorization", equalTo("Bearer token"))
+                .withRequestBody(equalToJson("{\"key\":\"value\"}", false, false)));
+    }
+
+    @Test
+    public void shouldRoundTripSpecialBodyInJsonPost() throws Exception {
+        given(command.getMethod()).willReturn(JSON_POST_METHOD);
+        given(command.getBody()).willReturn(Collections.singletonMap("html", SPECIAL_BODY_TEXT));
+
+        // Execute a command that posts a body with special characters
+        testedInstance.execute(command);
+
+        verify(postRequestedFor(urlPathEqualTo(SOME_PATH))
+                .withRequestBody(equalToJson(toJson(Collections.singletonMap("html", SPECIAL_BODY_TEXT)), false, false)));
+    }
+
+    @Test
+    public void shouldSendNoQueryParametersForJsonPost() throws Exception {
+        given(command.getMethod()).willReturn(JSON_POST_METHOD);
+        given(command.getBody()).willReturn(Collections.singletonMap("key", "value"));
+
+        testedInstance.execute(command);
+
+        verify(postRequestedFor(urlMatching(SOME_PATH)));
+    }
+
+    @Test
+    public void shouldRejectJsonPostWithNullBody() throws Exception {
+        given(command.getMethod()).willReturn(JSON_POST_METHOD);
+
+        thrown.expect(IllegalStateException.class);
+
+        testedInstance.execute(command);
+    }
+
+    @Test
+    public void shouldKeepFormPostUnchanged() throws Exception {
+        given(command.getMethod()).willReturn("POST");
+        given(command.getParameters()).willReturn(Collections.singletonMap("key", "value"));
+
+        testedInstance.execute(command);
+
+        verify(postRequestedFor(urlPathEqualTo(SOME_PATH))
+                .withHeader("Content-Type", equalTo("application/x-www-form-urlencoded;charset=UTF-8"))
+                .withRequestBody(equalTo("key=value")));
+    }
+
+    @Test
+    public void shouldNotPutBodyInErrorMessage() throws Exception {
+        given(command.getMethod()).willReturn(JSON_POST_METHOD);
+        given(command.getBody()).willReturn(Collections.singletonMap("key", SECRET_BODY_TEXT));
+        givenThat(post(urlStartingWith("/rest")).willReturn(
+                aJsonResponse("{\"success\": false, \"errors\":[{\"code\": \"100\",\"message\": \"Error!\"}]}")));
+
+        // Execute a failing JSON POST command and capture its error
+        MarketoApiException exception = null;
+        try {
+            testedInstance.execute(command);
+        } catch (MarketoApiException e) {
+            exception = e;
+        }
+
+        assertThat(exception).isNotNull();
+        assertThat(exception.getMessage()).contains("JSON_POST:/some/path").doesNotContain(SECRET_BODY_TEXT);
     }
 
     private static class JsonList extends ArrayList<String> implements HasToBeMappedToJson {

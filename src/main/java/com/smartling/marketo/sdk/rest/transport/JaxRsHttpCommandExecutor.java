@@ -38,6 +38,8 @@ import java.util.Set;
 public class JaxRsHttpCommandExecutor implements HttpCommandExecutor {
     private final static ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
+    private static final String JSON_POST_METHOD = "JSON_POST";
+
     private static final Set<String> API_LIMIT_ERROR_CODES = ImmutableSet.of(
             "606",  // Rate limit
             "607",  // Daily quota
@@ -59,6 +61,10 @@ public class JaxRsHttpCommandExecutor implements HttpCommandExecutor {
     private final TokenProvider tokenProvider;
     private final Client client;
 
+    /**
+     * @param client the JAX-RS client; it must register {@code JacksonFeature} and {@code ObjectMapperProvider},
+     *               which serialize and deserialize the JSON bodies and responses
+     */
     public JaxRsHttpCommandExecutor(String identityUrl, String restUrl, String clientId, String clientSecret, TokenProvider tokenProvider, Client client) {
         this.identityUrl = identityUrl;
         this.restUrl = restUrl;
@@ -97,6 +103,13 @@ public class JaxRsHttpCommandExecutor implements HttpCommandExecutor {
         } else if ("MULTIPART".equalsIgnoreCase(command.getMethod())) {
             MultiPart multiPartEntity = toMultipart(processParameters(command.getParameters(), false));
             Entity<?> entity = Entity.entity(multiPartEntity, multiPartEntity.getMediaType());
+            marketoResponse = invocationBuilder.post(entity, typeToken);
+        } else if (JSON_POST_METHOD.equalsIgnoreCase(command.getMethod())) {
+            Object body = command.getBody();
+            if (body == null) {
+                throw new IllegalStateException("JSON_POST command has no body, path=" + command.getPath());
+            }
+            Entity<?> entity = Entity.entity(body, MediaType.APPLICATION_JSON_TYPE.withCharset("UTF-8"));
             marketoResponse = invocationBuilder.post(entity, typeToken);
         } else {
             marketoResponse = invocationBuilder.method(command.getMethod(), typeToken);
