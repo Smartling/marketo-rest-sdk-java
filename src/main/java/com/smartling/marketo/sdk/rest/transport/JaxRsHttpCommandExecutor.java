@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableSet;
 import com.smartling.marketo.sdk.HasToBeMappedToJson;
 import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.rest.Command;
+import com.smartling.marketo.sdk.rest.EmailContentRejectedException;
 import com.smartling.marketo.sdk.rest.FolderTypeNotSupportedException;
 import com.smartling.marketo.sdk.rest.HttpCommandExecutor;
 import com.smartling.marketo.sdk.rest.ObjectNotFoundException;
@@ -52,6 +53,10 @@ public class JaxRsHttpCommandExecutor implements HttpCommandExecutor {
 
     private static final Set<String> FOLDER_TYPE_NOT_SUPPORTED_CODES = ImmutableSet.of(
             "711"   // Invalid folder type for email
+    );
+
+    private static final Set<String> EMAIL_CONTENT_REJECTED_CODES = ImmutableSet.of(
+            "60019" // Email content update rejected
     );
 
     private final String identityUrl;
@@ -143,6 +148,12 @@ public class JaxRsHttpCommandExecutor implements HttpCommandExecutor {
         if (folderTypeNotSupportedError.isPresent()) {
             MarketoResponse.Error error = folderTypeNotSupportedError.get();
             return new FolderTypeNotSupportedException(error.getCode(), description(command, error));
+        }
+
+        Optional<MarketoResponse.Error> emailContentRejectedError = getError(EMAIL_CONTENT_REJECTED_CODES, errors);
+        if (emailContentRejectedError.isPresent()) {
+            MarketoResponse.Error error = emailContentRejectedError.get();
+            return new EmailContentRejectedException(error.getCode(), description(command, error));
         }
 
         MarketoResponse.Error firstError = errors.get(0);

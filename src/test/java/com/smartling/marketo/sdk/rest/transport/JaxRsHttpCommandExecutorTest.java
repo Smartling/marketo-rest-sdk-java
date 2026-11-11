@@ -10,6 +10,7 @@ import com.smartling.marketo.sdk.domain.email.EmailTextContentItem;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.domain.folder.FolderType;
 import com.smartling.marketo.sdk.rest.Command;
+import com.smartling.marketo.sdk.rest.EmailContentRejectedException;
 import com.smartling.marketo.sdk.rest.FolderTypeNotSupportedException;
 import com.smartling.marketo.sdk.rest.ObjectNotFoundException;
 import com.smartling.marketo.sdk.rest.RequestLimitExceededException;
@@ -78,6 +79,8 @@ public class JaxRsHttpCommandExecutorTest extends BaseTransportTest {
     private static final String JSON_CONTENT_TYPE = "application/json;charset=UTF-8";
     private static final String SPECIAL_BODY_TEXT = "He said \"hi\" <p class=\"a\">x & y</p> {% if a %}{{!-- c --}} caf\u00e9 \u65e5\u672c";
     private static final String SECRET_BODY_TEXT = "secret-body-text";
+    private static final String CONTENT_REJECTED_MESSAGE = "contentWaveAssetUpdationFailed";
+    private static final String UPDATE_CONTENT_NOT_ALLOWED_MESSAGE = "Update content on dynamic email is not allowed.";
 
     private JaxRsHttpCommandExecutor testedInstance;
 
@@ -338,6 +341,35 @@ public class JaxRsHttpCommandExecutorTest extends BaseTransportTest {
     }
 
     @Test
+    public void shouldMapCode60019ToEmailContentRejectedException() throws Exception {
+        givenThat(get(urlStartingWith("/rest")).willReturn(
+                aJsonResponse(errorResponse("60019", CONTENT_REJECTED_MESSAGE))));
+
+        thrown.expect(EmailContentRejectedException.class);
+        thrown.expect(exceptionWithCode("60019"));
+        thrown.expectMessage(CONTENT_REJECTED_MESSAGE);
+
+        testedInstance.execute(command);
+    }
+
+    @Test
+    public void shouldNotChangeOtherMappings() throws Exception {
+        // Update content error on a dynamic email
+        MarketoApiException updateContentNotAllowed = failureFor("702", UPDATE_CONTENT_NOT_ALLOWED_MESSAGE);
+        // Missing object error with code 710
+        MarketoApiException notFound = failureFor("710", "Error!");
+        // Rate limit error
+        MarketoApiException rateLimit = failureFor("606", "Error!");
+        // Error with a code that has no dedicated mapping
+        MarketoApiException unknown = failureFor("100", "Error!");
+
+        assertThat(updateContentNotAllowed).isExactlyInstanceOf(UpdateContentNotAllowedException.class);
+        assertThat(notFound).isExactlyInstanceOf(ObjectNotFoundException.class);
+        assertThat(rateLimit).isExactlyInstanceOf(RequestLimitExceededException.class);
+        assertThat(unknown).isExactlyInstanceOf(MarketoApiException.class);
+    }
+
+    @Test
     public void shouldExecutePostCommands() throws Exception {
         given(command.getMethod()).willReturn("POST");
         given(command.getPath()).willReturn("/some/path");
@@ -559,6 +591,24 @@ public class JaxRsHttpCommandExecutorTest extends BaseTransportTest {
 
         assertThat(exception).isNotNull();
         assertThat(exception.getMessage()).contains("JSON_POST:/some/path").doesNotContain(SECRET_BODY_TEXT);
+    }
+
+    private static String errorResponse(String code, String message) {
+        return "{\"success\":false,\"warnings\":[],\"errors\":[{\"code\":\"" + code + "\",\"message\":\"" + message + "\"}]}";
+    }
+
+    private MarketoApiException failureFor(String code, String message) {
+        givenThat(get(urlStartingWith("/rest")).willReturn(aJsonResponse(errorResponse(code, message))));
+
+        try
+        {
+            testedInstance.execute(command);
+        }
+        catch (MarketoApiException e)
+        {
+            return e;
+        }
+        throw new AssertionError("Expected MarketoApiException for code " + code);
     }
 
     private static class JsonList extends ArrayList<String> implements HasToBeMappedToJson {
