@@ -10,6 +10,7 @@ import com.smartling.marketo.sdk.domain.email.EmailTextContentItem;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.domain.folder.FolderType;
 import com.smartling.marketo.sdk.rest.Command;
+import com.smartling.marketo.sdk.rest.EmailContentRejectedException;
 import com.smartling.marketo.sdk.rest.FolderTypeNotSupportedException;
 import com.smartling.marketo.sdk.rest.ObjectNotFoundException;
 import com.smartling.marketo.sdk.rest.RequestLimitExceededException;
@@ -46,6 +47,7 @@ import java.util.logging.Logger;
 import static com.github.tomakehurst.wiremock.client.WireMock.absent;
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.givenThat;
@@ -73,6 +75,12 @@ public class JaxRsHttpCommandExecutorTest extends BaseTransportTest {
     private static final String HEADER_NAME = "x-test";
     private static final String HEADER_VALUE = "value";
     private static final String STATUS_PARAM = "status";
+    private static final String JSON_POST_METHOD = "JSON_POST";
+    private static final String JSON_CONTENT_TYPE = "application/json;charset=UTF-8";
+    private static final String SPECIAL_BODY_TEXT = "He said \"hi\" <p class=\"a\">x & y</p> {% if a %}{{!-- c --}} caf\u00e9 \u65e5\u672c";
+    private static final String SECRET_BODY_TEXT = "secret-body-text";
+    private static final String CONTENT_REJECTED_MESSAGE = "contentWaveAssetUpdationFailed";
+    private static final String UPDATE_CONTENT_NOT_ALLOWED_MESSAGE = "Update content on dynamic email is not allowed.";
 
     private JaxRsHttpCommandExecutor testedInstance;
 
@@ -333,6 +341,35 @@ public class JaxRsHttpCommandExecutorTest extends BaseTransportTest {
     }
 
     @Test
+    public void shouldMapCode60019ToEmailContentRejectedException() throws Exception {
+        givenThat(get(urlStartingWith("/rest")).willReturn(
+                aJsonResponse(errorResponse("60019", CONTENT_REJECTED_MESSAGE))));
+
+        thrown.expect(EmailContentRejectedException.class);
+        thrown.expect(exceptionWithCode("60019"));
+        thrown.expectMessage(CONTENT_REJECTED_MESSAGE);
+
+        testedInstance.execute(command);
+    }
+
+    @Test
+    public void shouldNotChangeOtherMappings() throws Exception {
+        // Update content error on a dynamic email
+        MarketoApiException updateContentNotAllowed = failureFor("702", UPDATE_CONTENT_NOT_ALLOWED_MESSAGE);
+        // Missing object error with code 710
+        MarketoApiException notFound = failureFor("710", "Error!");
+        // Rate limit error
+        MarketoApiException rateLimit = failureFor("606", "Error!");
+        // Error with a code that has no dedicated mapping
+        MarketoApiException unknown = failureFor("100", "Error!");
+
+        assertThat(updateContentNotAllowed).isExactlyInstanceOf(UpdateContentNotAllowedException.class);
+        assertThat(notFound).isExactlyInstanceOf(ObjectNotFoundException.class);
+        assertThat(rateLimit).isExactlyInstanceOf(RequestLimitExceededException.class);
+        assertThat(unknown).isExactlyInstanceOf(MarketoApiException.class);
+    }
+
+    @Test
     public void shouldExecutePostCommands() throws Exception {
         given(command.getMethod()).willReturn("POST");
         given(command.getPath()).willReturn("/some/path");
@@ -476,6 +513,102 @@ public class JaxRsHttpCommandExecutorTest extends BaseTransportTest {
 
         verify(getRequestedFor(urlPathEqualTo(SOME_PATH))
                 .withQueryParam(STATUS_PARAM, absent()));
+    }
+
+    @Test
+    public void shouldSendJsonBodyForJsonPost() throws Exception {
+        given(command.getMethod()).willReturn(JSON_POST_METHOD);
+        given(command.getBody()).willReturn(Collections.singletonMap("key", "value"));
+        given(command.getHeaders()).willReturn(Collections.singletonMap(HEADER_NAME, HEADER_VALUE));
+
+        // Execute a command that posts a JSON body
+        testedInstance.execute(command);
+
+        verify(postRequestedFor(urlPathEqualTo(SOME_PATH))
+                .withHeader("Content-Type", equalTo(JSON_CONTENT_TYPE))
+                .withHeader(HEADER_NAME, equalTo(HEADER_VALUE))
+                .withHeader("Authorization", equalTo("Bearer token"))
+                .withRequestBody(equalToJson("{\"key\":\"value\"}", false, false)));
+    }
+
+    @Test
+    public void shouldRoundTripSpecialBodyInJsonPost() throws Exception {
+        given(command.getMethod()).willReturn(JSON_POST_METHOD);
+        given(command.getBody()).willReturn(Collections.singletonMap("html", SPECIAL_BODY_TEXT));
+
+        // Execute a command that posts a body with special characters
+        testedInstance.execute(command);
+
+        verify(postRequestedFor(urlPathEqualTo(SOME_PATH))
+                .withRequestBody(equalToJson(toJson(Collections.singletonMap("html", SPECIAL_BODY_TEXT)), false, false)));
+    }
+
+    @Test
+    public void shouldSendNoQueryParametersForJsonPost() throws Exception {
+        given(command.getMethod()).willReturn(JSON_POST_METHOD);
+        given(command.getBody()).willReturn(Collections.singletonMap("key", "value"));
+
+        testedInstance.execute(command);
+
+        verify(postRequestedFor(urlMatching(SOME_PATH)));
+    }
+
+    @Test
+    public void shouldRejectJsonPostWithNullBody() throws Exception {
+        given(command.getMethod()).willReturn(JSON_POST_METHOD);
+
+        thrown.expect(IllegalStateException.class);
+
+        testedInstance.execute(command);
+    }
+
+    @Test
+    public void shouldKeepFormPostUnchanged() throws Exception {
+        given(command.getMethod()).willReturn("POST");
+        given(command.getParameters()).willReturn(Collections.singletonMap("key", "value"));
+
+        testedInstance.execute(command);
+
+        verify(postRequestedFor(urlPathEqualTo(SOME_PATH))
+                .withHeader("Content-Type", equalTo("application/x-www-form-urlencoded;charset=UTF-8"))
+                .withRequestBody(equalTo("key=value")));
+    }
+
+    @Test
+    public void shouldNotPutBodyInErrorMessage() throws Exception {
+        given(command.getMethod()).willReturn(JSON_POST_METHOD);
+        given(command.getBody()).willReturn(Collections.singletonMap("key", SECRET_BODY_TEXT));
+        givenThat(post(urlStartingWith("/rest")).willReturn(
+                aJsonResponse("{\"success\": false, \"errors\":[{\"code\": \"100\",\"message\": \"Error!\"}]}")));
+
+        // Execute a failing JSON POST command and capture its error
+        MarketoApiException exception = null;
+        try {
+            testedInstance.execute(command);
+        } catch (MarketoApiException e) {
+            exception = e;
+        }
+
+        assertThat(exception).isNotNull();
+        assertThat(exception.getMessage()).contains("JSON_POST:/some/path").doesNotContain(SECRET_BODY_TEXT);
+    }
+
+    private static String errorResponse(String code, String message) {
+        return "{\"success\":false,\"warnings\":[],\"errors\":[{\"code\":\"" + code + "\",\"message\":\"" + message + "\"}]}";
+    }
+
+    private MarketoApiException failureFor(String code, String message) {
+        givenThat(get(urlStartingWith("/rest")).willReturn(aJsonResponse(errorResponse(code, message))));
+
+        try
+        {
+            testedInstance.execute(command);
+        }
+        catch (MarketoApiException e)
+        {
+            return e;
+        }
+        throw new AssertionError("Expected MarketoApiException for code " + code);
     }
 
     private static class JsonList extends ArrayList<String> implements HasToBeMappedToJson {
