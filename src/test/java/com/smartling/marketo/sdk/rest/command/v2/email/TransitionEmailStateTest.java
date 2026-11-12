@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class TransitionEmailStateTest
 {
-    private static final String EMAIL_ID = "6873";
+    private static final String EMAIL_ID = "1001";
     private static final String PATH = "/asset/v2/email/state/transition";
 
     @Test

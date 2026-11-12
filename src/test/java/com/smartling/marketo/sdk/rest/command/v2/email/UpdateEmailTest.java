@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class UpdateEmailTest
 {
-    private static final String EMAIL_ID = "6873";
+    private static final String EMAIL_ID = "1001";
     private static final String SUBJECT = "Test Subject";
     private static final String FROM_NAME = "John Doe";
     private static final String HTML_BODY = "<html><body><h1>Hello</h1></body></html>";
@@ -22,7 +22,7 @@ public class UpdateEmailTest
     {
         UpdateEmail command = new UpdateEmail(EMAIL_ID, EmailV2Update.builder().subject(SUBJECT).build());
 
-        assertThat(command.getPath()).isEqualTo("/asset/v2/email/6873/update");
+        assertThat(command.getPath()).isEqualTo("/asset/v2/email/1001/update");
         assertThat(command.getMethod()).isEqualTo("JSON_POST");
         assertThat(command.getHeaders()).isEqualTo(Collections.singletonMap("x-app-type", "marketo"));
         assertThat(command.getParameters()).isEmpty();

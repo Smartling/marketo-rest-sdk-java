@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class CloneEmailTest
 {
-    private static final String EMAIL_ID = "6873";
+    private static final String EMAIL_ID = "1001";
     private static final String NEW_NAME = "Test Email Copy";
 
     @Test
