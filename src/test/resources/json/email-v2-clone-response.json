@@ -1,0 +1,67 @@
+{
+  "requestId": "request-id-4",
+  "success": true,
+  "warnings": [],
+  "errors": null,
+  "result": [
+    {
+      "id": "1003",
+      "name": "Test Email Copy",
+      "description": "A test email",
+      "appType": "marketo",
+      "headers": {
+        "subject": "Test Subject",
+        "fromEmail": "john.doe@example.com",
+        "fromName": "John Doe",
+        "replyEmail": "john.doe@example.com"
+      },
+      "metadata": {
+        "createdBy": "John Doe",
+        "createdAt": "2026-10-30T10:31:55Z+0000",
+        "createdById": "user-id-1@example.com",
+        "createdByAepId": "aep-id-1",
+        "modifiedBy": "John Doe",
+        "modifiedAt": "2026-10-30T10:31:55Z+0000",
+        "modifiedById": "user-id-1@example.com",
+        "modifiedByAepId": "aep-id-1"
+      },
+      "settings": {
+        "isOperational": false,
+        "isWebPageView": false,
+        "isTextOnly": false,
+        "disableOpenTracking": false,
+        "enableUrlTracking": false,
+        "brandedDomain": "branded.example.com"
+      },
+      "status": "draft",
+      "state": "draft",
+      "virtualId": "virtual-id-2",
+      "associatedStates": [
+        {
+          "contentId": "1003",
+          "externalId": "1003",
+          "state": "draft"
+        }
+      ],
+      "appData": {
+        "workspaceId": "3",
+        "folderId": "2001"
+      },
+      "templateId": "template-1",
+      "externalId": "1003",
+      "editorContext": {
+        "dynamicContent": {}
+      },
+      "scriptEngine": "VELOCITY",
+      "data": {
+        "html": {
+          "body": "<html><body><h1>Hello</h1></body></html>"
+        },
+        "text": {
+          "body": "Hello",
+          "syncFromHtml": true
+        }
+      }
+    }
+  ]
+}

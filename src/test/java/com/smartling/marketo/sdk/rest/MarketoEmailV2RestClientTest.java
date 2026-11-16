@@ -4,8 +4,12 @@ import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.domain.v2.email.EmailV2;
 import com.smartling.marketo.sdk.domain.v2.email.EmailV2Filter;
 import com.smartling.marketo.sdk.domain.v2.email.EmailV2Page;
+import com.smartling.marketo.sdk.domain.v2.email.EmailV2Update;
+import com.smartling.marketo.sdk.rest.command.v2.email.CloneEmail;
 import com.smartling.marketo.sdk.rest.command.v2.email.FilterEmails;
 import com.smartling.marketo.sdk.rest.command.v2.email.GetEmailById;
+import com.smartling.marketo.sdk.rest.command.v2.email.TransitionEmailState;
+import com.smartling.marketo.sdk.rest.command.v2.email.UpdateEmail;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -15,6 +19,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -33,6 +38,13 @@ public class MarketoEmailV2RestClientTest
     private static final String MISSING_EMAIL_ERROR_CODE = "603";
     private static final String ACCESS_DENIED_MESSAGE = "Access denied";
     private static final String INVALID_PARAMETER_ERROR_CODE = "611";
+    private static final String CONTENT_REJECTED_ERROR_CODE = "60019";
+    private static final String DRAFT_EXISTS_ERROR_CODE = "60000";
+    private static final String COPY_NAME = "test-copy";
+    private static final String COPY_ID = "100";
+    private static final String DRAFT_ID = "101";
+    private static final String CLONE_NO_EMAIL_MESSAGE = "Clone of email[id = 42] returned no email";
+    private static final String DRAFT_NO_EMAIL_MESSAGE = "Create draft of email[id = 42] returned no email";
 
     @Mock
     private HttpCommandExecutor executor;
@@ -152,5 +164,200 @@ public class MarketoEmailV2RestClientTest
         ArgumentCaptor<GetEmailById> captor = ArgumentCaptor.forClass(GetEmailById.class);
         verify(executor).execute(captor.capture());
         assertThat(captor.getValue().getPath()).isEqualTo("/asset/v2/email/007");
+    }
+
+    @Test
+    public void shouldCloneEmailAndReturnFirstEmail() throws Exception
+    {
+        EmailV2 first = emailWithId(COPY_ID);
+        given(executor.execute(any(CloneEmail.class))).willReturn(Arrays.asList(first, emailWithId("43")));
+
+        // Clone the email under a new name
+        EmailV2 result = testedInstance.cloneEmail(EMAIL_ID, COPY_NAME);
+
+        ArgumentCaptor<CloneEmail> captor = ArgumentCaptor.forClass(CloneEmail.class);
+        verify(executor).execute(captor.capture());
+        assertThat(result).isSameAs(first);
+        assertThat(captor.getValue().getPath()).isEqualTo("/asset/v2/email/clone");
+        assertThat(captor.getValue().getBody()).isEqualTo(new CloneEmail(EMAIL_ID, COPY_NAME).getBody());
+    }
+
+    @Test
+    public void shouldUpdateEmailWithUpdateCommand() throws Exception
+    {
+        EmailV2Update update = EmailV2Update.builder().subject("test-subject").build();
+
+        // Update the email
+        testedInstance.updateEmail(EMAIL_ID, update);
+
+        ArgumentCaptor<UpdateEmail> captor = ArgumentCaptor.forClass(UpdateEmail.class);
+        verify(executor).execute(captor.capture());
+        assertThat(captor.getValue().getPath()).isEqualTo("/asset/v2/email/42/update");
+        assertThat(captor.getValue().getBody()).isEqualTo(new UpdateEmail(EMAIL_ID, update).getBody());
+    }
+
+    @Test
+    public void shouldCreateDraftAndReturnFirstEmail() throws Exception
+    {
+        EmailV2 first = emailWithId(DRAFT_ID);
+        given(executor.execute(any(TransitionEmailState.class))).willReturn(Arrays.asList(first, emailWithId("43")));
+
+        // Create a draft of the email
+        EmailV2 result = testedInstance.createDraft(EMAIL_ID);
+
+        ArgumentCaptor<TransitionEmailState> captor = ArgumentCaptor.forClass(TransitionEmailState.class);
+        verify(executor).execute(captor.capture());
+        assertThat(result).isSameAs(first);
+        assertThat(captor.getValue().getPath()).isEqualTo("/asset/v2/email/state/transition");
+        assertThat(captor.getValue().getBody()).isEqualTo(TransitionEmailState.createDraft(EMAIL_ID).getBody());
+    }
+
+    @Test
+    public void shouldApproveEmailWithTransitionCommand() throws Exception
+    {
+        // Approve the email
+        testedInstance.approveEmail(EMAIL_ID);
+
+        ArgumentCaptor<TransitionEmailState> captor = ArgumentCaptor.forClass(TransitionEmailState.class);
+        verify(executor).execute(captor.capture());
+        assertThat(captor.getValue().getPath()).isEqualTo("/asset/v2/email/state/transition");
+        assertThat(captor.getValue().getBody()).isEqualTo(TransitionEmailState.approve(EMAIL_ID).getBody());
+    }
+
+    @Test
+    public void shouldRejectUnsafeIdsOnEveryWriteMethod()
+    {
+        for (String unsafeId : Arrays.asList(null, "", "1/2", "{a}"))
+        {
+            for (Call call : writeCalls(unsafeId))
+            {
+                assertThatThrownBy(call::run)
+                        .isInstanceOf(IllegalArgumentException.class)
+                        .hasMessage("id must be a number, but was: " + unsafeId);
+            }
+        }
+
+        verifyNoInteractions(executor);
+    }
+
+    @Test
+    public void shouldRejectNullNameOnClone()
+    {
+        assertThatThrownBy(() -> testedInstance.cloneEmail(EMAIL_ID, null))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("name must not be null");
+
+        verifyNoInteractions(executor);
+    }
+
+    @Test
+    public void shouldRejectNullUpdateOnUpdate()
+    {
+        assertThatThrownBy(() -> testedInstance.updateEmail(EMAIL_ID, null))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("update must not be null");
+
+        verifyNoInteractions(executor);
+    }
+
+    @Test
+    public void shouldCheckIdBeforeNameAndUpdate()
+    {
+        assertThatThrownBy(() -> testedInstance.cloneEmail(null, null)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> testedInstance.updateEmail(null, null)).isInstanceOf(IllegalArgumentException.class);
+
+        verifyNoInteractions(executor);
+    }
+
+    @Test
+    public void shouldThrowObjectNotFoundWhenCloneReturnsNoEmail() throws Exception
+    {
+        for (List<EmailV2> result : noEmailResults())
+        {
+            given(executor.execute(any(CloneEmail.class))).willReturn(result);
+
+            Throwable thrown = catchThrowable(() -> testedInstance.cloneEmail(EMAIL_ID, COPY_NAME));
+
+            assertThat(thrown).isExactlyInstanceOf(ObjectNotFoundException.class).hasMessage(CLONE_NO_EMAIL_MESSAGE);
+            assertThat(((ObjectNotFoundException) thrown).getErrorCode()).isNull();
+        }
+    }
+
+    @Test
+    public void shouldThrowObjectNotFoundWhenCreateDraftReturnsNoEmail() throws Exception
+    {
+        for (List<EmailV2> result : noEmailResults())
+        {
+            given(executor.execute(any(TransitionEmailState.class))).willReturn(result);
+
+            Throwable thrown = catchThrowable(() -> testedInstance.createDraft(EMAIL_ID));
+
+            assertThat(thrown).isExactlyInstanceOf(ObjectNotFoundException.class).hasMessage(DRAFT_NO_EMAIL_MESSAGE);
+            assertThat(((ObjectNotFoundException) thrown).getErrorCode()).isNull();
+        }
+    }
+
+    @Test
+    public void shouldPropagateRejectedContentUnchanged() throws Exception
+    {
+        EmailContentRejectedException original = new EmailContentRejectedException(CONTENT_REJECTED_ERROR_CODE, "rejected");
+        given(executor.execute(any(UpdateEmail.class))).willThrow(original);
+
+        assertThatThrownBy(() -> testedInstance.updateEmail(EMAIL_ID, EmailV2Update.builder().subject("test-subject").build()))
+                .isSameAs(original);
+    }
+
+    @Test
+    public void shouldPropagateExistingDraftErrorUnchanged() throws Exception
+    {
+        MarketoApiException original = new MarketoApiException(DRAFT_EXISTS_ERROR_CODE, "draft exists");
+        given(executor.execute(any(TransitionEmailState.class))).willThrow(original);
+
+        assertThatThrownBy(() -> testedInstance.createDraft(EMAIL_ID)).isSameAs(original);
+    }
+
+    @Test
+    public void shouldMapErrorCode603ToObjectNotFoundOnEveryWriteMethod() throws Exception
+    {
+        given(executor.execute(any(CloneEmail.class)))
+                .willThrow(new MarketoApiException(MISSING_EMAIL_ERROR_CODE, ACCESS_DENIED_MESSAGE));
+        given(executor.execute(any(UpdateEmail.class)))
+                .willThrow(new MarketoApiException(MISSING_EMAIL_ERROR_CODE, ACCESS_DENIED_MESSAGE));
+        given(executor.execute(any(TransitionEmailState.class)))
+                .willThrow(new MarketoApiException(MISSING_EMAIL_ERROR_CODE, ACCESS_DENIED_MESSAGE));
+
+        for (Call call : writeCalls(EMAIL_ID))
+        {
+            Throwable thrown = catchThrowable(call::run);
+
+            assertThat(thrown).isExactlyInstanceOf(ObjectNotFoundException.class).hasMessage(ACCESS_DENIED_MESSAGE);
+            assertThat(((ObjectNotFoundException) thrown).getErrorCode()).isEqualTo(MISSING_EMAIL_ERROR_CODE);
+        }
+    }
+
+    private List<Call> writeCalls(String id)
+    {
+        return Arrays.asList(
+                () -> testedInstance.cloneEmail(id, COPY_NAME),
+                () -> testedInstance.updateEmail(id, EmailV2Update.builder().subject("test-subject").build()),
+                () -> testedInstance.createDraft(id),
+                () -> testedInstance.approveEmail(id));
+    }
+
+    private static List<List<EmailV2>> noEmailResults()
+    {
+        return Arrays.asList(null, Collections.<EmailV2>emptyList(), Collections.singletonList(new EmailV2()));
+    }
+
+    private static EmailV2 emailWithId(String id)
+    {
+        EmailV2 email = new EmailV2();
+        email.setId(id);
+        return email;
+    }
+
+    private interface Call
+    {
+        void run() throws Exception;
     }
 }

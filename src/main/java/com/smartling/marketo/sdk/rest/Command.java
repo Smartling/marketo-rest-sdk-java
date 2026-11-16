@@ -16,4 +16,11 @@ public interface Command<T> {
     default Map<String, String> getHeaders() {
         return Collections.emptyMap();
     }
+
+    /**
+     * Body of a {@code JSON_POST} command, serialized as JSON; {@code null} for every other command.
+     */
+    default Object getBody() {
+        return null;
+    }
 }

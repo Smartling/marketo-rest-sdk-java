@@ -1,6 +1,7 @@
 package com.smartling.marketo.sdk.domain.v2.email;
 
 import java.util.Date;
+import java.util.List;
 
 public class EmailV2
 {
@@ -18,6 +19,7 @@ public class EmailV2
     private Metadata metadata;
     private AppData appData;
     private Data data;
+    private List<AssociatedState> associatedStates;
 
     public String getId()
     {
@@ -157,6 +159,53 @@ public class EmailV2
     public void setData(Data data)
     {
         this.data = data;
+    }
+
+    public List<AssociatedState> getAssociatedStates()
+    {
+        return associatedStates;
+    }
+
+    public void setAssociatedStates(List<AssociatedState> associatedStates)
+    {
+        this.associatedStates = associatedStates;
+    }
+
+    public static class AssociatedState
+    {
+        private String contentId;
+        private String externalId;
+        private String state;
+
+        public String getContentId()
+        {
+            return contentId;
+        }
+
+        public void setContentId(String contentId)
+        {
+            this.contentId = contentId;
+        }
+
+        public String getExternalId()
+        {
+            return externalId;
+        }
+
+        public void setExternalId(String externalId)
+        {
+            this.externalId = externalId;
+        }
+
+        public String getState()
+        {
+            return state;
+        }
+
+        public void setState(String state)
+        {
+            this.state = state;
+        }
     }
 
     public static class Headers

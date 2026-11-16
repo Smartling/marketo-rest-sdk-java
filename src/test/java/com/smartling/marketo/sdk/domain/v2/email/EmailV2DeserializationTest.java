@@ -16,6 +16,9 @@ public class EmailV2DeserializationTest
 {
     private static final String FILTER_FIXTURE = "/json/email-v2-filter-response.json";
     private static final String GET_FIXTURE = "/json/email-v2-get-response.json";
+    private static final String CREATE_DRAFT_FIXTURE = "/json/email-v2-create-draft-response.json";
+    private static final String CLONE_FIXTURE = "/json/email-v2-clone-response.json";
+    private static final String STATE_DRAFT = "draft";
     private static final String EMAIL_ID = "1001";
     private static final String EMAIL_NAME = "Test Email";
     private static final String EMAIL_DESCRIPTION = "A test email";
@@ -81,6 +84,62 @@ public class EmailV2DeserializationTest
         EmailV2 email = objectMapper.treeToValue(result.get(0), EmailV2.class);
 
         assertThat(email).usingRecursiveComparison().isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldDeserializeCreateDraftResponseWithPublishedAndDraftStates() throws Exception
+    {
+        JsonNode result = readFixture(CREATE_DRAFT_FIXTURE).get("result");
+
+        // Deserialize the first element of the create-draft response result array
+        EmailV2 email = objectMapper.treeToValue(result.get(0), EmailV2.class);
+
+        assertThat(email.getId()).isEqualTo("1002");
+        assertThat(email.getStatus()).isEqualTo("published_with_draft");
+        assertThat(email.getAssociatedStates()).usingRecursiveFieldByFieldElementComparator().containsExactly(
+                associatedState(EMAIL_ID, EMAIL_ID, "published"),
+                associatedState("draft-content-id-1", null, STATE_DRAFT));
+    }
+
+    @Test
+    public void shouldDeserializeCloneResponseWithAllSeventeenFields() throws Exception
+    {
+        JsonNode result = readFixture(CLONE_FIXTURE).get("result");
+        assertThat(result.get(0).size()).isEqualTo(17);
+
+        EmailV2.Html html = new EmailV2.Html();
+        html.setBody(HTML_BODY);
+
+        EmailV2.Text text = new EmailV2.Text();
+        text.setBody(TEXT_BODY);
+        text.setSyncFromHtml(true);
+
+        EmailV2.Data data = new EmailV2.Data();
+        data.setHtml(html);
+        data.setText(text);
+
+        EmailV2 expected = expectedEmail(
+                Date.from(Instant.parse("2026-10-30T10:31:55Z")),
+                Date.from(Instant.parse("2026-10-30T10:31:55Z")));
+        expected.setId("1003");
+        expected.setName("Test Email Copy");
+        expected.setVirtualId("virtual-id-2");
+        expected.setExternalId("1003");
+        expected.setAssociatedStates(Collections.singletonList(associatedState("1003", "1003", STATE_DRAFT)));
+        expected.setData(data);
+
+        // Deserialize the first element of the clone response result array
+        EmailV2 email = objectMapper.treeToValue(result.get(0), EmailV2.class);
+
+        assertThat(email).usingRecursiveComparison().isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldLeaveAssociatedStatesNullWhenAbsent() throws Exception
+    {
+        EmailV2 email = objectMapper.readValue("{\"id\":\"1001\"}", EmailV2.class);
+
+        assertThat(email.getAssociatedStates()).isNull();
     }
 
     @Test
@@ -154,6 +213,16 @@ public class EmailV2DeserializationTest
         email.setTemplateId(TEMPLATE_ID);
         email.setExternalId(EMAIL_ID);
         email.setScriptEngine(SCRIPT_ENGINE);
+        email.setAssociatedStates(Collections.singletonList(associatedState(EMAIL_ID, EMAIL_ID, STATE_DRAFT)));
         return email;
+    }
+
+    private static EmailV2.AssociatedState associatedState(String contentId, String externalId, String state)
+    {
+        EmailV2.AssociatedState associatedState = new EmailV2.AssociatedState();
+        associatedState.setContentId(contentId);
+        associatedState.setExternalId(externalId);
+        associatedState.setState(state);
+        return associatedState;
     }
 }
