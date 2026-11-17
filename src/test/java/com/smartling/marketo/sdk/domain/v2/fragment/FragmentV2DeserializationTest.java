@@ -46,61 +46,53 @@ public class FragmentV2DeserializationTest
     @Test
     public void shouldDeserializeFilterResponse() throws Exception
     {
-        JsonNode result = readFixture(FILTER_FIXTURE).get("result");
+        JsonNode filterResponseNode = readFixture(FILTER_FIXTURE).get("result");
 
         // Deserialize the list response result
-        FragmentV2Page page = objectMapper.treeToValue(result, FragmentV2Page.class);
+        FragmentV2Page page = objectMapper.treeToValue(filterResponseNode, FragmentV2Page.class);
 
         assertThat(page.getTotalItems()).isEqualTo(3);
         assertThat(page.getPageSize()).isEqualTo(50);
         assertThat(page.getCurrentPage()).isZero();
         assertThat(page.getItems()).hasSize(3);
-
-        // Published item: whole object, without data
-        FragmentV2 published = page.getItems().get(0);
-        assertThat(published).usingRecursiveComparison().isEqualTo(expectedPublishedFragment());
-        assertThat(published.getData()).isNull();
-
-        // Draft item: sub type and the single associated state pointing to itself
-        FragmentV2 draft = page.getItems().get(1);
-        assertThat(draft.getId()).isEqualTo(DRAFT_FRAGMENT_ID);
-        assertThat(draft.getSettings().getFragmentSubType()).isEqualTo("html");
-        assertThat(draft.getAssociatedStates())
-                .usingRecursiveFieldByFieldElementComparator()
-                .containsExactly(associatedState(DRAFT_FRAGMENT_ID, "external-id-2", STATE_DRAFT));
-        assertThat(draft.getData()).isNull();
-
-        // Item without the optional keys
-        FragmentV2 stripped = page.getItems().get(2);
-        assertThat(stripped.getId()).isEqualTo("fragment-id-3");
-        assertThat(stripped.getDescription()).isNull();
-        assertThat(stripped.getThemeId()).isNull();
-        assertThat(stripped.getSettings().getFragmentSubType()).isNull();
-        assertThat(stripped.getData()).isNull();
+        assertThat(page.getItems().get(0)).usingRecursiveComparison().isEqualTo(expectedPublishedFragment());
+        assertThat(page.getItems().get(1)).usingRecursiveComparison().isEqualTo(expectedDraftFragment());
+        assertThat(page.getItems().get(2)).usingRecursiveComparison().isEqualTo(expectedStrippedFragment());
+        assertThat(page.getItems()).extracting(FragmentV2::getData).containsOnlyNulls();
     }
 
     @Test
     public void shouldDeserializeGetResponse() throws Exception
     {
-        JsonNode result = readFixture(GET_FIXTURE).get("result");
-        assertThat(result.size()).isEqualTo(1);
+        JsonNode getResponseNode = readFixture(GET_FIXTURE).get("result");
+        JsonNode fragmentNode = getResponseNode.get(0);
 
         FragmentV2 expected = expectedPublishedFragment();
         expected.setData(expectedData());
 
         // Deserialize the first element of the get response result array
-        FragmentV2 fragment = objectMapper.treeToValue(result.get(0), FragmentV2.class);
+        FragmentV2 fragment = objectMapper.treeToValue(fragmentNode, FragmentV2.class);
 
+        assertThat(getResponseNode.size()).isEqualTo(1);
         assertThat(fragment).usingRecursiveComparison().isEqualTo(expected);
+
+        // The unmodeled keys are present in the fixture and ignored
+        assertThat(fragmentNode.get("appData").has("editorContent")).isTrue();
+        assertThat(fragmentNode.has("thumbnail")).isTrue();
+        assertThat(fragmentNode.has("editorContext")).isTrue();
+        assertThat(fragmentNode.get("metadata").has("createdById")).isTrue();
+        assertThat(fragmentNode.get("metadata").has("createdByAepId")).isTrue();
+        assertThat(fragmentNode.get("metadata").has("modifiedById")).isTrue();
+        assertThat(fragmentNode.get("metadata").has("modifiedByAepId")).isTrue();
     }
 
     @Test
     public void shouldDeserializePublishedWithDraftGetResponse() throws Exception
     {
-        JsonNode result = readFixture(PUBLISHED_WITH_DRAFT_FIXTURE).get("result");
+        JsonNode getResponseNode = readFixture(PUBLISHED_WITH_DRAFT_FIXTURE).get("result");
 
         // Deserialize the first element of the get response result array
-        FragmentV2 fragment = objectMapper.treeToValue(result.get(0), FragmentV2.class);
+        FragmentV2 fragment = objectMapper.treeToValue(getResponseNode.get(0), FragmentV2.class);
 
         assertThat(fragment.getStatus()).isEqualTo("published_with_draft");
         assertThat(fragment.getState()).isEqualTo(STATE_PUBLISHED);
@@ -116,15 +108,16 @@ public class FragmentV2DeserializationTest
     @Test
     public void shouldDeserializeListItemDates() throws Exception
     {
-        JsonNode result = readFixture(FILTER_FIXTURE).get("result");
+        JsonNode filterResponseNode = readFixture(FILTER_FIXTURE).get("result");
 
         // Deserialize the list response result
-        FragmentV2Page page = objectMapper.treeToValue(result, FragmentV2Page.class);
+        FragmentV2Page page = objectMapper.treeToValue(filterResponseNode, FragmentV2Page.class);
 
         FragmentV2.Metadata metadata = page.getItems().get(0).getMetadata();
+
         assertThat(metadata.getCreatedAt()).isEqualTo(CREATED_AT);
         assertThat(metadata.getModifiedAt()).isEqualTo(MODIFIED_AT);
-        assertThat(result.get("items").get(0).get("appData").has("editorType")).isTrue();
+        assertThat(filterResponseNode.get("items").get(0).get("appData").has("editorType")).isTrue();
     }
 
     @Test
@@ -196,6 +189,73 @@ public class FragmentV2DeserializationTest
         fragment.setMetadata(metadata);
         fragment.setAppData(appData);
         fragment.setAssociatedStates(Collections.singletonList(associatedState(FRAGMENT_ID, EXTERNAL_ID, STATE_PUBLISHED)));
+        return fragment;
+    }
+
+    private static FragmentV2 expectedDraftFragment()
+    {
+        FragmentV2.Settings settings = new FragmentV2.Settings();
+        settings.setFragmentType(FRAGMENT_TYPE);
+        settings.setFragmentSubType("html");
+        settings.setSupportedChannels(Collections.singletonList(CHANNEL_EMAIL));
+
+        FragmentV2.Metadata metadata = new FragmentV2.Metadata();
+        metadata.setCreatedBy(PERSON_NAME);
+        metadata.setCreatedAt(Date.from(Instant.parse("2026-01-04T05:06:07Z")));
+        metadata.setModifiedBy("Jane Roe");
+        metadata.setModifiedAt(Date.from(Instant.parse("2026-01-05T06:07:08Z")));
+
+        FragmentV2.AppData appData = new FragmentV2.AppData();
+        appData.setWorkspaceId(WORKSPACE_ID);
+        appData.setFolderId(FOLDER_ID);
+
+        FragmentV2 fragment = new FragmentV2();
+        fragment.setId(DRAFT_FRAGMENT_ID);
+        fragment.setName("fragment-2");
+        fragment.setDescription("A draft test fragment");
+        fragment.setStatus(STATE_DRAFT);
+        fragment.setState(STATE_DRAFT);
+        fragment.setAppType(APP_TYPE);
+        fragment.setExternalId("external-id-2");
+        fragment.setVirtualId("virtual-id-2");
+        fragment.setScriptEngine(SCRIPT_ENGINE);
+        fragment.setThemeId(THEME_ID);
+        fragment.setSettings(settings);
+        fragment.setMetadata(metadata);
+        fragment.setAppData(appData);
+        fragment.setAssociatedStates(Collections.singletonList(associatedState(DRAFT_FRAGMENT_ID, "external-id-2", STATE_DRAFT)));
+        return fragment;
+    }
+
+    private static FragmentV2 expectedStrippedFragment()
+    {
+        FragmentV2.Settings settings = new FragmentV2.Settings();
+        settings.setFragmentType(FRAGMENT_TYPE);
+        settings.setSupportedChannels(Collections.singletonList(CHANNEL_EMAIL));
+
+        FragmentV2.Metadata metadata = new FragmentV2.Metadata();
+        metadata.setCreatedBy("Jane Roe");
+        metadata.setCreatedAt(Date.from(Instant.parse("2026-01-06T07:08:09Z")));
+        metadata.setModifiedBy("Jane Roe");
+        metadata.setModifiedAt(Date.from(Instant.parse("2026-01-07T08:09:10Z")));
+
+        FragmentV2.AppData appData = new FragmentV2.AppData();
+        appData.setWorkspaceId(WORKSPACE_ID);
+        appData.setFolderId("folder-id-2");
+
+        FragmentV2 fragment = new FragmentV2();
+        fragment.setId("fragment-id-3");
+        fragment.setName("fragment-3");
+        fragment.setStatus(STATE_PUBLISHED);
+        fragment.setState(STATE_PUBLISHED);
+        fragment.setAppType(APP_TYPE);
+        fragment.setExternalId("external-id-3");
+        fragment.setVirtualId("virtual-id-3");
+        fragment.setScriptEngine(SCRIPT_ENGINE);
+        fragment.setSettings(settings);
+        fragment.setMetadata(metadata);
+        fragment.setAppData(appData);
+        fragment.setAssociatedStates(Collections.singletonList(associatedState("fragment-id-3", "external-id-3", STATE_PUBLISHED)));
         return fragment;
     }
 

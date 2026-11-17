@@ -53,7 +53,9 @@ public class FragmentV2FilterTest
     public void shouldCopyStatusList()
     {
         List<String> statuses = new ArrayList<>(Arrays.asList(DRAFT, PUBLISHED));
-        FragmentV2Filter filter = FragmentV2Filter.builder(WORKSPACE_ID).status(statuses).build();
+        FragmentV2Filter filter = FragmentV2Filter.builder(WORKSPACE_ID)
+                .status(statuses)
+                .build();
 
         statuses.add("other");
 
@@ -65,7 +67,9 @@ public class FragmentV2FilterTest
     @Test
     public void shouldAllowEmptyStatusList()
     {
-        FragmentV2Filter filter = FragmentV2Filter.builder(WORKSPACE_ID).status(new ArrayList<>()).build();
+        FragmentV2Filter filter = FragmentV2Filter.builder(WORKSPACE_ID)
+                .status(new ArrayList<>())
+                .build();
 
         assertThat(filter.getStatus()).isEmpty();
     }
@@ -73,7 +77,9 @@ public class FragmentV2FilterTest
     @Test
     public void shouldTreatNullStatusAsNotSet()
     {
-        FragmentV2Filter filter = FragmentV2Filter.builder(WORKSPACE_ID).status(null).build();
+        FragmentV2Filter filter = FragmentV2Filter.builder(WORKSPACE_ID)
+                .status(null)
+                .build();
 
         assertThat(filter.getStatus()).isNull();
     }
@@ -81,7 +87,8 @@ public class FragmentV2FilterTest
     @Test
     public void shouldDefaultOptionalFiltersToNull()
     {
-        FragmentV2Filter filter = FragmentV2Filter.builder(WORKSPACE_ID).build();
+        FragmentV2Filter filter = FragmentV2Filter.builder(WORKSPACE_ID)
+                .build();
 
         assertThat(filter.getWorkspaceId()).isEqualTo(WORKSPACE_ID);
         assertThat(filter.getFolderId()).isNull();
