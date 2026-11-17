@@ -6,6 +6,7 @@ import com.smartling.marketo.sdk.MarketoEmailTemplateClient;
 import com.smartling.marketo.sdk.MarketoEmailV2Client;
 import com.smartling.marketo.sdk.MarketoFolderClient;
 import com.smartling.marketo.sdk.MarketoFormClient;
+import com.smartling.marketo.sdk.MarketoFragmentV2Client;
 import com.smartling.marketo.sdk.MarketoLandingPageClient;
 import com.smartling.marketo.sdk.MarketoLandingPageTemplateClient;
 import com.smartling.marketo.sdk.MarketoProgramClient;
@@ -33,6 +34,11 @@ public class MarketoRestClientManager implements MarketoClientManager {
     @Override
     public MarketoEmailV2Client getMarketoEmailV2Client() {
         return new MarketoEmailV2RestClient(httpCommandExecutor);
+    }
+
+    @Override
+    public MarketoFragmentV2Client getMarketoFragmentV2Client() {
+        return new MarketoFragmentV2RestClient(httpCommandExecutor);
     }
 
     public MarketoEmailTemplateClient getMarketoEmailTemplateClient() {
