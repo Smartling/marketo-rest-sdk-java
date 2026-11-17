@@ -55,6 +55,14 @@ public class MarketoFragmentV2EndToEndTest
     private static final String CONTENT_TYPE_HEADER = "Content-Type";
     private static final String JSON_CONTENT_TYPE = "application/json";
     private static final String SPECIAL_VALUE = "a+b&c=d#e %41 {x} é";
+    private static final String FOLDER_ID = "folder-1";
+    private static final String STATUS_DRAFT = "draft";
+    private static final String STATUS_PUBLISHED = "published";
+    private static final String FRAGMENT_NAME = "test-name";
+    private static final String FRAGMENT_TYPE = "test-fragment-type";
+    private static final String SORT_KEY = "test-sort-key";
+    private static final String SCRIPT_ENGINE = "VELOCITY";
+    private static final String VALUE_NON_NULLABLE = "test-non-nullable";
     private static final String WORKSPACE_ID_PARAMETER = "workspaceId";
     private static final String NAME_PARAMETER = "name";
     private static final String STATUS_PARAMETER = "status";
@@ -90,22 +98,22 @@ public class MarketoFragmentV2EndToEndTest
         // Arrange a filter with every property set
         stubGetResponse(FILTER_PATH, fixture(FILTER_FIXTURE));
         FragmentV2Filter filter = FragmentV2Filter.builder(WORKSPACE_ID)
-                .folderId("folder-1")
+                .folderId(FOLDER_ID)
                 .folderType(FolderType.PROGRAM)
-                .status(Arrays.asList("draft", "published"))
+                .status(Arrays.asList(STATUS_DRAFT, STATUS_PUBLISHED))
                 .createdAtStart(Instant.parse("2026-01-02T03:04:05Z"))
                 .createdAtEnd(Instant.parse("2026-02-03T04:05:06Z"))
                 .modifiedAtStart(Instant.parse("2026-03-04T05:06:07Z"))
                 .modifiedAtEnd(Instant.parse("2026-04-05T06:07:08Z"))
-                .name("test-name")
-                .fragmentType("test-fragment-type")
-                .sortKey("test-sort-key")
+                .name(FRAGMENT_NAME)
+                .fragmentType(FRAGMENT_TYPE)
+                .sortKey(SORT_KEY)
                 .sortOrder(SortOrder.DESC)
                 .createdByMe(true)
                 .modifiedByMe(false)
                 .includeArchived(true)
-                .scriptEngine("VELOCITY")
-                .valueNonNullable("test-non-nullable")
+                .scriptEngine(SCRIPT_ENGINE)
+                .valueNonNullable(VALUE_NON_NULLABLE)
                 .pageIndex(2)
                 .pageSize(25)
                 .build();
@@ -116,23 +124,23 @@ public class MarketoFragmentV2EndToEndTest
         // Every property reaches the server as its own query parameter
         wireMockRule.verify(getRequestedFor(urlPathEqualTo(FILTER_PATH))
                 .withHeader(APP_TYPE_HEADER, equalTo(APP_TYPE))
-                .withQueryParam(WORKSPACE_ID_PARAMETER,equalTo(WORKSPACE_ID))
-                .withQueryParam("folderId", equalTo("folder-1"))
+                .withQueryParam(WORKSPACE_ID_PARAMETER, equalTo(WORKSPACE_ID))
+                .withQueryParam("folderId", equalTo(FOLDER_ID))
                 .withQueryParam("folderType", equalTo("Program"))
-                .withQueryParam(STATUS_PARAMETER, havingExactly("draft", "published"))
+                .withQueryParam(STATUS_PARAMETER, havingExactly(STATUS_DRAFT, STATUS_PUBLISHED))
                 .withQueryParam("createdAtStart", equalTo("2026-01-02T03:04:05"))
                 .withQueryParam("createdAtEnd", equalTo("2026-02-03T04:05:06"))
                 .withQueryParam("modifiedAtStart", equalTo("2026-03-04T05:06:07"))
                 .withQueryParam("modifiedAtEnd", equalTo("2026-04-05T06:07:08"))
-                .withQueryParam(NAME_PARAMETER, equalTo("test-name"))
-                .withQueryParam("fragmentType", equalTo("test-fragment-type"))
-                .withQueryParam("sortKey", equalTo("test-sort-key"))
+                .withQueryParam(NAME_PARAMETER, equalTo(FRAGMENT_NAME))
+                .withQueryParam("fragmentType", equalTo(FRAGMENT_TYPE))
+                .withQueryParam("sortKey", equalTo(SORT_KEY))
                 .withQueryParam("sortOrder", equalTo("DESC"))
                 .withQueryParam(CREATED_BY_ME_PARAMETER, equalTo("true"))
                 .withQueryParam(MODIFIED_BY_ME_PARAMETER, equalTo("false"))
                 .withQueryParam(INCLUDE_ARCHIVED_PARAMETER, equalTo("true"))
-                .withQueryParam("scriptEngine", equalTo("VELOCITY"))
-                .withQueryParam("isValueNonNullable", equalTo("test-non-nullable"))
+                .withQueryParam("scriptEngine", equalTo(SCRIPT_ENGINE))
+                .withQueryParam("isValueNonNullable", equalTo(VALUE_NON_NULLABLE))
                 .withQueryParam("pageIndex", equalTo("2"))
                 .withQueryParam("pageSize", equalTo("25")));
     }

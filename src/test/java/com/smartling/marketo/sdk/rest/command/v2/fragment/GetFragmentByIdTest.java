@@ -18,7 +18,7 @@ public class GetFragmentByIdTest
     {
         GetFragmentById command = new GetFragmentById(FRAGMENT_ID);
 
-        assertThat(command.getPath()).isEqualTo("/asset/v2/fragment/0123456789abcdef01234567");
+        assertThat(command.getPath()).isEqualTo("/asset/v2/fragment/" + FRAGMENT_ID);
         assertThat(command.getMethod()).isEqualTo("GET");
         assertThat(command.getHeaders()).isEqualTo(Collections.singletonMap("x-app-type", "marketo"));
         assertThat(command.getParameters()).isEmpty();

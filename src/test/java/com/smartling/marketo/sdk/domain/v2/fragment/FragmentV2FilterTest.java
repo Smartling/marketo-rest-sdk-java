@@ -90,28 +90,12 @@ public class FragmentV2FilterTest
         FragmentV2Filter filter = FragmentV2Filter.builder(WORKSPACE_ID)
                 .build();
 
-        assertThat(filter.getWorkspaceId()).isEqualTo(WORKSPACE_ID);
-        assertThat(filter.getFolderId()).isNull();
-        assertThat(filter.getFolderType()).isNull();
-        assertThat(filter.getStatus()).isNull();
-        assertThat(filter.getCreatedAtStart()).isNull();
-        assertThat(filter.getCreatedAtEnd()).isNull();
-        assertThat(filter.getModifiedAtStart()).isNull();
-        assertThat(filter.getModifiedAtEnd()).isNull();
-        assertThat(filter.getName()).isNull();
-        assertThat(filter.getFragmentType()).isNull();
-        assertThat(filter.getSortKey()).isNull();
-        assertThat(filter.getSortOrder()).isNull();
-        assertThat(filter.getCreatedByMe()).isNull();
-        assertThat(filter.getModifiedByMe()).isNull();
-        assertThat(filter.getIncludeArchived()).isNull();
-        assertThat(filter.getScriptEngine()).isNull();
-        assertThat(filter.getValueNonNullable()).isNull();
-        assertThat(filter.getPageIndex()).isNull();
-        assertThat(filter.getPageSize()).isNull();
+        assertThat(filter)
+                .hasFieldOrPropertyWithValue("workspaceId", WORKSPACE_ID)
+                .hasAllNullFieldsOrPropertiesExcept("workspaceId");
     }
 
-    // Per-getter assertions: FragmentV2Filter has no equals, so the whole object cannot be compared
+    // Per-getter assertions: an expected filter could only be built with the builder under test
     @Test
     public void shouldReturnEverythingTheBuilderSet()
     {

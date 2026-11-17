@@ -38,7 +38,8 @@ public interface MarketoFragmentV2Client
      * as {@link com.smartling.marketo.sdk.rest.ObjectNotFoundException} with Marketo's error code and
      * message, so that callers do not retry it. A {@code 603} can also mean a missing permission (observed for
      * emails). The same exception is thrown when the result array is null or empty, and when its first element
-     * has no id. Every other API error stays a {@link MarketoApiException}.
+     * has no id. Other API errors are thrown as the executor maps them (all of them
+     * {@link MarketoApiException}s).
      *
      * @throws IllegalArgumentException if the id is null, blank or not alphanumeric
      */

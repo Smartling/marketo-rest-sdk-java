@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import java.io.InputStream;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -40,6 +41,7 @@ public class FragmentV2DeserializationTest
     private static final String CHANNEL_EMAIL = "email";
     private static final String STATE_PUBLISHED = "published";
     private static final String STATE_DRAFT = "draft";
+    private static final String STATUS_PUBLISHED_WITH_DRAFT = "published_with_draft";
     private static final String HTML_BODY = "<div>Hello</div>";
     private static final String TEXT_BODY = "Hello";
     private static final Date CREATED_AT = Date.from(Instant.parse("2026-01-02T03:04:05Z"));
@@ -55,14 +57,7 @@ public class FragmentV2DeserializationTest
         // Deserialize the list response result
         FragmentV2Page page = objectMapper.treeToValue(filterResponseNode, FragmentV2Page.class);
 
-        assertThat(page.getTotalItems()).isEqualTo(3);
-        assertThat(page.getPageSize()).isEqualTo(50);
-        assertThat(page.getCurrentPage()).isZero();
-        assertThat(page.getItems()).hasSize(3);
-        assertThat(page.getItems().get(0)).usingRecursiveComparison().isEqualTo(expectedPublishedFragment());
-        assertThat(page.getItems().get(1)).usingRecursiveComparison().isEqualTo(expectedDraftFragment());
-        assertThat(page.getItems().get(2)).usingRecursiveComparison().isEqualTo(expectedStrippedFragment());
-        assertThat(page.getItems()).extracting(FragmentV2::getData).containsOnlyNulls();
+        assertThat(page).usingRecursiveComparison().isEqualTo(expectedFilterPage());
     }
 
     @Test
@@ -95,32 +90,28 @@ public class FragmentV2DeserializationTest
     {
         JsonNode getResponseNode = readFixture(PUBLISHED_WITH_DRAFT_FIXTURE).get("result");
 
+        FragmentV2 expected = expectedPublishedFragment();
+        expected.setStatus(STATUS_PUBLISHED_WITH_DRAFT);
+        expected.setData(expectedData());
+        expected.setAssociatedStates(Arrays.asList(
+                associatedState(FRAGMENT_ID, EXTERNAL_ID, STATE_PUBLISHED),
+                associatedState(DRAFT_CONTENT_ID, null, STATE_DRAFT)));
+
         // Deserialize the first element of the get response result array
         FragmentV2 fragment = objectMapper.treeToValue(getResponseNode.get(0), FragmentV2.class);
 
-        assertThat(fragment.getStatus()).isEqualTo("published_with_draft");
-        assertThat(fragment.getState()).isEqualTo(STATE_PUBLISHED);
-        assertThat(fragment.getAssociatedStates()).hasSize(2);
-        assertThat(stateEntry(fragment, STATE_PUBLISHED))
+        assertThat(fragment)
                 .usingRecursiveComparison()
-                .isEqualTo(associatedState(FRAGMENT_ID, EXTERNAL_ID, STATE_PUBLISHED));
-        assertThat(stateEntry(fragment, STATE_DRAFT))
-                .usingRecursiveComparison()
-                .isEqualTo(associatedState(DRAFT_CONTENT_ID, null, STATE_DRAFT));
+                .ignoringCollectionOrder()
+                .isEqualTo(expected);
+        assertThat(stateEntry(fragment, STATE_DRAFT).getExternalId()).isNull();
     }
 
     @Test
-    public void shouldDeserializeListItemDates() throws Exception
+    public void shouldIgnoreUnmodeledKeysOfListItems() throws Exception
     {
         JsonNode filterResponseNode = readFixture(FILTER_FIXTURE).get("result");
 
-        // Deserialize the list response result
-        FragmentV2Page page = objectMapper.treeToValue(filterResponseNode, FragmentV2Page.class);
-
-        FragmentV2.Metadata metadata = page.getItems().get(0).getMetadata();
-
-        assertThat(metadata.getCreatedAt()).isEqualTo(CREATED_AT);
-        assertThat(metadata.getModifiedAt()).isEqualTo(MODIFIED_AT);
         assertThat(filterResponseNode.get("items").get(0).get("appData").has("editorType")).isTrue();
     }
 
@@ -151,6 +142,16 @@ public class FragmentV2DeserializationTest
         {
             return objectMapper.readTree(stream);
         }
+    }
+
+    private static FragmentV2Page expectedFilterPage()
+    {
+        FragmentV2Page page = new FragmentV2Page();
+        page.setTotalItems(3);
+        page.setPageSize(50);
+        page.setCurrentPage(0);
+        page.setItems(Arrays.asList(expectedPublishedFragment(), expectedDraftFragment(), expectedStrippedFragment()));
+        return page;
     }
 
     private static FragmentV2.AssociatedState stateEntry(FragmentV2 fragment, String state)

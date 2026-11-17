@@ -198,7 +198,7 @@ public class FilterFragmentsTest
                 .status(Collections.<String>emptyList())
                 .build());
 
-        assertThat(command.getParameters()).doesNotContainKey(STATUS_KEY);
+        assertThat(command.getParameters()).isEqualTo(Collections.singletonMap(WORKSPACE_ID_KEY, WORKSPACE_ID));
     }
 
     @Test
