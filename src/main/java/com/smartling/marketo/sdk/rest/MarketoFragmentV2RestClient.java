@@ -41,6 +41,7 @@ public class MarketoFragmentV2RestClient implements MarketoFragmentV2Client
         // Load the fragment, reporting Marketo's "missing fragment" error as not found
         List<FragmentV2> fragments = executeReportingMissingFragment(new GetFragmentById(id));
 
+        // A null or empty result array means that no fragment has this id
         if (fragments == null || fragments.isEmpty())
         {
             throw new ObjectNotFoundException(String.format("Fragment[id = %s] not found", id));

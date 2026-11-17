@@ -27,7 +27,11 @@ public class FragmentV2DeserializationTest
     private static final String APP_TYPE = "marketo";
     private static final String PERSON_NAME = "John Doe";
     private static final String VIRTUAL_ID = "virtual-id-1";
+    private static final String SECOND_PERSON_NAME = "Jane Roe";
     private static final String EXTERNAL_ID = "external-id-1";
+    private static final String DRAFT_EXTERNAL_ID = "external-id-2";
+    private static final String STRIPPED_FRAGMENT_ID = "fragment-id-3";
+    private static final String STRIPPED_EXTERNAL_ID = "external-id-3";
     private static final String WORKSPACE_ID = "workspace-id-1";
     private static final String FOLDER_ID = "folder-id-1";
     private static final String THEME_ID = "theme-id-1";
@@ -202,7 +206,7 @@ public class FragmentV2DeserializationTest
         FragmentV2.Metadata metadata = new FragmentV2.Metadata();
         metadata.setCreatedBy(PERSON_NAME);
         metadata.setCreatedAt(Date.from(Instant.parse("2026-01-04T05:06:07Z")));
-        metadata.setModifiedBy("Jane Roe");
+        metadata.setModifiedBy(SECOND_PERSON_NAME);
         metadata.setModifiedAt(Date.from(Instant.parse("2026-01-05T06:07:08Z")));
 
         FragmentV2.AppData appData = new FragmentV2.AppData();
@@ -216,14 +220,14 @@ public class FragmentV2DeserializationTest
         fragment.setStatus(STATE_DRAFT);
         fragment.setState(STATE_DRAFT);
         fragment.setAppType(APP_TYPE);
-        fragment.setExternalId("external-id-2");
+        fragment.setExternalId(DRAFT_EXTERNAL_ID);
         fragment.setVirtualId("virtual-id-2");
         fragment.setScriptEngine(SCRIPT_ENGINE);
         fragment.setThemeId(THEME_ID);
         fragment.setSettings(settings);
         fragment.setMetadata(metadata);
         fragment.setAppData(appData);
-        fragment.setAssociatedStates(Collections.singletonList(associatedState(DRAFT_FRAGMENT_ID, "external-id-2", STATE_DRAFT)));
+        fragment.setAssociatedStates(Collections.singletonList(associatedState(DRAFT_FRAGMENT_ID, DRAFT_EXTERNAL_ID, STATE_DRAFT)));
         return fragment;
     }
 
@@ -234,9 +238,9 @@ public class FragmentV2DeserializationTest
         settings.setSupportedChannels(Collections.singletonList(CHANNEL_EMAIL));
 
         FragmentV2.Metadata metadata = new FragmentV2.Metadata();
-        metadata.setCreatedBy("Jane Roe");
+        metadata.setCreatedBy(SECOND_PERSON_NAME);
         metadata.setCreatedAt(Date.from(Instant.parse("2026-01-06T07:08:09Z")));
-        metadata.setModifiedBy("Jane Roe");
+        metadata.setModifiedBy(SECOND_PERSON_NAME);
         metadata.setModifiedAt(Date.from(Instant.parse("2026-01-07T08:09:10Z")));
 
         FragmentV2.AppData appData = new FragmentV2.AppData();
@@ -244,18 +248,18 @@ public class FragmentV2DeserializationTest
         appData.setFolderId("folder-id-2");
 
         FragmentV2 fragment = new FragmentV2();
-        fragment.setId("fragment-id-3");
+        fragment.setId(STRIPPED_FRAGMENT_ID);
         fragment.setName("fragment-3");
         fragment.setStatus(STATE_PUBLISHED);
         fragment.setState(STATE_PUBLISHED);
         fragment.setAppType(APP_TYPE);
-        fragment.setExternalId("external-id-3");
+        fragment.setExternalId(STRIPPED_EXTERNAL_ID);
         fragment.setVirtualId("virtual-id-3");
         fragment.setScriptEngine(SCRIPT_ENGINE);
         fragment.setSettings(settings);
         fragment.setMetadata(metadata);
         fragment.setAppData(appData);
-        fragment.setAssociatedStates(Collections.singletonList(associatedState("fragment-id-3", "external-id-3", STATE_PUBLISHED)));
+        fragment.setAssociatedStates(Collections.singletonList(associatedState(STRIPPED_FRAGMENT_ID, STRIPPED_EXTERNAL_ID, STATE_PUBLISHED)));
         return fragment;
     }
 

@@ -59,6 +59,9 @@ public class MarketoFragmentV2EndToEndTest
     private static final String CREATED_BY_ME_PARAMETER = "isCreatedByMe";
     private static final String MODIFIED_BY_ME_PARAMETER = "isModifiedByMe";
     private static final String INCLUDE_ARCHIVED_PARAMETER = "includeArchived";
+    private static final String ERROR_CODE_NOT_FOUND = "603";
+    private static final String ERROR_CODE_INVALID_PARAMETER = "611";
+    private static final String ERROR_CODE_REQUEST_LIMIT = "606";
     private static final String ERROR_BODY_TEMPLATE =
             "{\"success\":false,\"errors\":[{\"code\":\"%s\",\"message\":\"test error\"}]}";
 
@@ -140,7 +143,7 @@ public class MarketoFragmentV2EndToEndTest
         stubGetResponse(GET_PATH, fixture(GET_FIXTURE));
 
         // Filter the fragments, then load one by id
-        FragmentV2Page fragmentPage = client.filterFragments(FragmentV2Filter.builder(WORKSPACE_ID).build());
+        FragmentV2Page fragmentPage = client.filterFragments(emptyFilter());
         FragmentV2 loadedFragment = client.loadFragmentById(FRAGMENT_ID);
 
         // Both requests carry the app type and the bearer token, and the fixtures are deserialized
@@ -218,56 +221,52 @@ public class MarketoFragmentV2EndToEndTest
     public void shouldMapError603OnGetToObjectNotFound()
     {
         // Arrange an error 603 on the fragment endpoint
-        stubGetResponse(GET_PATH, errorBody("603"));
+        stubGetResponse(GET_PATH, errorBody(ERROR_CODE_NOT_FOUND));
 
         // Load the fragment by its id
         Throwable loadFailure = catchThrowable(() -> client.loadFragmentById(FRAGMENT_ID));
 
         // The error becomes an ObjectNotFoundException that keeps the code
-        assertThat(loadFailure).isExactlyInstanceOf(ObjectNotFoundException.class);
-        assertThat(((MarketoApiException) loadFailure).getErrorCode()).isEqualTo("603");
+        assertApiError(loadFailure, ObjectNotFoundException.class, ERROR_CODE_NOT_FOUND);
     }
 
     @Test
     public void shouldKeepError603OnFilterAsMarketoApiException()
     {
         // Arrange an error 603 on the filter endpoint
-        stubGetResponse(FILTER_PATH, errorBody("603"));
+        stubGetResponse(FILTER_PATH, errorBody(ERROR_CODE_NOT_FOUND));
 
         // Filter the fragments
-        Throwable filterFailure = catchThrowable(() -> client.filterFragments(FragmentV2Filter.builder(WORKSPACE_ID).build()));
+        Throwable filterFailure = catchThrowable(() -> client.filterFragments(emptyFilter()));
 
         // The error stays a plain MarketoApiException
-        assertThat(filterFailure).isExactlyInstanceOf(MarketoApiException.class);
-        assertThat(((MarketoApiException) filterFailure).getErrorCode()).isEqualTo("603");
+        assertApiError(filterFailure, MarketoApiException.class, ERROR_CODE_NOT_FOUND);
     }
 
     @Test
     public void shouldMapErrorCode611ToMarketoApiException()
     {
         // Arrange an error 611 on the filter endpoint
-        stubGetResponse(FILTER_PATH, errorBody("611"));
+        stubGetResponse(FILTER_PATH, errorBody(ERROR_CODE_INVALID_PARAMETER));
 
         // Filter the fragments
-        Throwable filterFailure = catchThrowable(() -> client.filterFragments(FragmentV2Filter.builder(WORKSPACE_ID).build()));
+        Throwable filterFailure = catchThrowable(() -> client.filterFragments(emptyFilter()));
 
         // The error is a plain MarketoApiException with its code
-        assertThat(filterFailure).isExactlyInstanceOf(MarketoApiException.class);
-        assertThat(((MarketoApiException) filterFailure).getErrorCode()).isEqualTo("611");
+        assertApiError(filterFailure, MarketoApiException.class, ERROR_CODE_INVALID_PARAMETER);
     }
 
     @Test
     public void shouldMapErrorCode606ToRequestLimitExceeded()
     {
         // Arrange an error 606 on the filter endpoint
-        stubGetResponse(FILTER_PATH, errorBody("606"));
+        stubGetResponse(FILTER_PATH, errorBody(ERROR_CODE_REQUEST_LIMIT));
 
         // Filter the fragments
-        Throwable filterFailure = catchThrowable(() -> client.filterFragments(FragmentV2Filter.builder(WORKSPACE_ID).build()));
+        Throwable filterFailure = catchThrowable(() -> client.filterFragments(emptyFilter()));
 
         // The error becomes a RequestLimitExceededException with its code
-        assertThat(filterFailure).isExactlyInstanceOf(RequestLimitExceededException.class);
-        assertThat(((MarketoApiException) filterFailure).getErrorCode()).isEqualTo("606");
+        assertApiError(filterFailure, RequestLimitExceededException.class, ERROR_CODE_REQUEST_LIMIT);
     }
 
     private MarketoFragmentV2Client newClient()
@@ -293,9 +292,22 @@ public class MarketoFragmentV2EndToEndTest
 
     private void stubGetResponse(String path, String responseBody)
     {
-        wireMockRule.stubFor(
-                get(urlPathEqualTo(path))
-                        .willReturn(jsonResponse(responseBody)));
+        wireMockRule.stubFor(get(urlPathEqualTo(path))
+                .willReturn(jsonResponse(responseBody)));
+    }
+
+    private static FragmentV2Filter emptyFilter()
+    {
+        return FragmentV2Filter.builder(WORKSPACE_ID)
+                .build();
+    }
+
+    private static void assertApiError(Throwable failure, Class<? extends MarketoApiException> expectedType, String expectedErrorCode)
+    {
+        assertThat(failure)
+                .isExactlyInstanceOf(expectedType)
+                .extracting(thrown -> ((MarketoApiException) thrown).getErrorCode())
+                .isEqualTo(expectedErrorCode);
     }
 
     private static String errorBody(String errorCode)

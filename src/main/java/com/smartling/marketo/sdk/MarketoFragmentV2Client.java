@@ -36,8 +36,8 @@ public interface MarketoFragmentV2Client
      * <p>
      * A missing id comes back from the API as error {@code 603} ("Access denied"). This client reports it
      * as {@link com.smartling.marketo.sdk.rest.ObjectNotFoundException} with Marketo's error code and
-     * message, so that callers do not retry it. Marketo also answers {@code 603} for a permission failure,
-     * so a {@code 603} can mean either. The same exception is thrown when the result array is null or
+     * message, so that callers do not retry it. A {@code 603} can also mean a missing permission
+     * (observed for emails), so it can mean either. The same exception is thrown when the result array is null or
      * empty, and when its first element has no id. Every other API error stays a {@link MarketoApiException}.
      *
      * @throws IllegalArgumentException if the id is null, blank or not alphanumeric

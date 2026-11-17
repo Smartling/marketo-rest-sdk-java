@@ -19,8 +19,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.Assertions.catchThrowable;
-import static org.mockito.ArgumentMatchers.any;
+import static org.assertj.core.api.Assertions.catchThrowable;import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -30,6 +29,7 @@ public class MarketoFragmentV2RestClientTest
 {
     private static final String WORKSPACE_ID = "test-workspace";
     private static final String FRAGMENT_ID = "0123456789abcdef01234567";
+    private static final String FRAGMENT_PATH_PREFIX = "/asset/v2/fragment/";
     private static final String FILTER_WORD_ID = "filter";
     private static final String AJO_PREFIXED_ID = "ajo:" + FRAGMENT_ID;
     private static final String MISSING_FRAGMENT_ERROR_CODE = "603";
@@ -52,7 +52,8 @@ public class MarketoFragmentV2RestClientTest
         given(executor.execute(any(FilterFragments.class))).willReturn(page);
 
         // Filter fragments by workspace
-        FragmentV2Page filteredPage = testedInstance.filterFragments(FragmentV2Filter.builder(WORKSPACE_ID).build());
+        FragmentV2Page filteredPage = testedInstance.filterFragments(FragmentV2Filter.builder(WORKSPACE_ID)
+                .build());
 
         ArgumentCaptor<FilterFragments> commandCaptor = ArgumentCaptor.forClass(FilterFragments.class);
         verify(executor).execute(commandCaptor.capture());
@@ -67,7 +68,8 @@ public class MarketoFragmentV2RestClientTest
         given(executor.execute(any(FilterFragments.class))).willReturn(null);
 
         // Filter fragments by workspace
-        FragmentV2Page filteredPage = testedInstance.filterFragments(FragmentV2Filter.builder(WORKSPACE_ID).build());
+        FragmentV2Page filteredPage = testedInstance.filterFragments(FragmentV2Filter.builder(WORKSPACE_ID)
+                .build());
 
         assertThat(filteredPage).usingRecursiveComparison().isEqualTo(FragmentV2Page.empty());
     }
@@ -85,14 +87,16 @@ public class MarketoFragmentV2RestClientTest
     @Test
     public void shouldLeaveMissingFragmentErrorOnFilterAsApiException() throws Exception
     {
-        MarketoApiException missingWorkspaceError = new MarketoApiException(MISSING_FRAGMENT_ERROR_CODE, ACCESS_DENIED_MESSAGE);
-        given(executor.execute(any(FilterFragments.class))).willThrow(missingWorkspaceError);
+        MarketoApiException accessDeniedError = new MarketoApiException(MISSING_FRAGMENT_ERROR_CODE, ACCESS_DENIED_MESSAGE);
+        given(executor.execute(any(FilterFragments.class))).willThrow(accessDeniedError);
 
         // Filter fragments by workspace
-        Throwable thrown = catchThrowable(() -> testedInstance.filterFragments(FragmentV2Filter.builder(WORKSPACE_ID).build()));
+        Throwable thrown = catchThrowable(() -> testedInstance.filterFragments(FragmentV2Filter.builder(WORKSPACE_ID)
+                .build()));
 
-        assertThat(thrown).isSameAs(missingWorkspaceError);
-        assertThat(thrown).isExactlyInstanceOf(MarketoApiException.class);
+        assertThat(thrown)
+                .isSameAs(accessDeniedError)
+                .isExactlyInstanceOf(MarketoApiException.class);
     }
 
     @Test
@@ -108,7 +112,7 @@ public class MarketoFragmentV2RestClientTest
         ArgumentCaptor<GetFragmentById> commandCaptor = ArgumentCaptor.forClass(GetFragmentById.class);
         verify(executor).execute(commandCaptor.capture());
         assertThat(loadedFragment).isSameAs(firstFragment);
-        assertThat(commandCaptor.getValue().getPath()).isEqualTo("/asset/v2/fragment/" + FRAGMENT_ID);
+        assertThat(commandCaptor.getValue().getPath()).isEqualTo(FRAGMENT_PATH_PREFIX + FRAGMENT_ID);
     }
 
     @Test
@@ -123,7 +127,7 @@ public class MarketoFragmentV2RestClientTest
         ArgumentCaptor<GetFragmentById> commandCaptor = ArgumentCaptor.forClass(GetFragmentById.class);
         verify(executor).execute(commandCaptor.capture());
         assertThat(loadedFragment).isSameAs(fragment);
-        assertThat(commandCaptor.getValue().getPath()).isEqualTo("/asset/v2/fragment/" + FILTER_WORD_ID);
+        assertThat(commandCaptor.getValue().getPath()).isEqualTo(FRAGMENT_PATH_PREFIX + FILTER_WORD_ID);
     }
 
     @Test
@@ -167,8 +171,9 @@ public class MarketoFragmentV2RestClientTest
 
         assertThat(thrown)
                 .isExactlyInstanceOf(ObjectNotFoundException.class)
-                .hasMessage(ACCESS_DENIED_MESSAGE);
-        assertThat(((ObjectNotFoundException) thrown).getErrorCode()).isEqualTo(MISSING_FRAGMENT_ERROR_CODE);
+                .hasMessage(ACCESS_DENIED_MESSAGE)
+                .extracting(thrownError -> ((MarketoApiException) thrownError).getErrorCode())
+                .isEqualTo(MISSING_FRAGMENT_ERROR_CODE);
     }
 
     @Test

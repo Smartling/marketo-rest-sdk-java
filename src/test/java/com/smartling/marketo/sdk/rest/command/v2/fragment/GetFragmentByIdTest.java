@@ -1,8 +1,11 @@
 package com.smartling.marketo.sdk.rest.command.v2.fragment;
 
+import com.google.common.reflect.TypeToken;
+import com.smartling.marketo.sdk.domain.v2.fragment.FragmentV2;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -19,7 +22,6 @@ public class GetFragmentByIdTest
         assertThat(command.getMethod()).isEqualTo("GET");
         assertThat(command.getHeaders()).isEqualTo(Collections.singletonMap("x-app-type", "marketo"));
         assertThat(command.getParameters()).isEmpty();
-        assertThat(command.getResultType().getTypeName())
-                .isEqualTo("java.util.List<com.smartling.marketo.sdk.domain.v2.fragment.FragmentV2>");
+        assertThat(command.getResultType()).isEqualTo(new TypeToken<List<FragmentV2>>() {}.getType());
     }
 }
