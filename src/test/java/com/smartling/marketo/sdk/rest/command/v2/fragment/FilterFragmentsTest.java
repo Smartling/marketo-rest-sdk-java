@@ -230,7 +230,7 @@ public class FilterFragmentsTest
                 .modifiedAtEnd(instantWithPlusTwoOffset)
                 .build());
 
-        assertThat(command.getParameters()).isEqualTo(expectedParameters(MODIFIED_AT_END_KEY, CREATED_AT_START_WIRE));
+        assertThat(command.getParameters()).isEqualTo(expectedParameters(MODIFIED_AT_END_KEY, "2026-10-28T08:27:00"));
     }
 
     @Test

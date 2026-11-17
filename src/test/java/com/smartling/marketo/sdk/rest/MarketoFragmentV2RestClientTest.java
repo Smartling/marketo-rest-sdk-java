@@ -19,7 +19,9 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.Assertions.catchThrowable;import static org.mockito.ArgumentMatchers.any;
+import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.assertj.core.api.InstanceOfAssertFactories.type;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -52,8 +54,7 @@ public class MarketoFragmentV2RestClientTest
         given(executor.execute(any(FilterFragments.class))).willReturn(page);
 
         // Filter fragments by workspace
-        FragmentV2Page filteredPage = testedInstance.filterFragments(FragmentV2Filter.builder(WORKSPACE_ID)
-                .build());
+        FragmentV2Page filteredPage = testedInstance.filterFragments(emptyFilter());
 
         ArgumentCaptor<FilterFragments> commandCaptor = ArgumentCaptor.forClass(FilterFragments.class);
         verify(executor).execute(commandCaptor.capture());
@@ -68,8 +69,7 @@ public class MarketoFragmentV2RestClientTest
         given(executor.execute(any(FilterFragments.class))).willReturn(null);
 
         // Filter fragments by workspace
-        FragmentV2Page filteredPage = testedInstance.filterFragments(FragmentV2Filter.builder(WORKSPACE_ID)
-                .build());
+        FragmentV2Page filteredPage = testedInstance.filterFragments(emptyFilter());
 
         assertThat(filteredPage).usingRecursiveComparison().isEqualTo(FragmentV2Page.empty());
     }
@@ -91,8 +91,7 @@ public class MarketoFragmentV2RestClientTest
         given(executor.execute(any(FilterFragments.class))).willThrow(accessDeniedError);
 
         // Filter fragments by workspace
-        Throwable thrown = catchThrowable(() -> testedInstance.filterFragments(FragmentV2Filter.builder(WORKSPACE_ID)
-                .build()));
+        Throwable thrown = catchThrowable(() -> testedInstance.filterFragments(emptyFilter()));
 
         assertThat(thrown)
                 .isSameAs(accessDeniedError)
@@ -172,7 +171,8 @@ public class MarketoFragmentV2RestClientTest
         assertThat(thrown)
                 .isExactlyInstanceOf(ObjectNotFoundException.class)
                 .hasMessage(ACCESS_DENIED_MESSAGE)
-                .extracting(thrownError -> ((MarketoApiException) thrownError).getErrorCode())
+                .asInstanceOf(type(MarketoApiException.class))
+                .extracting(MarketoApiException::getErrorCode)
                 .isEqualTo(MISSING_FRAGMENT_ERROR_CODE);
     }
 
@@ -209,6 +209,12 @@ public class MarketoFragmentV2RestClientTest
         }
 
         verifyNoInteractions(executor);
+    }
+
+    private static FragmentV2Filter emptyFilter()
+    {
+        return FragmentV2Filter.builder(WORKSPACE_ID)
+                .build();
     }
 
     private static FragmentV2 fragmentWithId(String id)

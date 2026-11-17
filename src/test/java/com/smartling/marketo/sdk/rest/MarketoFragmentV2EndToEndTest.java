@@ -35,6 +35,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.assertj.core.api.InstanceOfAssertFactories.type;
 
 public class MarketoFragmentV2EndToEndTest
 {
@@ -54,6 +55,7 @@ public class MarketoFragmentV2EndToEndTest
     private static final String CONTENT_TYPE_HEADER = "Content-Type";
     private static final String JSON_CONTENT_TYPE = "application/json";
     private static final String SPECIAL_VALUE = "a+b&c=d#e %41 {x} é";
+    private static final String WORKSPACE_ID_PARAMETER = "workspaceId";
     private static final String NAME_PARAMETER = "name";
     private static final String STATUS_PARAMETER = "status";
     private static final String CREATED_BY_ME_PARAMETER = "isCreatedByMe";
@@ -114,7 +116,7 @@ public class MarketoFragmentV2EndToEndTest
         // Every property reaches the server as its own query parameter
         wireMockRule.verify(getRequestedFor(urlPathEqualTo(FILTER_PATH))
                 .withHeader(APP_TYPE_HEADER, equalTo(APP_TYPE))
-                .withQueryParam("workspaceId", equalTo(WORKSPACE_ID))
+                .withQueryParam(WORKSPACE_ID_PARAMETER,equalTo(WORKSPACE_ID))
                 .withQueryParam("folderId", equalTo("folder-1"))
                 .withQueryParam("folderType", equalTo("Program"))
                 .withQueryParam(STATUS_PARAMETER, havingExactly("draft", "published"))
@@ -306,7 +308,8 @@ public class MarketoFragmentV2EndToEndTest
     {
         assertThat(failure)
                 .isExactlyInstanceOf(expectedType)
-                .extracting(thrown -> ((MarketoApiException) thrown).getErrorCode())
+                .asInstanceOf(type(MarketoApiException.class))
+                .extracting(MarketoApiException::getErrorCode)
                 .isEqualTo(expectedErrorCode);
     }
 
