@@ -1,0 +1,392 @@
+package com.smartling.marketo.sdk.domain.v2.fragment;
+
+import java.util.Date;
+import java.util.List;
+
+public class FragmentV2
+{
+    private String id;
+    private String name;
+    private String description;
+    private String status;
+    private String state;
+    private String appType;
+    private String externalId;
+    private String virtualId;
+    private String scriptEngine;
+    private String themeId;
+    private Settings settings;
+    private Metadata metadata;
+    private AppData appData;
+    private Data data;
+    private List<AssociatedState> associatedStates;
+
+    public String getId()
+    {
+        return id;
+    }
+
+    public void setId(String id)
+    {
+        this.id = id;
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+
+    public String getDescription()
+    {
+        return description;
+    }
+
+    public void setDescription(String description)
+    {
+        this.description = description;
+    }
+
+    public String getStatus()
+    {
+        return status;
+    }
+
+    public void setStatus(String status)
+    {
+        this.status = status;
+    }
+
+    public String getState()
+    {
+        return state;
+    }
+
+    public void setState(String state)
+    {
+        this.state = state;
+    }
+
+    public String getAppType()
+    {
+        return appType;
+    }
+
+    public void setAppType(String appType)
+    {
+        this.appType = appType;
+    }
+
+    public String getExternalId()
+    {
+        return externalId;
+    }
+
+    public void setExternalId(String externalId)
+    {
+        this.externalId = externalId;
+    }
+
+    public String getVirtualId()
+    {
+        return virtualId;
+    }
+
+    public void setVirtualId(String virtualId)
+    {
+        this.virtualId = virtualId;
+    }
+
+    public String getScriptEngine()
+    {
+        return scriptEngine;
+    }
+
+    public void setScriptEngine(String scriptEngine)
+    {
+        this.scriptEngine = scriptEngine;
+    }
+
+    public String getThemeId()
+    {
+        return themeId;
+    }
+
+    public void setThemeId(String themeId)
+    {
+        this.themeId = themeId;
+    }
+
+    public Settings getSettings()
+    {
+        return settings;
+    }
+
+    public void setSettings(Settings settings)
+    {
+        this.settings = settings;
+    }
+
+    public Metadata getMetadata()
+    {
+        return metadata;
+    }
+
+    public void setMetadata(Metadata metadata)
+    {
+        this.metadata = metadata;
+    }
+
+    public AppData getAppData()
+    {
+        return appData;
+    }
+
+    public void setAppData(AppData appData)
+    {
+        this.appData = appData;
+    }
+
+    public Data getData()
+    {
+        return data;
+    }
+
+    public void setData(Data data)
+    {
+        this.data = data;
+    }
+
+    public List<AssociatedState> getAssociatedStates()
+    {
+        return associatedStates;
+    }
+
+    public void setAssociatedStates(List<AssociatedState> associatedStates)
+    {
+        this.associatedStates = associatedStates;
+    }
+
+    public static class Settings
+    {
+        private String fragmentType;
+        private String fragmentSubType;
+        private List<String> supportedChannels;
+
+        public String getFragmentType()
+        {
+            return fragmentType;
+        }
+
+        public void setFragmentType(String fragmentType)
+        {
+            this.fragmentType = fragmentType;
+        }
+
+        public String getFragmentSubType()
+        {
+            return fragmentSubType;
+        }
+
+        public void setFragmentSubType(String fragmentSubType)
+        {
+            this.fragmentSubType = fragmentSubType;
+        }
+
+        public List<String> getSupportedChannels()
+        {
+            return supportedChannels;
+        }
+
+        public void setSupportedChannels(List<String> supportedChannels)
+        {
+            this.supportedChannels = supportedChannels;
+        }
+    }
+
+    /**
+     * One entry of {@code associatedStates}. All fields are nullable: the draft entry of a
+     * {@code published_with_draft} fragment has no {@code externalId}.
+     */
+    public static class AssociatedState
+    {
+        private String contentId;
+        private String externalId;
+        private String state;
+
+        public String getContentId()
+        {
+            return contentId;
+        }
+
+        public void setContentId(String contentId)
+        {
+            this.contentId = contentId;
+        }
+
+        public String getExternalId()
+        {
+            return externalId;
+        }
+
+        public void setExternalId(String externalId)
+        {
+            this.externalId = externalId;
+        }
+
+        public String getState()
+        {
+            return state;
+        }
+
+        public void setState(String state)
+        {
+            this.state = state;
+        }
+    }
+
+    public static class Metadata
+    {
+        private String createdBy;
+        private Date createdAt;
+        private String modifiedBy;
+        private Date modifiedAt;
+
+        public String getCreatedBy()
+        {
+            return createdBy;
+        }
+
+        public void setCreatedBy(String createdBy)
+        {
+            this.createdBy = createdBy;
+        }
+
+        public Date getCreatedAt()
+        {
+            return createdAt;
+        }
+
+        public void setCreatedAt(Date createdAt)
+        {
+            this.createdAt = createdAt;
+        }
+
+        public String getModifiedBy()
+        {
+            return modifiedBy;
+        }
+
+        public void setModifiedBy(String modifiedBy)
+        {
+            this.modifiedBy = modifiedBy;
+        }
+
+        public Date getModifiedAt()
+        {
+            return modifiedAt;
+        }
+
+        public void setModifiedAt(Date modifiedAt)
+        {
+            this.modifiedAt = modifiedAt;
+        }
+    }
+
+    public static class AppData
+    {
+        private String workspaceId;
+        private String folderId;
+
+        public String getWorkspaceId()
+        {
+            return workspaceId;
+        }
+
+        public void setWorkspaceId(String workspaceId)
+        {
+            this.workspaceId = workspaceId;
+        }
+
+        public String getFolderId()
+        {
+            return folderId;
+        }
+
+        public void setFolderId(String folderId)
+        {
+            this.folderId = folderId;
+        }
+    }
+
+    public static class Data
+    {
+        private Html html;
+        private Text text;
+
+        public Html getHtml()
+        {
+            return html;
+        }
+
+        public void setHtml(Html html)
+        {
+            this.html = html;
+        }
+
+        public Text getText()
+        {
+            return text;
+        }
+
+        public void setText(Text text)
+        {
+            this.text = text;
+        }
+    }
+
+    public static class Html
+    {
+        private String body;
+
+        public String getBody()
+        {
+            return body;
+        }
+
+        public void setBody(String body)
+        {
+            this.body = body;
+        }
+    }
+
+    public static class Text
+    {
+        private String body;
+        private boolean syncFromHtml;
+
+        public String getBody()
+        {
+            return body;
+        }
+
+        public void setBody(String body)
+        {
+            this.body = body;
+        }
+
+        public boolean isSyncFromHtml()
+        {
+            return syncFromHtml;
+        }
+
+        public void setSyncFromHtml(boolean syncFromHtml)
+        {
+            this.syncFromHtml = syncFromHtml;
+        }
+    }
+}
