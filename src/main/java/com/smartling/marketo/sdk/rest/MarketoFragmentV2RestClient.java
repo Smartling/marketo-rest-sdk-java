@@ -5,8 +5,12 @@ import com.smartling.marketo.sdk.MarketoFragmentV2Client;
 import com.smartling.marketo.sdk.domain.v2.fragment.FragmentV2;
 import com.smartling.marketo.sdk.domain.v2.fragment.FragmentV2Filter;
 import com.smartling.marketo.sdk.domain.v2.fragment.FragmentV2Page;
+import com.smartling.marketo.sdk.domain.v2.fragment.FragmentV2Update;
+import com.smartling.marketo.sdk.rest.command.v2.fragment.CloneFragment;
 import com.smartling.marketo.sdk.rest.command.v2.fragment.FilterFragments;
 import com.smartling.marketo.sdk.rest.command.v2.fragment.GetFragmentById;
+import com.smartling.marketo.sdk.rest.command.v2.fragment.TransitionFragmentState;
+import com.smartling.marketo.sdk.rest.command.v2.fragment.UpdateFragment;
 
 import java.util.List;
 import java.util.Objects;
@@ -57,6 +61,48 @@ public class MarketoFragmentV2RestClient implements MarketoFragmentV2Client
         return fragment;
     }
 
+    @Override
+    public FragmentV2 cloneFragment(String id, String name) throws MarketoApiException
+    {
+        requireAlphanumericId(id);
+        Objects.requireNonNull(name, "name must not be null");
+
+        // Clone the fragment and take the copy from the answer
+        List<FragmentV2> fragments = executeReportingMissingFragment(new CloneFragment(id, name));
+
+        return firstFragmentWithId(fragments, String.format("Clone of fragment[id = %s] returned no fragment", id));
+    }
+
+    @Override
+    public void updateFragment(String id, FragmentV2Update update) throws MarketoApiException
+    {
+        requireAlphanumericId(id);
+        Objects.requireNonNull(update, "update must not be null");
+
+        // Update the fragment; the answer carries nothing the caller needs
+        executeReportingMissingFragment(new UpdateFragment(id, update));
+    }
+
+    @Override
+    public FragmentV2 createDraft(String id) throws MarketoApiException
+    {
+        requireAlphanumericId(id);
+
+        // Create the draft and take it from the answer
+        List<FragmentV2> fragments = executeReportingMissingFragment(TransitionFragmentState.createDraft(id));
+
+        return firstFragmentWithId(fragments, String.format("Create draft of fragment[id = %s] returned no fragment", id));
+    }
+
+    @Override
+    public void approveFragment(String id) throws MarketoApiException
+    {
+        requireAlphanumericId(id);
+
+        // Approve the fragment; the answer carries nothing the caller needs
+        executeReportingMissingFragment(TransitionFragmentState.approve(id));
+    }
+
     private void requireAlphanumericId(String id)
     {
         // The id goes into the URL path, so only plain alphanumeric tokens are allowed
@@ -82,5 +128,16 @@ public class MarketoFragmentV2RestClient implements MarketoFragmentV2Client
 
             throw e;
         }
+    }
+
+    private FragmentV2 firstFragmentWithId(List<FragmentV2> fragments, String noFragmentMessage) throws ObjectNotFoundException
+    {
+        // A null or empty result, or a first fragment without an id, means the call produced no usable fragment
+        if (fragments == null || fragments.isEmpty() || fragments.get(0).getId() == null)
+        {
+            throw new ObjectNotFoundException(noFragmentMessage);
+        }
+
+        return fragments.get(0);
     }
 }
