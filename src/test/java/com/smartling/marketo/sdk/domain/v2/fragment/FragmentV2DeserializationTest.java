@@ -111,7 +111,6 @@ public class FragmentV2DeserializationTest
         assertThat(stateEntry(fragment, STATE_DRAFT).getExternalId()).isNull();
     }
 
-    // The create-draft fixture is synthetic: no response body of a fragment create draft was recorded, it follows the observed shape
     @Test
     public void shouldDeserializeCreateDraftResponseWithPublishedAndDraftStates() throws Exception
     {
@@ -129,7 +128,6 @@ public class FragmentV2DeserializationTest
         assertThat(stateEntry(fragment, STATE_DRAFT).getExternalId()).isNull();
     }
 
-    // The clone fixture is synthetic: it is built from the swagger schema and a copy made in the UI, because no fragment clone response was recorded
     @Test
     public void shouldDeserializeCloneResponseAsDraft() throws Exception
     {

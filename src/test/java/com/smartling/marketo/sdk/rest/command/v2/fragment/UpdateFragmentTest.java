@@ -34,7 +34,7 @@ public class UpdateFragmentTest
 
         UpdateFragment command = new UpdateFragment(FRAGMENT_ID, update);
 
-        assertThat(command.getBody()).isEqualTo(body(part("html", HTML_BODY), part("text", TEXT_BODY)));
+        assertThat(command.getBody()).isEqualTo(map("data", map("html", map("body", HTML_BODY), "text", map("body", TEXT_BODY))));
     }
 
     @Test
@@ -44,7 +44,7 @@ public class UpdateFragmentTest
 
         UpdateFragment command = new UpdateFragment(FRAGMENT_ID, update);
 
-        assertThat(command.getBody()).isEqualTo(body(part("html", HTML_BODY)));
+        assertThat(command.getBody()).isEqualTo(map("data", map("html", map("body", HTML_BODY))));
     }
 
     @Test
@@ -54,7 +54,7 @@ public class UpdateFragmentTest
 
         UpdateFragment command = new UpdateFragment(FRAGMENT_ID, update);
 
-        assertThat(command.getBody()).isEqualTo(body(part("text", TEXT_BODY)));
+        assertThat(command.getBody()).isEqualTo(map("data", map("text", map("body", TEXT_BODY))));
     }
 
     @Test
@@ -64,49 +64,30 @@ public class UpdateFragmentTest
 
         UpdateFragment command = new UpdateFragment(FRAGMENT_ID, update);
 
-        assertThat(command.getBody()).isEqualTo(body(part("html", "")));
+        assertThat(command.getBody()).isEqualTo(map("data", map("html", map("body", ""))));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void shouldNeverSendSyncFromHtml()
     {
-        FragmentV2Update[] updates = {
-                FragmentV2Update.builder().htmlBody(HTML_BODY).build(),
-                FragmentV2Update.builder().textBody(TEXT_BODY).build(),
-                FragmentV2Update.builder().htmlBody(HTML_BODY).textBody(TEXT_BODY).build()
-        };
+        UpdateFragment htmlOnlyCommand = new UpdateFragment(FRAGMENT_ID, FragmentV2Update.builder().htmlBody(HTML_BODY).build());
+        UpdateFragment textOnlyCommand = new UpdateFragment(FRAGMENT_ID, FragmentV2Update.builder().textBody(TEXT_BODY).build());
+        UpdateFragment bothPartsCommand = new UpdateFragment(
+                FRAGMENT_ID,
+                FragmentV2Update.builder().htmlBody(HTML_BODY).textBody(TEXT_BODY).build());
 
-        for (FragmentV2Update update : updates)
-        {
-            Map<String, Object> body = (Map<String, Object>) new UpdateFragment(FRAGMENT_ID, update).getBody();
-            Map<String, Object> data = (Map<String, Object>) body.get("data");
-
-            assertThat(data.values())
-                    .allSatisfy(content -> assertThat((Map<String, Object>) content).containsOnlyKeys("body"));
-        }
+        assertThat(htmlOnlyCommand.getBody().toString()).doesNotContain("syncFromHtml");
+        assertThat(textOnlyCommand.getBody().toString()).doesNotContain("syncFromHtml");
+        assertThat(bothPartsCommand.getBody().toString()).doesNotContain("syncFromHtml");
     }
 
-    @SafeVarargs
-    private static Map<String, Object> body(Map.Entry<String, Object>... parts)
+    private static Map<String, Object> map(Object... keysAndValues)
     {
-        Map<String, Object> data = new LinkedHashMap<>();
-        for (Map.Entry<String, Object> part : parts)
+        Map<String, Object> result = new LinkedHashMap<>();
+        for (int i = 0; i < keysAndValues.length; i += 2)
         {
-            data.put(part.getKey(), part.getValue());
+            result.put((String) keysAndValues[i], keysAndValues[i + 1]);
         }
-
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put("data", data);
-
-        return body;
-    }
-
-    private static Map.Entry<String, Object> part(String name, String bodyValue)
-    {
-        Map<String, Object> content = new LinkedHashMap<>();
-        content.put("body", bodyValue);
-
-        return new java.util.AbstractMap.SimpleEntry<String, Object>(name, content);
+        return result;
     }
 }

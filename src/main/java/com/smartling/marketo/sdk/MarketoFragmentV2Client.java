@@ -37,8 +37,8 @@ public interface MarketoFragmentV2Client
      * <p>
      * A missing id comes back from the API as error {@code 603} ("Access denied"). This client reports it
      * as {@link com.smartling.marketo.sdk.rest.ObjectNotFoundException} with Marketo's error code and
-     * message, so that callers do not retry it. A {@code 603} can also mean a missing permission (observed for
-     * emails). The same exception is thrown when the result array is null or empty, and when its first element
+     * message, so that callers do not retry it. A {@code 603} can also mean a missing permission. The same
+     * exception is thrown when the result array is null or empty, and when its first element
      * has no id. Other API errors are thrown as the executor maps them (all of them
      * {@link MarketoApiException}s).
      *
@@ -47,15 +47,13 @@ public interface MarketoFragmentV2Client
     FragmentV2 loadFragmentById(String id) throws MarketoApiException;
 
     /**
-     * Clones a fragment under a new name and returns the copy. The copy lands in the source's folder as a
-     * draft.
+     * Clones a fragment under a new name and returns the copy. The copy is a draft in the source's folder.
      * <p>
      * Error {@code 603} is reported as {@link com.smartling.marketo.sdk.rest.ObjectNotFoundException} with
-     * Marketo's error code and message. A {@code 603} can also be a permission refusal (the API clone answered
-     * it to the sandbox user), so a caller must not read it as proof that the source fragment is missing. The
-     * same exception is thrown when the result array is null or empty, and when its first element has no id.
-     * A duplicate or too long name was answered with {@code 60000} (observed); it stays a plain
-     * {@link MarketoApiException}.
+     * Marketo's error code and message. A {@code 603} can also be a permission refusal, so a caller must not
+     * read it as proof that the source fragment is missing. The same exception is thrown when the result array
+     * is null or empty, and when its first element has no id. A duplicate or too long name fails with
+     * {@code 60000}, which stays a plain {@link MarketoApiException}.
      *
      * @throws IllegalArgumentException if the id is null, blank or not alphanumeric
      * @throws NullPointerException if the name is null
@@ -65,12 +63,13 @@ public interface MarketoFragmentV2Client
     /**
      * Updates the parts of a draft fragment that are set in the update.
      * <p>
-     * Marketo does not regenerate the text body from the HTML body, so a caller that changes the HTML sends the
-     * text body too; {@code syncFromHtml} is not sent. Update the id of the draft: Marketo answers {@code 60019}
-     * (thrown as {@link com.smartling.marketo.sdk.rest.ContentRejectedException}, not retried) also for an update
-     * of the published id, with or without a draft. Error {@code 603} is reported as
-     * {@link com.smartling.marketo.sdk.rest.ObjectNotFoundException}. {@code 60051} (a draft id after its approve,
-     * observed once) stays a plain {@link MarketoApiException}.
+     * The text body is not regenerated from the HTML body, so a caller that changes the HTML sends the text body
+     * too; {@code syncFromHtml} is not sent. Update the id of the draft: an update of the published id, with or
+     * without a draft, fails with {@code 60019}, thrown as
+     * {@link com.smartling.marketo.sdk.rest.ContentRejectedException} and not retried. Error {@code 603} is
+     * reported as {@link com.smartling.marketo.sdk.rest.ObjectNotFoundException}. The id of a draft created
+     * from a published fragment no longer exists after the approve, and an update of it fails with {@code 60051},
+     * which stays a plain {@link MarketoApiException}.
      *
      * @throws IllegalArgumentException if the id is null, blank or not alphanumeric
      * @throws NullPointerException if the update is null
@@ -81,7 +80,7 @@ public interface MarketoFragmentV2Client
      * Creates a draft of a published fragment and returns the draft.
      * <p>
      * Takes the id of a published fragment. The draft has its own id, which is the id to update and to approve.
-     * A published fragment that already has a draft answers {@code 60000} (observed), which stays a plain
+     * A published fragment that already has a draft fails with {@code 60000}, which stays a plain
      * {@link MarketoApiException}. The draft of a {@code published_with_draft} fragment is found through
      * {@link FragmentV2#getAssociatedStates()}. Error {@code 603} is reported as
      * {@link com.smartling.marketo.sdk.rest.ObjectNotFoundException}, which is also thrown when the result array
@@ -94,11 +93,11 @@ public interface MarketoFragmentV2Client
     /**
      * Approves a draft fragment, which makes its content the published one.
      * <p>
-     * Takes the id of the draft. Approving the published id while a draft exists answers {@code 60000} and changes
-     * nothing (observed). The id of a draft created from a published fragment stops existing after the approve: a
-     * get or update of it answers {@code 60051} and an approve of it {@code 60000} (one observation each). A
-     * never-published draft keeps its id, which becomes the published one (one observation). {@code 60000} and
-     * {@code 60051} stay plain {@link MarketoApiException}s. Error {@code 603} is reported as
+     * Takes the id of the draft. Approving the published id of a fragment that has a draft fails with
+     * {@code 60000} and changes nothing; approve the draft id. The id of a draft created from a published
+     * fragment no longer exists after the approve: a get or update of it fails with {@code 60051} and an approve
+     * of it with {@code 60000}. A never-published draft keeps its id, which becomes the published one.
+     * {@code 60000} and {@code 60051} stay plain {@link MarketoApiException}s. Error {@code 603} is reported as
      * {@link com.smartling.marketo.sdk.rest.ObjectNotFoundException}.
      *
      * @throws IllegalArgumentException if the id is null, blank or not alphanumeric
