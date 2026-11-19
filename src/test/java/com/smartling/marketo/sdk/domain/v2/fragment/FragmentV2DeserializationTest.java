@@ -20,6 +20,10 @@ public class FragmentV2DeserializationTest
     private static final String FILTER_FIXTURE = "/json/fragment-v2-filter-response.json";
     private static final String GET_FIXTURE = "/json/fragment-v2-get-response.json";
     private static final String PUBLISHED_WITH_DRAFT_FIXTURE = "/json/fragment-v2-get-published-with-draft-response.json";
+    private static final String CREATE_DRAFT_FIXTURE = "/json/fragment-v2-create-draft-response.json";
+    private static final String CLONE_FIXTURE = "/json/fragment-v2-clone-response.json";
+    private static final String CREATED_DRAFT_ID = "draft-fragment-id-1";
+    private static final String CLONED_FRAGMENT_ID = "copy-fragment-id-1";
     private static final String FRAGMENT_ID = "0123456789abcdef01234567";
     private static final String DRAFT_FRAGMENT_ID = "fragment-id-2";
     private static final String DRAFT_CONTENT_ID = "draft-content-id-1";
@@ -105,6 +109,37 @@ public class FragmentV2DeserializationTest
                 .ignoringCollectionOrder()
                 .isEqualTo(expected);
         assertThat(stateEntry(fragment, STATE_DRAFT).getExternalId()).isNull();
+    }
+
+    // The create-draft fixture is synthetic: no response body of a fragment create draft was recorded, it follows the observed shape
+    @Test
+    public void shouldDeserializeCreateDraftResponseWithPublishedAndDraftStates() throws Exception
+    {
+        JsonNode createDraftResponseNode = readFixture(CREATE_DRAFT_FIXTURE).get("result");
+
+        // Deserialize the first element of the create draft response result array
+        FragmentV2 fragment = objectMapper.treeToValue(createDraftResponseNode.get(0), FragmentV2.class);
+
+        assertThat(createDraftResponseNode.size()).isEqualTo(1);
+        assertThat(fragment)
+                .usingRecursiveComparison()
+                .ignoringCollectionOrder()
+                .isEqualTo(expectedCreateDraftFragment());
+        assertThat(stateEntry(fragment, STATE_DRAFT).getContentId()).isEqualTo(fragment.getId());
+        assertThat(stateEntry(fragment, STATE_DRAFT).getExternalId()).isNull();
+    }
+
+    // The clone fixture is synthetic: it is built from the swagger schema and a copy made in the UI, because no fragment clone response was recorded
+    @Test
+    public void shouldDeserializeCloneResponseAsDraft() throws Exception
+    {
+        JsonNode cloneResponseNode = readFixture(CLONE_FIXTURE).get("result");
+
+        // Deserialize the first element of the clone response result array
+        FragmentV2 fragment = objectMapper.treeToValue(cloneResponseNode.get(0), FragmentV2.class);
+
+        assertThat(cloneResponseNode.size()).isEqualTo(1);
+        assertThat(fragment).usingRecursiveComparison().isEqualTo(expectedCloneFragment());
     }
 
     @Test
@@ -194,6 +229,38 @@ public class FragmentV2DeserializationTest
         fragment.setMetadata(metadata);
         fragment.setAppData(appData);
         fragment.setAssociatedStates(Collections.singletonList(associatedState(FRAGMENT_ID, EXTERNAL_ID, STATE_PUBLISHED)));
+        return fragment;
+    }
+
+    private static FragmentV2 expectedCreateDraftFragment()
+    {
+        FragmentV2 fragment = expectedPublishedFragment();
+        fragment.setId(CREATED_DRAFT_ID);
+        fragment.setStatus(STATUS_PUBLISHED_WITH_DRAFT);
+        fragment.setState(STATE_DRAFT);
+        fragment.setExternalId(null);
+        fragment.setData(expectedData());
+        fragment.setAssociatedStates(Arrays.asList(
+                associatedState(FRAGMENT_ID, EXTERNAL_ID, STATE_PUBLISHED),
+                associatedState(CREATED_DRAFT_ID, null, STATE_DRAFT)));
+        return fragment;
+    }
+
+    private static FragmentV2 expectedCloneFragment()
+    {
+        Date copiedAt = Date.from(Instant.parse("2026-01-04T05:06:07Z"));
+        FragmentV2 fragment = expectedPublishedFragment();
+        fragment.setId(CLONED_FRAGMENT_ID);
+        fragment.setName("fragment-1-copy");
+        fragment.setDescription("");
+        fragment.setStatus(STATE_DRAFT);
+        fragment.setState(STATE_DRAFT);
+        fragment.setExternalId(null);
+        fragment.setVirtualId("virtual-id-4");
+        fragment.getMetadata().setCreatedAt(copiedAt);
+        fragment.getMetadata().setModifiedAt(copiedAt);
+        fragment.setData(expectedData());
+        fragment.setAssociatedStates(Collections.singletonList(associatedState(CLONED_FRAGMENT_ID, null, STATE_DRAFT)));
         return fragment;
     }
 
