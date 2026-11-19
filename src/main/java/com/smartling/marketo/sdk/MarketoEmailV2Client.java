@@ -69,7 +69,7 @@ public interface MarketoEmailV2Client
      * caller that changes the HTML sends the text body too. {@code syncFromHtml} is not sent.
      * <p>
      * An answer with error {@code 60019} is thrown as
-     * {@link com.smartling.marketo.sdk.rest.EmailContentRejectedException}; it also happens when a published
+     * {@link com.smartling.marketo.sdk.rest.ContentRejectedException}; it also happens when a published
      * (non-draft) email is updated directly, so update the draft. A missing id is reported as in
      * {@link #cloneEmail(String, String)}.
      *
