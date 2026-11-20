@@ -300,7 +300,7 @@ public class MarketoEmailV2RestClientTest
     @Test
     public void shouldPropagateRejectedContentUnchanged() throws Exception
     {
-        EmailContentRejectedException original = new EmailContentRejectedException(CONTENT_REJECTED_ERROR_CODE, "rejected");
+        ContentRejectedException original = new ContentRejectedException(CONTENT_REJECTED_ERROR_CODE, "rejected");
         given(executor.execute(any(UpdateEmail.class))).willThrow(original);
 
         assertThatThrownBy(() -> testedInstance.updateEmail(EMAIL_ID, EmailV2Update.builder().subject("test-subject").build()))

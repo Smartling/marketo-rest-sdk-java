@@ -4,8 +4,12 @@ import com.smartling.marketo.sdk.MarketoApiException;
 import com.smartling.marketo.sdk.domain.v2.fragment.FragmentV2;
 import com.smartling.marketo.sdk.domain.v2.fragment.FragmentV2Filter;
 import com.smartling.marketo.sdk.domain.v2.fragment.FragmentV2Page;
+import com.smartling.marketo.sdk.domain.v2.fragment.FragmentV2Update;
+import com.smartling.marketo.sdk.rest.command.v2.fragment.CloneFragment;
 import com.smartling.marketo.sdk.rest.command.v2.fragment.FilterFragments;
 import com.smartling.marketo.sdk.rest.command.v2.fragment.GetFragmentById;
+import com.smartling.marketo.sdk.rest.command.v2.fragment.TransitionFragmentState;
+import com.smartling.marketo.sdk.rest.command.v2.fragment.UpdateFragment;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -39,6 +43,14 @@ public class MarketoFragmentV2RestClientTest
     private static final String INVALID_PARAMETER_ERROR_CODE = "611";
     private static final String INVALID_PARAMETER_MESSAGE = "bad parameter";
     private static final String NOT_FOUND_MESSAGE = "Fragment[id = " + FRAGMENT_ID + "] not found";
+    private static final String COPY_NAME = "test-fragment-copy";
+    private static final String COPY_ID = "copy123";
+    private static final String DRAFT_ID = "draft123";
+    private static final String CONTENT_REJECTED_ERROR_CODE = "60019";
+    private static final String DRAFT_EXISTS_ERROR_CODE = "60000";
+    private static final String DELETED_DRAFT_ERROR_CODE = "60051";
+    private static final String CLONE_NO_FRAGMENT_MESSAGE = "Clone of fragment[id = " + FRAGMENT_ID + "] returned no fragment";
+    private static final String DRAFT_NO_FRAGMENT_MESSAGE = "Create draft of fragment[id = " + FRAGMENT_ID + "] returned no fragment";
     private static final String NO_ID_MESSAGE = "Fragment[id = " + FRAGMENT_ID + "] returned without an id";
 
     @Mock
@@ -211,6 +223,216 @@ public class MarketoFragmentV2RestClientTest
         verifyNoInteractions(executor);
     }
 
+    @Test
+    public void shouldCloneFragmentAndReturnFirstFragment() throws Exception
+    {
+        FragmentV2 firstFragment = fragmentWithId(COPY_ID);
+        given(executor.execute(any(CloneFragment.class))).willReturn(Arrays.asList(firstFragment, fragmentWithId("second-fragment")));
+
+        // Clone the fragment under a new name
+        FragmentV2 clonedFragment = testedInstance.cloneFragment(FRAGMENT_ID, COPY_NAME);
+
+        ArgumentCaptor<CloneFragment> commandCaptor = ArgumentCaptor.forClass(CloneFragment.class);
+        verify(executor).execute(commandCaptor.capture());
+        assertThat(clonedFragment).isSameAs(firstFragment);
+        assertThat(commandCaptor.getValue().getPath()).isEqualTo(FRAGMENT_PATH_PREFIX + "clone");
+        assertThat(commandCaptor.getValue().getBody()).isEqualTo(new CloneFragment(FRAGMENT_ID, COPY_NAME).getBody());
+    }
+
+    @Test
+    public void shouldUpdateFragmentWithUpdateCommand() throws Exception
+    {
+        FragmentV2Update update = FragmentV2Update.builder().htmlBody("<p>test-html</p>").build();
+
+        // Update the fragment
+        testedInstance.updateFragment(FRAGMENT_ID, update);
+
+        ArgumentCaptor<UpdateFragment> commandCaptor = ArgumentCaptor.forClass(UpdateFragment.class);
+        verify(executor).execute(commandCaptor.capture());
+        assertThat(commandCaptor.getValue().getPath()).isEqualTo(FRAGMENT_PATH_PREFIX + FRAGMENT_ID + "/update");
+        assertThat(commandCaptor.getValue().getBody()).isEqualTo(new UpdateFragment(FRAGMENT_ID, update).getBody());
+    }
+
+    @Test
+    public void shouldCreateDraftAndReturnFirstFragment() throws Exception
+    {
+        FragmentV2 firstFragment = fragmentWithId(DRAFT_ID);
+        given(executor.execute(any(TransitionFragmentState.class))).willReturn(Arrays.asList(firstFragment, fragmentWithId("second-fragment")));
+
+        // Create a draft of the fragment
+        FragmentV2 draft = testedInstance.createDraft(FRAGMENT_ID);
+
+        ArgumentCaptor<TransitionFragmentState> commandCaptor = ArgumentCaptor.forClass(TransitionFragmentState.class);
+        verify(executor).execute(commandCaptor.capture());
+        assertThat(draft).isSameAs(firstFragment);
+        assertThat(commandCaptor.getValue().getPath()).isEqualTo(FRAGMENT_PATH_PREFIX + "state/transition");
+        assertThat(commandCaptor.getValue().getBody()).isEqualTo(TransitionFragmentState.createDraft(FRAGMENT_ID).getBody());
+    }
+
+    @Test
+    public void shouldApproveFragmentWithTransitionCommand() throws Exception
+    {
+        // Approve the fragment
+        testedInstance.approveFragment(FRAGMENT_ID);
+
+        ArgumentCaptor<TransitionFragmentState> commandCaptor = ArgumentCaptor.forClass(TransitionFragmentState.class);
+        verify(executor).execute(commandCaptor.capture());
+        assertThat(commandCaptor.getValue().getPath()).isEqualTo(FRAGMENT_PATH_PREFIX + "state/transition");
+        assertThat(commandCaptor.getValue().getBody()).isEqualTo(TransitionFragmentState.approve(FRAGMENT_ID).getBody());
+    }
+
+    @Test
+    public void shouldRejectUnsafeIdsOnEveryWriteMethod()
+    {
+        List<String> unsafeIds = Arrays.asList(null, "", "  ", "1/2", "{a}", AJO_PREFIXED_ID);
+
+        for (String unsafeId : unsafeIds)
+        {
+            for (Call call : writeCalls(unsafeId))
+            {
+                assertThatThrownBy(call::run)
+                        .isInstanceOf(IllegalArgumentException.class)
+                        .hasMessage("id must be an alphanumeric token, but was: " + unsafeId);
+            }
+        }
+
+        verifyNoInteractions(executor);
+    }
+
+    @Test
+    public void shouldRejectNullNameOnClone()
+    {
+        assertThatThrownBy(() -> testedInstance.cloneFragment(FRAGMENT_ID, null))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("name must not be null");
+
+        verifyNoInteractions(executor);
+    }
+
+    @Test
+    public void shouldRejectNullUpdateOnUpdate()
+    {
+        assertThatThrownBy(() -> testedInstance.updateFragment(FRAGMENT_ID, null))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("update must not be null");
+
+        verifyNoInteractions(executor);
+    }
+
+    @Test
+    public void shouldCheckIdBeforeNameAndUpdate()
+    {
+        assertThatThrownBy(() -> testedInstance.cloneFragment(null, null)).isExactlyInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> testedInstance.updateFragment(null, null)).isExactlyInstanceOf(IllegalArgumentException.class);
+
+        verifyNoInteractions(executor);
+    }
+
+    @Test
+    public void shouldThrowObjectNotFoundWhenCloneReturnsNoFragment() throws Exception
+    {
+        for (List<FragmentV2> noFragmentResult : noFragmentResults())
+        {
+            given(executor.execute(any(CloneFragment.class))).willReturn(noFragmentResult);
+
+            // Clone the fragment under a new name
+            Throwable thrown = catchThrowable(() -> testedInstance.cloneFragment(FRAGMENT_ID, COPY_NAME));
+
+            assertThat(thrown).isExactlyInstanceOf(ObjectNotFoundException.class).hasMessage(CLONE_NO_FRAGMENT_MESSAGE);
+        }
+    }
+
+    @Test
+    public void shouldThrowObjectNotFoundWhenCreateDraftReturnsNoFragment() throws Exception
+    {
+        for (List<FragmentV2> noFragmentResult : noFragmentResults())
+        {
+            given(executor.execute(any(TransitionFragmentState.class))).willReturn(noFragmentResult);
+
+            // Create a draft of the fragment
+            Throwable thrown = catchThrowable(() -> testedInstance.createDraft(FRAGMENT_ID));
+
+            assertThat(thrown).isExactlyInstanceOf(ObjectNotFoundException.class).hasMessage(DRAFT_NO_FRAGMENT_MESSAGE);
+        }
+    }
+
+    @Test
+    public void shouldMapErrorCode603ToObjectNotFoundOnEveryWriteMethod() throws Exception
+    {
+        given(executor.execute(any(CloneFragment.class)))
+                .willThrow(new MarketoApiException(MISSING_FRAGMENT_ERROR_CODE, ACCESS_DENIED_MESSAGE));
+        given(executor.execute(any(UpdateFragment.class)))
+                .willThrow(new MarketoApiException(MISSING_FRAGMENT_ERROR_CODE, ACCESS_DENIED_MESSAGE));
+        given(executor.execute(any(TransitionFragmentState.class)))
+                .willThrow(new MarketoApiException(MISSING_FRAGMENT_ERROR_CODE, ACCESS_DENIED_MESSAGE));
+
+        for (Call call : writeCalls(FRAGMENT_ID))
+        {
+            Throwable thrown = catchThrowable(call::run);
+
+            assertThat(thrown)
+                    .isExactlyInstanceOf(ObjectNotFoundException.class)
+                    .hasMessage(ACCESS_DENIED_MESSAGE)
+                    .asInstanceOf(type(MarketoApiException.class))
+                    .extracting(MarketoApiException::getErrorCode)
+                    .isEqualTo(MISSING_FRAGMENT_ERROR_CODE);
+        }
+    }
+
+    @Test
+    public void shouldPassContentRejectedThroughUnchanged() throws Exception
+    {
+        ContentRejectedException contentRejectedError = new ContentRejectedException(CONTENT_REJECTED_ERROR_CODE, "rejected");
+        given(executor.execute(any(UpdateFragment.class))).willThrow(contentRejectedError);
+
+        // Update the fragment
+        Throwable thrown = catchThrowable(() -> testedInstance.updateFragment(FRAGMENT_ID, FragmentV2Update.builder().htmlBody("<p>test-html</p>").build()));
+
+        assertThat(thrown).isSameAs(contentRejectedError);
+    }
+
+    @Test
+    public void shouldPropagateExistingDraftErrorUnchanged() throws Exception
+    {
+        MarketoApiException existingDraftError = new MarketoApiException(DRAFT_EXISTS_ERROR_CODE, "draft exists");
+        given(executor.execute(any(TransitionFragmentState.class))).willThrow(existingDraftError);
+
+        // Create a draft of the fragment
+        Throwable thrown = catchThrowable(() -> testedInstance.createDraft(FRAGMENT_ID));
+
+        assertThat(thrown)
+                .isSameAs(existingDraftError)
+                .isExactlyInstanceOf(MarketoApiException.class);
+    }
+
+    @Test
+    public void shouldPropagateDeletedDraftErrorUnchanged() throws Exception
+    {
+        MarketoApiException deletedDraftError = new MarketoApiException(DELETED_DRAFT_ERROR_CODE, "draft deleted");
+        given(executor.execute(any(UpdateFragment.class))).willThrow(deletedDraftError);
+
+        // Update the fragment
+        Throwable thrown = catchThrowable(() -> testedInstance.updateFragment(FRAGMENT_ID, FragmentV2Update.builder().htmlBody("<p>test-html</p>").build()));
+
+        assertThat(thrown)
+                .isSameAs(deletedDraftError)
+                .isExactlyInstanceOf(MarketoApiException.class);
+    }
+
+    private List<Call> writeCalls(String id)
+    {
+        return Arrays.asList(
+                () -> testedInstance.cloneFragment(id, COPY_NAME),
+                () -> testedInstance.updateFragment(id, FragmentV2Update.builder().htmlBody("<p>test-html</p>").build()),
+                () -> testedInstance.createDraft(id),
+                () -> testedInstance.approveFragment(id));
+    }
+
+    private static List<List<FragmentV2>> noFragmentResults()
+    {
+        return Arrays.asList(null, Collections.<FragmentV2>emptyList(), Collections.singletonList(new FragmentV2()));
+    }
+
     private static FragmentV2Filter emptyFilter()
     {
         return FragmentV2Filter.builder(WORKSPACE_ID)
@@ -222,5 +444,10 @@ public class MarketoFragmentV2RestClientTest
         FragmentV2 fragment = new FragmentV2();
         fragment.setId(id);
         return fragment;
+    }
+
+    private interface Call
+    {
+        void run() throws Exception;
     }
 }
