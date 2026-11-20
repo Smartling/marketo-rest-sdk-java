@@ -45,6 +45,7 @@ public class FragmentV2DeserializationTest
     private static final String CHANNEL_EMAIL = "email";
     private static final String STATE_PUBLISHED = "published";
     private static final String STATE_DRAFT = "draft";
+    private static final String STATUS_DRAFT = "draft";
     private static final String STATUS_PUBLISHED_WITH_DRAFT = "published_with_draft";
     private static final String HTML_BODY = "<div>Hello</div>";
     private static final String TEXT_BODY = "Hello";
@@ -251,7 +252,7 @@ public class FragmentV2DeserializationTest
         fragment.setId(CLONED_FRAGMENT_ID);
         fragment.setName("fragment-1-copy");
         fragment.setDescription("");
-        fragment.setStatus(STATE_DRAFT);
+        fragment.setStatus(STATUS_DRAFT);
         fragment.setState(STATE_DRAFT);
         fragment.setExternalId(null);
         fragment.setVirtualId("virtual-id-4");

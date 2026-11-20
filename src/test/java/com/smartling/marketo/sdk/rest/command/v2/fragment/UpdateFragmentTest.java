@@ -83,11 +83,11 @@ public class UpdateFragmentTest
 
     private static Map<String, Object> map(Object... keysAndValues)
     {
-        Map<String, Object> result = new LinkedHashMap<>();
+        Map<String, Object> expectedObject = new LinkedHashMap<>();
         for (int i = 0; i < keysAndValues.length; i += 2)
         {
-            result.put((String) keysAndValues[i], keysAndValues[i + 1]);
+            expectedObject.put((String) keysAndValues[i], keysAndValues[i + 1]);
         }
-        return result;
+        return expectedObject;
     }
 }

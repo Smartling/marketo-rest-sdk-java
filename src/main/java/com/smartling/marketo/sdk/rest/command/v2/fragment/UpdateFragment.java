@@ -41,19 +41,19 @@ public class UpdateFragment extends BaseFragmentPostCommand<Void>
         return body;
     }
 
-    private static void putIfSet(Map<String, Object> target, String key, String value)
+    private static void putIfSet(Map<String, Object> bodyObject, String key, String partText)
     {
-        if (value != null)
+        if (partText != null)
         {
-            target.put(key, value);
+            bodyObject.put(key, partText);
         }
     }
 
-    private static void putIfNotEmpty(Map<String, Object> target, String key, Map<String, Object> value)
+    private static void putIfNotEmpty(Map<String, Object> bodyObject, String key, Map<String, Object> childObject)
     {
-        if (!value.isEmpty())
+        if (!childObject.isEmpty())
         {
-            target.put(key, value);
+            bodyObject.put(key, childObject);
         }
     }
 }

@@ -44,7 +44,7 @@ Observed on the Smartling sandbox on 17 November 2026 (read and write calls by h
 | Filter while a fragment is `published_with_draft` | A filter by `workspaceId` and `name` lists one item: the published id, with `status` `published_with_draft` and `state` `published`; the draft is not listed on its own. With `status=published_with_draft` it is returned; with `status=draft` or `status=published` the result is empty. |
 | Filter sort key | `sortKey=name` with `sortOrder=ASC` and `pageSize=50` is accepted; an unknown sort key answers `611`. |
 | Folder of a copy made in the UI | The copy has the same `appData.folderId` and `workspaceId` as its source. |
-| Ids in `appData` | In the source and in its UI copy `appData.workspaceId` is `"3"` and `appData.folderId` is `"2379"`: strings of digits. |
+| Ids in `appData` | In the source and in its UI copy `appData.workspaceId` and `appData.folderId` are strings of digits, not integers. |
 | A published fragment with no draft | `associatedStates` has one entry: `state` `published`, `contentId` equal to the fragment's `id` (the source fragment, and the probe copy after an approve). |
 | `settings` of the sandbox fragment | `fragmentType` `visual` and `supportedChannels` `["email"]`; there is no `fragmentSubType`. |
 | Duplicate name, name over 100 characters | `60000` with no other detail, for the fragment API clone (MRKT-506 Findings #10, 28 October). |
