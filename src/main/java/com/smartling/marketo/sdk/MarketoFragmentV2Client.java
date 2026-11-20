@@ -6,7 +6,7 @@ import com.smartling.marketo.sdk.domain.v2.fragment.FragmentV2Page;
 import com.smartling.marketo.sdk.domain.v2.fragment.FragmentV2Update;
 
 /**
- * Client for the Marketo Asset API v2 fragment endpoints: filter and load, and the write calls clone, update, create draft and approve.
+ * Client for the Marketo Asset API v2 fragment endpoints.
  */
 public interface MarketoFragmentV2Client
 {
