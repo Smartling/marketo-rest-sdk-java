@@ -1,0 +1,53 @@
+{
+  "requestId": "request-id-4",
+  "success": true,
+  "warnings": [],
+  "errors": null,
+  "result": [
+    {
+      "id": "draft-fragment-id-1",
+      "name": "fragment-1",
+      "description": "A test fragment",
+      "appType": "marketo",
+      "appData": {
+        "folderId": "folder-id-1",
+        "workspaceId": "workspace-id-1"
+      },
+      "metadata": {
+        "createdBy": "John Doe",
+        "createdAt": "2026-01-02T03:04:05Z+0000",
+        "modifiedBy": "John Doe",
+        "modifiedAt": "2026-01-03T04:05:06Z+0000"
+      },
+      "settings": {
+        "fragmentType": "visual",
+        "supportedChannels": ["email"]
+      },
+      "data": {
+        "html": {
+          "body": "<div>Hello</div>"
+        },
+        "text": {
+          "body": "Hello",
+          "syncFromHtml": true
+        }
+      },
+      "status": "published_with_draft",
+      "state": "draft",
+      "virtualId": "virtual-id-1",
+      "associatedStates": [
+        {
+          "contentId": "0123456789abcdef01234567",
+          "externalId": "external-id-1",
+          "state": "published"
+        },
+        {
+          "contentId": "draft-fragment-id-1",
+          "state": "draft"
+        }
+      ],
+      "scriptEngine": "VELOCITY",
+      "themeId": "theme-id-1"
+    }
+  ]
+}

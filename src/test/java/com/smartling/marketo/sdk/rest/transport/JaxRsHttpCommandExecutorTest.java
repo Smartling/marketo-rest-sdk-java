@@ -10,7 +10,7 @@ import com.smartling.marketo.sdk.domain.email.EmailTextContentItem;
 import com.smartling.marketo.sdk.domain.folder.FolderId;
 import com.smartling.marketo.sdk.domain.folder.FolderType;
 import com.smartling.marketo.sdk.rest.Command;
-import com.smartling.marketo.sdk.rest.EmailContentRejectedException;
+import com.smartling.marketo.sdk.rest.ContentRejectedException;
 import com.smartling.marketo.sdk.rest.FolderTypeNotSupportedException;
 import com.smartling.marketo.sdk.rest.ObjectNotFoundException;
 import com.smartling.marketo.sdk.rest.RequestLimitExceededException;
@@ -341,11 +341,11 @@ public class JaxRsHttpCommandExecutorTest extends BaseTransportTest {
     }
 
     @Test
-    public void shouldMapCode60019ToEmailContentRejectedException() throws Exception {
+    public void shouldMapCode60019ToContentRejectedException() throws Exception {
         givenThat(get(urlStartingWith("/rest")).willReturn(
                 aJsonResponse(errorResponse("60019", CONTENT_REJECTED_MESSAGE))));
 
-        thrown.expect(EmailContentRejectedException.class);
+        thrown.expect(ContentRejectedException.class);
         thrown.expect(exceptionWithCode("60019"));
         thrown.expectMessage(CONTENT_REJECTED_MESSAGE);
 

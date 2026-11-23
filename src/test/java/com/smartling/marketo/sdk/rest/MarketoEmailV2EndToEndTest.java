@@ -331,7 +331,7 @@ public class MarketoEmailV2EndToEndTest
 
         Throwable thrown = catchThrowable(() -> client.updateEmail(EMAIL_ID, EmailV2Update.builder().subject(SUBJECT).build()));
 
-        assertThat(thrown).isExactlyInstanceOf(EmailContentRejectedException.class);
+        assertThat(thrown).isExactlyInstanceOf(ContentRejectedException.class);
         assertThat(((MarketoApiException) thrown).getErrorCode()).isEqualTo("60019");
         wireMockRule.verify(1, postRequestedFor(urlPathEqualTo(UPDATE_PATH)));
     }
