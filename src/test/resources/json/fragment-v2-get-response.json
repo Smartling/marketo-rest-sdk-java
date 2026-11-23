@@ -1,0 +1,59 @@
+{
+  "requestId": "request-id-2",
+  "success": true,
+  "warnings": [],
+  "errors": null,
+  "result": [
+    {
+      "id": "0123456789abcdef01234567",
+      "name": "fragment-1",
+      "description": "A test fragment",
+      "appType": "marketo",
+      "appData": {
+        "folderId": "folder-id-1",
+        "workspaceId": "workspace-id-1",
+        "editorContent": "{\"editorKey\":\"editor-value-1\"}"
+      },
+      "metadata": {
+        "createdBy": "John Doe",
+        "createdAt": "2026-01-02T03:04:05Z+0000",
+        "createdById": "user-id-1@example.com",
+        "createdByAepId": "aep-id-1",
+        "modifiedBy": "John Doe",
+        "modifiedAt": "2026-01-03T04:05:06Z+0000",
+        "modifiedById": "user-id-1@example.com",
+        "modifiedByAepId": "aep-id-1"
+      },
+      "settings": {
+        "fragmentType": "visual",
+        "supportedChannels": ["email"]
+      },
+      "data": {
+        "html": {
+          "body": "<div>Hello</div>"
+        },
+        "text": {
+          "body": "Hello",
+          "syncFromHtml": true
+        }
+      },
+      "status": "published",
+      "state": "published",
+      "virtualId": "virtual-id-1",
+      "associatedStates": [
+        {
+          "contentId": "0123456789abcdef01234567",
+          "externalId": "external-id-1",
+          "state": "published"
+        }
+      ],
+      "externalId": "external-id-1",
+      "scriptEngine": "VELOCITY",
+      "themeId": "theme-id-1",
+      "thumbnail": "thumbnail-1",
+      "editorContext": {
+        "editorKey": "editor-value-1"
+      }
+    }
+  ]
+}

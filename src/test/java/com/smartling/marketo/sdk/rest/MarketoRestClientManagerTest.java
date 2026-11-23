@@ -5,6 +5,7 @@ import com.smartling.marketo.sdk.MarketoEmailV2Client;
 import com.smartling.marketo.sdk.rest.MarketoRestClientManagerFactory;
 import com.smartling.marketo.sdk.MarketoEmailTemplateClient;
 import com.smartling.marketo.sdk.MarketoFolderClient;
+import com.smartling.marketo.sdk.MarketoFragmentV2Client;
 import com.smartling.marketo.sdk.MarketoLandingPageClient;
 import com.smartling.marketo.sdk.MarketoLandingPageTemplateClient;
 import com.smartling.marketo.sdk.MarketoProgramClient;
@@ -54,6 +55,14 @@ public class MarketoRestClientManagerTest {
 
         assertThat(client).isNotNull();
         assertThat(client).isInstanceOf(MarketoEmailV2RestClient.class);
+    }
+
+    @Test
+    public void shouldReturnFragmentV2RestClient() throws Exception {
+        final MarketoFragmentV2Client client = testedInstance.getMarketoFragmentV2Client();
+
+        assertThat(client).isNotNull();
+        assertThat(client).isInstanceOf(MarketoFragmentV2RestClient.class);
     }
 
     @Test
